@@ -1,11 +1,10 @@
-$.widget("viz.vizworkbench", $.viz.vizcontainer, {
+$.widget("vis.visworkbench", $.vis.viscontainer, {
     options: {
-	test: this.test,
     },
     _create: function() {
 	$("<div id='editor'>").appendTo(this.element);
 	var editor = CKEDITOR.appendTo( 'editor', {}, "" );
-	$("<textarea class='ckeditor' id='testtest'></textarea>").appendTo(this.element);
+	//$("<textarea class='ckeditor' id='testtest'></textarea>").appendTo(this.element);
 	var $ele = this.element;
 	$.get("/workbench/pirs", function(data) {
             var layout = "";

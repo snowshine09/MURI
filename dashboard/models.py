@@ -1,17 +1,13 @@
 from django.contrib.gis.db import models
 from model_utils.managers import InheritanceManager
-from django.template.defaultfilters import slugify
-
-from south.modelsinspector import add_introspection_rules
-add_introspection_rules([], ["^django\.contrib\.gis\.db\.models\.fields\.GeometryField"])
 
 # Create your models here.
 class Entity(models.Model):
-    name          = models.CharField(max_length=100, blank=True)
-    security_info = models.CharField(max_length=50, blank=True)
+    name          = models.CharField(max_length=100, null=True, blank=True)
+    security_info = models.CharField(max_length=50, null=True, blank=True)
     date_as_of    = models.DateTimeField(null=True, blank=True)
     date_first_info    = models.DateTimeField(null=True, blank=True)
-    affiliation   = models.CharField(max_length=100, blank=True)
+    affiliation   = models.CharField(max_length=100, null=True, blank=True)
     allegiance    = models.CharField(max_length=50, null=True, blank=True)
     intelligence_evaluation = models.CharField(max_length=50, null=True, blank=True)
     guid          = models.CharField(max_length=50, null=True, blank=True)
@@ -39,20 +35,6 @@ class Entity(models.Model):
             res.append(sou[0])
         return Entity.objects.filter(id__in=res).select_subclasses()
 
-class Message(models.Model):
-    uid = models.CharField(max_length=10)
-    content = models.CharField(max_length=1000)
-    date  = models.DateTimeField(null=True, blank=True)
-
-    def getKeyAttr(self):
-        attr = {}
-        attr['uid'] = self.uid
-        attr['content'] = self.content
-        attr['date']    = '' 
-        if self.date != None: 
-            attr['date']  = self.date.strftime('%m/%d/%Y') 
-        return attr
-
 class Footprint(Entity):
     shape = models.GeometryField(null=True, blank=True)
     imprecision = models.FloatField(null=True, blank=True)
@@ -66,7 +48,7 @@ class Footprint(Entity):
         attr = {}
         attr['uid'] = self.id
         attr['name'] = self.name
-        attr['tag'] = 'footprint'
+        attr['node'] = 'footprint'
         if self.shape:
             attr['shape'] = self.shape.wkt
             attr['srid'] = self.shape.srid
@@ -105,7 +87,7 @@ class Person(Entity):
         attr['gender'] = self.gender
         attr['race'] = self.race
         attr['nationality'] = self.nationality
-        attr['tag'] = 'person'
+        attr['node'] = 'person'
         return attr
 
     def getAllAttr(self):
@@ -134,7 +116,7 @@ class Organization(Entity):
         attr['nationality'] = self.nationality
         attr['ethnicity'] = self.ethnicity
         attr['religion'] = self.religion
-        attr['tag'] = 'organization'
+        attr['node'] = 'organization'
         return attr
 
     def getAllAttr(self):
@@ -159,7 +141,7 @@ class Event(Entity):
         attr['excerpt'] = ''
         if len(messages) != 0:
             attr['excerpt'] = messages[0].content[:100] + "..." # get the first 100 characters in the first string
-        attr['tag'] = 'event'
+        attr['node'] = 'event'
         return attr
 
     def getAllAttr(self):
@@ -169,6 +151,21 @@ class Event(Entity):
         messages = self.message_set.all()
         if len(messages) != 0:
             attr['messages'] = [message for message in messages]
+        return attr
+
+class Message(models.Model):
+    uid = models.CharField(max_length=10)
+    content = models.CharField(max_length=1000)
+    date  = models.DateTimeField(null=True, blank=True)
+    event = models.ManyToManyField(Event, null=True, blank=True)
+
+    def getKeyAttr(self):
+        attr = {}
+        attr['uid'] = self.uid
+        attr['content'] = self.content
+        attr['date']    = '' 
+        if self.date != None: 
+            attr['date']  = self.date.strftime('%m/%d/%Y') 
         return attr
 
 class Unit(Entity):
@@ -183,7 +180,7 @@ class Unit(Entity):
         attr = {}
         attr['uid'] = self.id
         attr['name'] = self.name
-        attr['tag'] = 'unit'
+        attr['node'] = 'unit'
         return attr
 
     def getAllAttr(self):
@@ -207,7 +204,7 @@ class Resource(Entity):
         attr['uid'] = self.id
         attr['name'] = self.name
         attr['condition'] = self.condition
-        attr['tag'] = 'resource'
+        attr['node'] = 'resource'
         attr['resource_type'] = self.resource_type
         return attr
 
@@ -226,7 +223,7 @@ class Equipment(Resource):
         attr['condition'] = self.condition
         attr['operational_status'] = self.operational_status
         attr['availability'] = self.availability
-        attr['tag'] = 'resource.equipment'
+        attr['node'] = 'resource'
         attr['resource_type'] = 'equipment'
         return attr
 
@@ -247,7 +244,7 @@ class Weapon(Resource):
         attr['condition'] = self.condition
         attr['operational_status'] = self.operational_status
         attr['availability'] = self.availability
-        attr['tag'] = 'resource.weapon'
+        attr['node'] = 'resource'
         attr['resource_type'] = 'weapon'
         return attr
 
@@ -275,7 +272,7 @@ class Vehicle(Resource):
         attr['condition'] = self.condition
         attr['operational_status'] = self.operational_status
         attr['availability'] = self.availability
-        attr['tag'] = 'resource.vehicle'
+        attr['node'] = 'resource'
         attr['resource_type'] = 'vehicle'
         return attr
 
@@ -300,7 +297,7 @@ class Facility(Resource):
         attr['condition'] = self.condition
         attr['operational_status'] = self.operational_status
         attr['availability'] = self.availability
-        attr['tag'] = 'resource.facility'
+        attr['node'] = 'resource'
         attr['resource_type'] = 'facility'
         return attr
 
@@ -327,7 +324,7 @@ class Document(Resource):
         attr['condition'] = self.condition
         attr['operational_status'] = self.operational_status
         attr['availability'] = self.availability
-        attr['tag'] = 'resource.document'
+        attr['node'] = 'resource'
         attr['resource_type'] = 'document'
         return attr
 

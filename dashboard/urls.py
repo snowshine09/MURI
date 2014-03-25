@@ -21,5 +21,4 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     url(r'^workbench/', include('workbench.urls')),
-    url(r'^annotation/', include('annotation.urls')),
 )
