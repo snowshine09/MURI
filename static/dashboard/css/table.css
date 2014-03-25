@@ -1,0 +1,3 @@
+.dataTables tbody tr {
+    min-height: 35px; /* or whatever height you need to make them all consistent */
+}

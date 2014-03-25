@@ -1,0 +1,96 @@
+{% load static %}
+{% load compress %}
+{% block extralib %}
+<script type="text/javascript" language="javascript" src="{% static 'dashboard/lib/DataTables-1.9.4/media/js/jquery.dataTables.js' %}"></script>
+<script type="text/javascript" language="javascript" src="{% static 'dashboard/lib/DataTables-1.9.4/plugin/ColReorderWithResize.js' %}"></script>
+<!--        <link rel="stylesheet" type="text/css" href="lib/DataTables-1.9.4/media/css/jquery.dataTables.css"> -->
+<link rel="stylesheet" type="text/css" href="{% static 'dashboard/lib/DataTables-1.9.4/media/css/demo_table_jui.css' %}"> 
+
+<script type="text/javascript" language="javascript" src="{% static 'dashboard/js/event_table.js' %}"></script>
+{% compress css %}
+<link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/map.css' %}"> 
+{% endcompress %}
+{% endblock %}
+<div id="location_dlg" class="hidden">
+<table id="location_table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Frequency</th>
+        </tr>
+    </thead>
+
+</table>
+</div>
+<div id = "message_dlg" class="hidden">
+<table id="message_table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Content</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+ 
+</table>
+</div>
+<div id="event_dlg" class="hidden">
+<table id="event_table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+
+</table>
+</div>
+<div id="person_dlg" class="hidden">
+<table id="person_table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Gender</th>
+            <th>Race</th>
+            <th>Nationality</th>
+            <th>Frequency</th>
+        </tr>
+    </thead>
+ 
+</table>
+</div>
+<div id="organization_dlg" class="hidden">
+<table id="organization_table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Nationality</th>
+            <th>Ethnicity</th>
+            <th>Religion</th>
+            <th>Frequency</th>
+        </tr>
+    </thead>
+
+</table>
+</div>
+<div id="resource_dlg" class="hidden">
+<table id="resource_table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Condition</th>
+            <th>Type</th>
+            <th>Frequency</th>
+        </tr>
+    </thead>
+
+</table>
+</div>
