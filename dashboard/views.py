@@ -61,11 +61,13 @@ def getData(request):
 
         linked_entities = list(chain(event.findTargets(), event.findSources()))
         for entity in linked_entities:
+            #print entity.getKeyAttr(),entity
             if hasattr(entity, 'organization'):
                 e_info['organizations'].append(entity.getKeyAttr())
             elif hasattr(entity, 'resource'):
                 e_info['resources'].append(entity.getKeyAttr())
             elif hasattr(entity, 'person'):
+                #print entity,hasattr(entity,"node"),hasattr(entity,"person"),dir(entity)
                 e_info['persons'].append(entity.getKeyAttr())
             elif hasattr(entity, 'footprint'):
                 e_info['footprints'].append(entity.getKeyAttr())
@@ -77,16 +79,16 @@ def getData(request):
 def flatten(dic):
     res = []
     for person in dic['persons']+[{}]:
-	rec = {}
-	rec['uid'] = dic['uid']
-	rec['name'] = dic['name']
-	rec['types'] = dic['types']
-	rec['date'] = dic['date']
-	rec['excerpt'] = dic['excerpt']
+    	rec = {}
+    	rec['uid'] = dic['uid']
+    	rec['name'] = dic['name']
+    	rec['types'] = dic['types']
+    	rec['date'] = dic['date']
+    	rec['excerpt'] = dic['excerpt']
 
         if len(dic['persons']) != 0 and person == {}:
             continue
-	rec['person'] = person
+    	rec['person'] = person
 	for org in dic['organizations']+[{}]:
             if len(dic['organizations']) != 0 and org == {}:
                 continue

@@ -7,5 +7,16 @@
 <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/network.css' %}">
 {% endblock %}
 
-<div id="network" style='display: none'>
+<div id="network" class='nw' style='display: none'>
+	<div id="nw-selectbar">Generate the next linked window...
+		<select class="view-dropdown" id="nw-combobox">
+			<option value="Timeline">Timeline</option>
+			<option value="Network">Network</option>
+			<option value="Map">Map</option>
+			<option value="Messages">Messages</option>
+			<option value="Events">Events</option>
+			<option value="People">People</option>
+		</select>
+	</div>
+
 </div>

@@ -80,7 +80,13 @@ function tick() {
         );
 
     this.update = function() {
-
+      $("#nw-combobox").insertAfter($(".ui-dialog-title .nw"))
+          .attr("selectedIndex", -1)
+          .change(function() {
+              //alert($("#combobox-network option:selected").val());
+              var x = $("#nw-combobox option:selected").val();
+              // self.generateOthers(x);
+          });
         events_id = []
         dDate.top(Infinity).forEach(function(p, i) {
             events_id.push(p.uid);
