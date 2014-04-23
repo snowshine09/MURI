@@ -7,9 +7,53 @@
     margin: 0px;
 }
 
-.ui-dialog-content {
-    overflow: scroll;
+.selectbar {
+  width:inherit;
+  background-color: rgba(102,196,226,0.5);
+  margin:1px;
+  padding: 0!important;
+  z-index: 9999;
+  
 }
+
+div.ui-dialog-content {
+  padding: 0!important;
+  overflow:inherit!important;
+}
+
+
+/*div.dataTables_length{
+    width:inherit!important;
+    margin-top:25px!important;
+    position: fixed!important;
+    z-index: 10000!important;
+}
+
+div.dataTables_filter{
+    width:inherit!important;
+    margin-top:25px!important;
+    position: fixed!important;
+    z-index: 10000;
+    float:right!important;
+}
+*/
+
+div.dataTables_wrapper {
+    margin-top:5px!important;
+}
+
+
+/*div.dataTables_scrollHead{
+    width:inherit!important;
+    position: fixed!important;
+    z-index: 9999!important;
+}*/
+div.dataTables_scrollBody{
+    max-height: 500px;
+}
+/*.ui-dialog-content {
+    overflow: scroll;
+}*/
 
 #progressbar {
     position: absolute;
@@ -25,3 +69,11 @@
     font-weight: bold;
     text-shadow: 1px 1px 0 #fff;
   }
+
+/*tr.odd{
+    background-color: #E2E4FF!important;
+}
+*/
+tr.even{
+    background-color: rgb(241, 236, 255)!important;
+}

@@ -100,6 +100,7 @@ SIIL.DataTable.prototype.resize = function() {
 
 SIIL.DataTable.prototype.update = function() {
     // prepare data for DataTable
+    var oSettings = this.table.fnSettings();//for testing whether the aodata is null
     if (dataset[this.SID]['dDate'] == null) {
         return;
     }
@@ -114,7 +115,7 @@ SIIL.DataTable.prototype.update = function() {
             dataset[this.SID]['dFootprint'].group().top(Infinity).forEach(function(d) {
                 if (d.value != 0 && d.key[0] != undefined) {
                     data.push([d.key[0], d.key[1]].concat([d.value]));
-                    console.log(d);
+                    //console.log(d);
                 }
             });
             break;
@@ -130,7 +131,7 @@ SIIL.DataTable.prototype.update = function() {
             dataset[this.SID]['dEvent'].group().top(Infinity).forEach(function(d) {
                 if (d.value != 0 && d.key[0] != undefined) {
                     data.push(d.key);
-                    //console.log("event:"+d);
+                    console.log("event:"+d.key+" value:"+d.value);
                 }
             });
             break;
@@ -156,6 +157,7 @@ SIIL.DataTable.prototype.update = function() {
             });
             break;
     }
+
     this.table.fnClearTable();
     this.table.fnAddData(data);
     this.table.fnAdjustColumnSizing();

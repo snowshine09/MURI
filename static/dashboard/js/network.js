@@ -127,7 +127,7 @@ SIIL.Network = function(div) {
       node.exit().remove();
       force.nodes(d.nodes)
         .links(d.links);
-      console.log(d);
+      //console.log(d);
       //
       //    link = link.data(links, function(d) { return d.source.id + "-" + d.target.id; });
       link = link.data(d.links);
@@ -256,11 +256,21 @@ SIIL.Network = function(div) {
       case "Messages":
         var vardlg = "message_dlg_" + self.SID,
           vartb = "message_tb_" + self.SID;
+        if (document.getElementById(vardlg)) {
+          break;
+        }
         $("#message_dlg").clone().attr("id", vardlg).dialog($.extend({
           title: "Messages of Link " + self.SID,
           position: ['left', 36],
+          close: function(event, ui) {
+            var tmp = $(this).attr("id"),
+              sid = tmp.split("_")[2],
+              tb = "message_tb_" + sid;
+            // alert(tmp);
+            delete messageTable[sid];
+            $(this).dialog('destroy').remove();
+          },
           resize: function() {
-            //eval(vartb+'\.resize();');
             messageTable[self.SID].resize();
           },
           height: 800
@@ -272,10 +282,27 @@ SIIL.Network = function(div) {
         break;
       case "Events":
         var vardlg = "event_dlg_" + self.SID,
-          vartb = "event_tb_" + self.SID;
+          vartb = "event_tb_" + self.SID,
+          varbar = "selectbar_" + self.SID;
+        if (document.getElementById(vardlg)) {
+          break;
+        }
         $("#event_dlg").clone().attr("id", vardlg).dialog($.extend({
           title: "Events of Link " + self.SID,
           position: ['left', 36 + 800],
+          close: function(event, ui) {
+            var tmp = $(this).attr("id"),
+              sid = tmp.split("_")[2],
+              tb = "event_tb_" + sid;
+            alert(sid);
+            delete eventTable[sid];
+            if ($('#' + tb).hasClass('row_selected')) {
+              dataset[sid]['dEvent'].filterAll();
+              renderAllExcept([tb]);
+              $('#' + tb).removeClass('row_selected');
+            }
+            $(this).dialog('destroy').remove();
+          },
           resize: function() {
             //eval(vartb+'\.resize();');
             eventTable[self.SID].resize();
@@ -283,16 +310,26 @@ SIIL.Network = function(div) {
           height: 800
         }, dialogOptions))
           .dialogExtend(dialogExtendOptions);
-        $("#" + vardlg).children().attr("id", vartb);
+        $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+        $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
         eventTable[self.SID] = new SIIL.DataTable("#" + vartb); //messageTable's key should include both Id and subID related to the vis type
         eventTable[self.SID].update();
         break;
       case "People":
         var vardlg = "person_dlg_" + self.SID,
           vartb = "person_tb_" + self.SID;
+        if (document.getElementById(vardlg)) {
+          break;
+        }
         $("#person_dlg").clone().attr("id", vardlg).dialog($.extend({
           title: "People of Link " + self.SID,
           position: ['left', 36 + 800 * 2],
+          close: function(event, ui) {
+            var tmp = $(this).attr("id");
+            // alert(tmp);
+            delete eventTable[tmp.split("_")[1]];
+            $(this).dialog('destroy').remove();
+          },
           resize: function() {
             //eval(vartb+'\.resize();');
             personTable[self.SID].resize();

@@ -1,3 +1,6 @@
 .dataTables tbody tr {
     min-height: 35px; /* or whatever height you need to make them all consistent */
 }
+.dataTables tbody tr .brushed{
+    fill: steelblue; /* height */
+}

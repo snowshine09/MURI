@@ -78,7 +78,7 @@ function CreateSource() {
         //     var mes = d.message;
         //     return [mes.uid, mes.content, mes.date]
         // });
-
+    alert("end loading data!");
 
     });
     //alert("end of create source");
@@ -116,10 +116,12 @@ function CopySource() {
 }
 $(document).ready(function() {
     // show progress bar before data is loaded
+    alert("progress");
     $("#progressbar").progressbar({
         value: false
     });
     CreateSource();
+    alert("end");
     $("#progressbar").remove();
 
 

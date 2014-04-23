@@ -12,16 +12,26 @@
 {% endcompress %}
 {% endblock %}
 <div id="location_dlg" class="hidden">
-<table id="location_table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Frequency</th>
-        </tr>
-    </thead>
+    <div id="nw-selectbar">Generate the next linked window...
+        <select class="view-dropdown" id="nw-combobox">
+            <option value="Timeline">Timeline</option>
+            <option value="Network">Network</option>
+            <option value="Map">Map</option>
+            <option value="Messages">Messages</option>
+            <option value="Events">Events</option>
+            <option value="People">People</option>
+        </select>
+    </div>
+    <table id="location_table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Frequency</th>
+            </tr>
+        </thead>
 
-</table>
+    </table>
 </div>
 <div id = "message_dlg" class="hidden">
 <table id="message_table">
@@ -36,18 +46,28 @@
 </table>
 </div>
 <div id="event_dlg" class="hidden">
-<table id="event_table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Date</th>
-        </tr>
-    </thead>
+    <div id="nw-selectbar" class="selectbar">Generate the next linked window...
+        <select class="view-dropdown" id="nw-combobox">
+            <option value="Timeline">Timeline</option>
+            <option value="Network">Network</option>
+            <option value="Map">Map</option>
+            <option value="Messages">Messages</option>
+            <option value="Events">Events</option>
+            <option value="People">People</option>
+        </select>
+    </div>
+    <table id="event_table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Date</th>
+            </tr>
+        </thead>
 
-</table>
+    </table>
 </div>
 <div id="person_dlg" class="hidden">
 <table id="person_table">

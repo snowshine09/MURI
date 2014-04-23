@@ -133,29 +133,35 @@ function showDialogs(dialogs) {
             case "event_table":
                 d3.json("dataSetNum", function(error, result) {
                     // eval("var dataSet" + result);
-                    console.log(result);
+                    //console.log(result);
 
                     var vardlg = "event_dlg_" + result.NewLinkNum,
-                        vartb = "event_tb_" + result.NewLinkNum;
+                        vartb = "event_tb_" + result.NewLinkNum,
+                        varbar = "nw-selectbar_"+ result.NewLinkNum;
                     $("#event_dlg").clone().attr("id", vardlg).dialog($.extend({
                         title: "Events of Link " + result.NewLinkNum,
                         position: ['left', 36],
+                        close: function(event, ui) {
+                            // delete eventTable[result.NewLinkNum],
+                            var tmp = $(this).attr("id");
+                            alert(tmp);
+                            delete eventTable[tmp.split("_")[2]];
+                            //alert(eventTable[tmp.split("_")[1]]);
+                            $(this).dialog('destroy').remove();
+                            alert("!");
+                        },
                         resize: function() {
-                            //eval(vartb+'\.resize();');
                             eventTable[result.NewLinkNum].resize();
                         },
                         height: 800
                     }, dialogOptions))
                         .dialogExtend(dialogExtendOptions);
-                    //var divCon = document.getElementById(vardlg);
-                    $("#" + vardlg).children().attr("id", vartb);
-                    // alert(vartb+'= new SIIL.DataTable(\"#'+vartb+'\");');
-                    // alert(vartb+'\.update();');
-                    //eval(vartb+'= new SIIL.DataTable(\"#'+vartb+'\");');
-                    //eval(vartb+'\.update();');
+                    //$("#" + vardlg).children().attr("id", vartb);
+                    $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                    $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     eventTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
                     dataset[result.NewLinkNum] = CopySource();
-                    console.log(dataset[result.NewLinkNum]);
+                    // console.log(dataset[result.NewLinkNum]);
                     eventTable[result.NewLinkNum].update();
 
                     // console.log(eventTable);
@@ -181,13 +187,19 @@ function showDialogs(dialogs) {
                 // messageTable.update();
                 d3.json("dataSetNum", function(error, result) {
                     // eval("var dataSet" + result);
-                    console.log(result);
+                    //console.log(result);
 
                     var vardlg = "message_dlg_" + result.NewLinkNum,
                         vartb = "message_tb_" + result.NewLinkNum;
                     $("#message_dlg").clone().attr("id", vardlg).dialog($.extend({
                         title: "Messages of Link " + result.NewLinkNum,
                         position: ['left', 36],
+                        close: function(event, ui) {
+                            var tmp = $(this).attr("id");
+                            // alert(tmp);
+                            delete messageTable[tmp.split("_")[1]];
+                            $(this).dialog('destroy').remove();
+                        },
                         resize: function() {
                             //eval(vartb+'\.resize();');
                             messageTable[result.NewLinkNum].resize();
@@ -195,9 +207,9 @@ function showDialogs(dialogs) {
                         height: 800
                     }, dialogOptions))
                         .dialogExtend(dialogExtendOptions);
-                        alert($("#" + vardlg).html());
+                    alert($("#" + vardlg).html());
                     //$("#" + vardlg).children().attr("id", vartb);
-                    $('#'+vardlg + ' >table:eq(0)').attr("id", vartb);
+                    $('#' + vardlg + ' >table:eq(0)').attr("id", vartb);
                     messageTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
                     dataset[result.NewLinkNum] = CopySource();
                     messageTable[result.NewLinkNum].update();
@@ -220,13 +232,19 @@ function showDialogs(dialogs) {
                 // locationTable.update();
                 d3.json("dataSetNum", function(error, result) {
                     // eval("var dataSet" + result);
-                    console.log(result);
+                    //console.log(result);
 
                     var vardlg = "location_dlg_" + result.NewLinkNum,
                         vartb = "location_tb_" + result.NewLinkNum;
                     $("#location_dlg").clone().attr("id", vardlg).dialog($.extend({
                         title: "Locations of Link " + result.NewLinkNum,
                         position: ['left', 36],
+                        close: function(event, ui) {
+                            var tmp = $(this).attr("id");
+                            // alert(tmp);
+                            delete locationTable[tmp.split("_")[1]];
+                            $(this).dialog('destroy').remove();
+                        },
                         resize: function() {
                             //eval(vartb+'\.resize();');
                             locationTable[result.NewLinkNum].resize();
@@ -339,7 +357,7 @@ function showDialogs(dialogs) {
                     $("#" + nw).children().attr("id", sbar);
                     $("#" + sbar).children().attr("id", cmb);
                     $('#' + nw + ' > div:eq(1)').attr("id", cvs);; //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
-                    network[result.NewLinkNum] = new SIIL.Network("#" + nw);
+                    network[result.NewLinkNum] = new SIIL.Network("#" + cvs);
                     dataset[result.NewLinkNum] = CopySource();
                     network[result.NewLinkNum].update();
                 });
