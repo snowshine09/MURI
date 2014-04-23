@@ -15,12 +15,6 @@ Thumbs.db
 
 # swp file by vim
 *.swp
-*.swo
 *.bak
 
-/CACHE/
-/dashboard/CACHE/
-data/
-pip-log.txt
-/dashboard/migrations/
 /logs/

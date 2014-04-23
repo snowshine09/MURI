@@ -9,6 +9,15 @@ from django.template import Context
 from django.db.models import Q
 from itertools import chain
 import copy
+import sys
+
+linkCount = 0
+def LinkNum(request):
+    global linkCount
+    linkCount +=1
+    response = {}
+    response['NewLinkNum'] = str(linkCount)
+    return HttpResponse(json.dumps(response), mimetype='application/json')
 
 def index(request):
     bbox    = request.REQUEST.getlist('map')
@@ -73,7 +82,7 @@ def getData(request):
                 e_info['footprints'].append(entity.getKeyAttr())
 
         response['events'] += flatten(e_info)
-
+    #print len(response['events']),sys.getsizeof(response['events'])
     return HttpResponse(json.dumps(response), mimetype='application/json')
 
 def flatten(dic):
@@ -89,23 +98,25 @@ def flatten(dic):
         if len(dic['persons']) != 0 and person == {}:
             continue
     	rec['person'] = person
-	for org in dic['organizations']+[{}]:
-            if len(dic['organizations']) != 0 and org == {}:
-                continue
-            rec['organization'] = org
-            for resource in dic['resources']+[{}]:
-                if len(dic['resources']) != 0 and resource == {}:
+        for org in dic['organizations']+[{}]:
+                if len(dic['organizations']) != 0 and org == {}:
                     continue
-                rec['resource'] = resource
-                for fp in dic['footprints']+[{}]:
-                    if len(dic['footprints']) != 0 and fp == {}:
+                rec['organization'] = org
+                for resource in dic['resources']+[{}]:
+                    if len(dic['resources']) != 0 and resource == {}:
                         continue
-                    rec['footprint'] = fp
-                    for mes in dic['messages']+[{}]:
-                        if len(dic['messages']) != 0 and mes == {}:
+                    rec['resource'] = resource
+                    for fp in dic['footprints']+[{}]:
+                        if len(dic['footprints']) != 0 and fp == {}:
                             continue
-                        rec['message'] = mes
-                        res.append(copy.deepcopy(rec))
+                        rec['footprint'] = fp
+                        for mes in dic['messages']+[{}]:
+                            if len(dic['messages']) != 0 and mes == {}:
+                                continue
+                            rec['message'] = mes
+                            # print rec
+                            res.append(copy.deepcopy(rec))
+    #print "res",len(res),sys.getsizeof(res)
     return res
 
 def prepareNetwork(request):
