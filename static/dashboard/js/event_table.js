@@ -100,16 +100,22 @@ SIIL.DataTable.prototype.resize = function() {
 
 SIIL.DataTable.prototype.update = function() {
     // prepare data for DataTable
-    var oSettings = this.table.fnSettings();//for testing whether the aodata is null
+    var oSettings = this.table.fnSettings(); //for testing whether the aodata is null
     if (dataset[this.SID]['dDate'] == null) {
         return;
     }
-    var data = [];
-    // var ds = dataset[this.SID];
-    // alert("ds"+ds);
-    // console.log(ds);
-    // console.log(this.SID);
 
+    var self = this,
+        cmb = self.tbType + "_selectbar_" + self.SID;
+    //alert(cmb);
+    $("#" + cmb).attr("selectedIndex", -1)
+        .change(function() {
+            var x = $("#" + cmb + " option:selected").val();
+            alert(x);
+            generateOthers(self.tbName, x);
+        });
+
+    var data = [];
     switch (this.tbType) {
         case "location":
             dataset[this.SID]['dFootprint'].group().top(Infinity).forEach(function(d) {
@@ -131,7 +137,7 @@ SIIL.DataTable.prototype.update = function() {
             dataset[this.SID]['dEvent'].group().top(Infinity).forEach(function(d) {
                 if (d.value != 0 && d.key[0] != undefined) {
                     data.push(d.key);
-                    console.log("event:"+d.key+" value:"+d.value);
+                    // console.log("event:" + d.key + " value:" + d.value);
                 }
             });
             break;

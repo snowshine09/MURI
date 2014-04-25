@@ -132,23 +132,17 @@ function showDialogs(dialogs) {
             //     break;
             case "event_table":
                 d3.json("dataSetNum", function(error, result) {
-                    // eval("var dataSet" + result);
-                    //console.log(result);
-
                     var vardlg = "event_dlg_" + result.NewLinkNum,
                         vartb = "event_tb_" + result.NewLinkNum,
-                        varbar = "nw-selectbar_"+ result.NewLinkNum;
+                        varbar = "event_selectbar_" + result.NewLinkNum;
                     $("#event_dlg").clone().attr("id", vardlg).dialog($.extend({
                         title: "Events of Link " + result.NewLinkNum,
                         position: ['left', 36],
                         close: function(event, ui) {
-                            // delete eventTable[result.NewLinkNum],
                             var tmp = $(this).attr("id");
-                            alert(tmp);
+                            alert("deleting"+tmp);
                             delete eventTable[tmp.split("_")[2]];
-                            //alert(eventTable[tmp.split("_")[1]]);
                             $(this).dialog('destroy').remove();
-                            alert("!");
                         },
                         resize: function() {
                             eventTable[result.NewLinkNum].resize();
@@ -156,60 +150,35 @@ function showDialogs(dialogs) {
                         height: 800
                     }, dialogOptions))
                         .dialogExtend(dialogExtendOptions);
-                    //$("#" + vardlg).children().attr("id", vartb);
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     eventTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
                     dataset[result.NewLinkNum] = CopySource();
-                    // console.log(dataset[result.NewLinkNum]);
                     eventTable[result.NewLinkNum].update();
-
-                    // console.log(eventTable);
-                    // console.log(dataset);
-                    // console.log(window.dic0);
-                    // eventTable = new SIIL.DataTable("#event_table");
-                    // eventTable.update();
-
                 });
 
                 break;
             case "message_table":
-                // $("#message_dlg").dialog($.extend({
-                //     title: "Messages",
-                //     position: ['left', 36],
-                //     resize: function() {
-                //         messageTable.resize();
-                //     },
-                //     height: 800
-                // }, dialogOptions))
-                //     .dialogExtend(dialogExtendOptions);
-                // messageTable = new SIIL.DataTable("#message_table");
-                // messageTable.update();
                 d3.json("dataSetNum", function(error, result) {
-                    // eval("var dataSet" + result);
-                    //console.log(result);
-
                     var vardlg = "message_dlg_" + result.NewLinkNum,
-                        vartb = "message_tb_" + result.NewLinkNum;
+                        vartb = "message_tb_" + result.NewLinkNum,
+                        varbar = "message_selectbar_" + result.NewLinkNum;
                     $("#message_dlg").clone().attr("id", vardlg).dialog($.extend({
                         title: "Messages of Link " + result.NewLinkNum,
                         position: ['left', 36],
                         close: function(event, ui) {
                             var tmp = $(this).attr("id");
-                            // alert(tmp);
-                            delete messageTable[tmp.split("_")[1]];
+                            delete messageTable[tmp.split("_")[2]];
                             $(this).dialog('destroy').remove();
                         },
                         resize: function() {
-                            //eval(vartb+'\.resize();');
                             messageTable[result.NewLinkNum].resize();
                         },
-                        height: 800
                     }, dialogOptions))
                         .dialogExtend(dialogExtendOptions);
                     alert($("#" + vardlg).html());
-                    //$("#" + vardlg).children().attr("id", vartb);
-                    $('#' + vardlg + ' >table:eq(0)').attr("id", vartb);
+                    $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                    $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     messageTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
                     dataset[result.NewLinkNum] = CopySource();
                     messageTable[result.NewLinkNum].update();
@@ -217,88 +186,64 @@ function showDialogs(dialogs) {
 
                 break;
             case "location_table":
-                // $("#location_dlg").dialog($.extend({
-                //     title: "Locations",
-                //     resize: function() {
-                //         locationTable.resize();
-                //         //     var oSettings = localtable.fnSettings();
-                //         //     oSettings.oScroll.sY = calcDataTableHeight();
-                //         //     localtable.fnDraw();
-                //     },
-                //     width: 200
-                // }, dialogOptions))
-                //     .dialogExtend(dialogExtendOptions);
-                // locationTable = new SIIL.DataTable("#location_table");
-                // locationTable.update();
                 d3.json("dataSetNum", function(error, result) {
-                    // eval("var dataSet" + result);
-                    //console.log(result);
-
                     var vardlg = "location_dlg_" + result.NewLinkNum,
-                        vartb = "location_tb_" + result.NewLinkNum;
+                        vartb = "location_tb_" + result.NewLinkNum,
+                        varbar = "location_selectbar_" + result.NewLinkNum;
                     $("#location_dlg").clone().attr("id", vardlg).dialog($.extend({
                         title: "Locations of Link " + result.NewLinkNum,
                         position: ['left', 36],
                         close: function(event, ui) {
                             var tmp = $(this).attr("id");
                             // alert(tmp);
-                            delete locationTable[tmp.split("_")[1]];
+                            delete locationTable[tmp.split("_")[2]];
                             $(this).dialog('destroy').remove();
                         },
                         resize: function() {
                             //eval(vartb+'\.resize();');
                             locationTable[result.NewLinkNum].resize();
                         },
-                        height: 800
                     }, dialogOptions))
                         .dialogExtend(dialogExtendOptions);
-                    $("#" + vardlg).children().attr("id", vartb);
+                    $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                    $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     locationTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
                     dataset[result.NewLinkNum] = CopySource();
                     locationTable[result.NewLinkNum].update();
                 });
                 break;
             case "person_table":
-                // $("#person_dlg").dialog($.extend({
-                //     title: "People",
-                //     resize: function() {
-                //         personTable.resize();
-                //     },
-                // }, dialogOptions))
-                //     .dialogExtend(dialogExtendOptions);
-                // personTable = new SIIL.DataTable("#person_table");
-                // personTable.update();
                 d3.json("dataSetNum", function(error, result) {
                     var vardlg = "person_dlg_" + result.NewLinkNum,
-                        vartb = "person_tb_" + result.NewLinkNum;
+                        vartb = "person_tb_" + result.NewLinkNum,
+                        varbar = "person_selectbar_" + result.NewLinkNum;
                     $("#person_dlg").clone().attr("id", vardlg).dialog($.extend({
                         title: "Persons of Link " + result.NewLinkNum,
                         position: ['left', 36],
+                        close: function(event, ui) {
+                            var tmp = $(this).attr("id");
+                            alert("deleting"+tmp);
+                            delete personTable[tmp.split("_")[2]];
+                            $(this).dialog('destroy').remove();
+                        },
                         resize: function() {
                             personTable[result.NewLinkNum].resize();
                         },
                         height: 800
                     }, dialogOptions))
                         .dialogExtend(dialogExtendOptions);
-                    $("#" + vardlg).children().attr("id", vartb);
+                    $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                    $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     personTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
                     dataset[result.NewLinkNum] = CopySource();
                     personTable[result.NewLinkNum].update();
                 });
                 break;
             case "organization_table":
-                // $("#organization_dlg").dialog($.extend({
-                //     title: "Organizations",
-                //     resize: function() {
-                //         organizationTable.resize();
-                //     },
-                // }, dialogOptions))
-                //     .dialogExtend(dialogExtendOptions);
-                // organizationTable = new SIIL.DataTable("#organization_table");
-                // organizationTable.update();
                 d3.json("dataSetNum", function(error, result) {
                     var vardlg = "organization_dlg_" + result.NewLinkNum,
-                        vartb = "organization_tb_" + result.NewLinkNum;
+                        vartb = "organization_tb_" + result.NewLinkNum,
+                        varbar = "organization_selectbar_" + result.NewLinkNum;
                     $("#organization_dlg").clone().attr("id", vardlg).dialog($.extend({
                         title: "Organizations of Link " + result.NewLinkNum,
                         position: ['left', 36],
@@ -309,25 +254,19 @@ function showDialogs(dialogs) {
                         height: 800
                     }, dialogOptions))
                         .dialogExtend(dialogExtendOptions);
-                    $("#" + vardlg).children().attr("id", vartb);
+                    $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                    $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     organizationTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
                     dataset[result.NewLinkNum] = CopySource();
                     organizationTable[result.NewLinkNum].update();
                 });
                 break;
             case "resource_table":
-                // $("#resource_dlg").dialog($.extend({
-                //     title: "Resources",
-                //     resize: function() {
-                //         resourceTable.resize();
-                //     },
-                // }, dialogOptions))
-                //     .dialogExtend(dialogExtendOptions);
-                // resourceTable = new SIIL.DataTable("#resource_table");
-                // resourceTable.update();
                 d3.json("dataSetNum", function(error, result) {
                     var vardlg = "resource_dlg_" + result.NewLinkNum,
-                        vartb = "resource_tb_" + result.NewLinkNum;
+                        vartb = "resource_tb_" + result.NewLinkNum,
+                        varbar = "resource_selectbar_" + result.NewLinkNum;
+                    varbar = "resource_selectbar_" + self.SID
                     $("#resource_dlg").clone().attr("id", vardlg).dialog($.extend({
                         title: "Resources of Link " + result.NewLinkNum,
                         position: ['left', 36],
@@ -338,7 +277,8 @@ function showDialogs(dialogs) {
                         height: 800
                     }, dialogOptions))
                         .dialogExtend(dialogExtendOptions);
-                    $("#" + vardlg).children().attr("id", vartb);
+                    $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                    $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     resourceTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
                     dataset[result.NewLinkNum] = CopySource();
                     resourceTable[result.NewLinkNum].update();
@@ -346,17 +286,15 @@ function showDialogs(dialogs) {
                 break;
             case "network":
                 d3.json("dataSetNum", function(error, result) {
-                    var nw = "network_" + result.NewLinkNum,
-                        sbar = "nw-selectbar_" + result.NewLinkNum,
-                        cmb = "nw-combobox_" + result.NewLinkNum,
-                        cvs = "nw-cvs_" + result.NewLinkNum;
-                    $("#network").clone().attr("id", nw).dialog($.extend({
+                    var vardlg = "network_dlg_" + result.NewLinkNum,
+                        varbar = "network_selectbar_" + result.NewLinkNum,
+                        cvs = "network_cvs_" + result.NewLinkNum;
+                    $("#network").clone().attr("id", vardlg).dialog($.extend({
                         title: "Network of Link " + result.NewLinkNum
                     }, dialogOptions))
                         .dialogExtend(dialogExtendOptions);
-                    $("#" + nw).children().attr("id", sbar);
-                    $("#" + sbar).children().attr("id", cmb);
-                    $('#' + nw + ' > div:eq(1)').attr("id", cvs);; //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
+                    $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                    $('#' + vardlg + ' > div:eq(1)').attr("id", cvs); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
                     network[result.NewLinkNum] = new SIIL.Network("#" + cvs);
                     dataset[result.NewLinkNum] = CopySource();
                     network[result.NewLinkNum].update();

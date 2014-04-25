@@ -12,8 +12,8 @@
 {% endcompress %}
 {% endblock %}
 <div id="location_dlg" class="hidden">
-    <div id="nw-selectbar">Generate the next linked window...
-        <select class="view-dropdown" id="nw-combobox">
+    <div id="selectbar" class="selectbar dropdown">Generate the next linked window...
+        <select class="view-dropdown">
             <option value="Timeline">Timeline</option>
             <option value="Network">Network</option>
             <option value="Map">Map</option>
@@ -34,20 +34,8 @@
     </table>
 </div>
 <div id = "message_dlg" class="hidden">
-<table id="message_table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Content</th>
-            <th>Date</th>
-        </tr>
-    </thead>
- 
-</table>
-</div>
-<div id="event_dlg" class="hidden">
-    <div id="nw-selectbar" class="selectbar">Generate the next linked window...
-        <select class="view-dropdown" id="nw-combobox">
+    <div id="selectbar" class="selectbar dropdown">Generate the next linked window...
+        <select class="view-dropdown">
             <option value="Timeline">Timeline</option>
             <option value="Network">Network</option>
             <option value="Map">Map</option>
@@ -55,6 +43,44 @@
             <option value="Events">Events</option>
             <option value="People">People</option>
         </select>
+    </div>
+    <table id="message_table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Content</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+     
+    </table>
+</div>
+<div id="event_dlg" class="hidden">
+    <div id="selectbar" class="selectbar dropdown">Generate the next linked window...
+      <!-- <a id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="/page.html">
+        Dropdown <span class="caret"></span>
+      </a>
+
+
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+        ...
+      </ul> -->
+        <select class="form-control">
+            <option value="Timeline">Timeline</option>
+            <option value="Network">Network</option>
+            <option value="Map">Map</option>
+            <option value="Messages">Messages</option>
+            <option value="Events">Events</option>
+            <option value="People">People</option>
+        </select>   
+        <!-- <select class="view-dropdown" id="nw-combobox">
+            <option value="Timeline">Timeline</option>
+            <option value="Network">Network</option>
+            <option value="Map">Map</option>
+            <option value="Messages">Messages</option>
+            <option value="Events">Events</option>
+            <option value="People">People</option>
+        </select> -->
     </div>
     <table id="event_table">
         <thead>
@@ -70,47 +96,74 @@
     </table>
 </div>
 <div id="person_dlg" class="hidden">
-<table id="person_table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Gender</th>
-            <th>Race</th>
-            <th>Nationality</th>
-            <th>Frequency</th>
-        </tr>
-    </thead>
- 
-</table>
+    <div id="selectbar" class="selectbar dropdown">Generate the next linked window...
+        <select class="view-dropdown" id="nw-combobox">
+            <option value="Timeline">Timeline</option>
+            <option value="Network">Network</option>
+            <option value="Map">Map</option>
+            <option value="Messages">Messages</option>
+            <option value="Events">Events</option>
+            <option value="People">People</option>
+        </select>
+    </div>
+    <table id="person_table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Gender</th>
+                <th>Race</th>
+                <th>Nationality</th>
+                <th>Frequency</th>
+            </tr>
+        </thead>
+    </table>
 </div>
 <div id="organization_dlg" class="hidden">
-<table id="organization_table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Nationality</th>
-            <th>Ethnicity</th>
-            <th>Religion</th>
-            <th>Frequency</th>
-        </tr>
-    </thead>
-
-</table>
+    <div id="selectbar" class="selectbar dropdown">Generate the next linked window...
+        <select class="view-dropdown" id="nw-combobox">
+            <option value="Timeline">Timeline</option>
+            <option value="Network">Network</option>
+            <option value="Map">Map</option>
+            <option value="Messages">Messages</option>
+            <option value="Events">Events</option>
+            <option value="People">People</option>
+        </select>
+    </div>
+    <table id="organization_table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Nationality</th>
+                <th>Ethnicity</th>
+                <th>Religion</th>
+                <th>Frequency</th>
+            </tr>
+        </thead>
+    </table>
 </div>
 <div id="resource_dlg" class="hidden">
-<table id="resource_table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Condition</th>
-            <th>Type</th>
-            <th>Frequency</th>
-        </tr>
-    </thead>
-
-</table>
+    <div id="selectbar" class="selectbar dropdown">Generate the next linked window...
+        <select class="view-dropdown" id="nw-combobox">
+            <option value="Timeline">Timeline</option>
+            <option value="Network">Network</option>
+            <option value="Map">Map</option>
+            <option value="Messages">Messages</option>
+            <option value="Events">Events</option>
+            <option value="People">People</option>
+        </select>
+    </div>
+    <table id="resource_table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Condition</th>
+                <th>Type</th>
+                <th>Frequency</th>
+            </tr>
+        </thead>
+    </table>
 </div>

@@ -43,14 +43,17 @@ div.dataTables_wrapper {
 }
 
 
-/*div.dataTables_scrollHead{
-    width:inherit!important;
-    position: fixed!important;
-    z-index: 9999!important;
-}*/
 div.dataTables_scrollBody{
     max-height: 500px;
 }
+
+/*selectbar customization overriding*/
+select.form-control{
+    display: inline-block!important;
+    height: inherit!important;
+    width: inherit!important;
+}
+
 /*.ui-dialog-content {
     overflow: scroll;
 }*/
