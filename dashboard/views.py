@@ -53,7 +53,13 @@ def queryEvent(request):
 def getData(request):
     response = {}
     response['events'] = []
-    events = Event.objects.all().order_by('date_begin')
+    events_id = request.POST.getlist('events_id[]', None)
+    if events_id != []:
+        print "condition is not empty", events_id
+        events = Event.objects.filter(id__in=events_id).order_by('date_begin')
+    else: 
+        events = Event.objects.all().order_by('date_begin')
+    ##events = Event.objects.all().order_by('date_begin')
     for event in events:
         e_info = {}
         e_info = event.getKeyAttr()
@@ -82,7 +88,7 @@ def getData(request):
                 e_info['footprints'].append(entity.getKeyAttr())
 
         response['events'] += flatten(e_info)
-    #print len(response['events']),sys.getsizeof(response['events'])
+    print "returned object len:",len(response['events']),sys.getsizeof(response['events'])
     return HttpResponse(json.dumps(response), mimetype='application/json')
 
 def flatten(dic):
@@ -126,7 +132,7 @@ def prepareNetwork(request):
         response['links'] = []
         node_types = request.POST.getlist('entities[]', None)
         events_id = request.POST.getlist('events_id[]', None)
-
+        print events_id, "is the events ids for network (prepareNetwork)"
         if node_types == None or events_id == None:
             return
 

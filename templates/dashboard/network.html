@@ -7,17 +7,31 @@
 <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/network.css' %}">
 {% endblock %}
 
-<div id="network" class='nw' style='display: none'>
+<div id="network" class='nw dlg' style='display: none'>
 	<div id="selectbar" class = "selectbar dropdown">Generate the next linked window...
 		<select class="form-control">
-			<option value="Timeline">Timeline</option>
-			<option value="Network">Network</option>
-			<option value="Map">Map</option>
-			<option value="Messages">Messages</option>
-			<option value="Events">Events</option>
-			<option value="People">People</option>
+			<option value="timeline">Timeline</option>
+            <option value="network">Network</option>
+            <option value="map">Map</option>
+            <option value="message">Messages</option>
+            <option value="event">Events</option>
+            <option value="person">People</option>
 		</select>
 	</div>
-	<div id = "nw_cvs">
+	<div id = "modebar" class = "modebar" display = "inline-block">
+		<div class="radio">
+	  		<label>
+	    		<input type="radio" name="pan" id="pan" value="option1"> <!-- checked -->
+	    		Pan and Zoom mode
+	  		</label>
+		</div>
+		<div class="radio">
+	  		<label>
+	    		<input type="radio" name="brush" id="brush" value="option2">
+	    		Brush mode
+	  		</label>
+		</div>
+	</div>
+	<div id = "nw_cvs" class="cvs">
 	</div>
 </div>

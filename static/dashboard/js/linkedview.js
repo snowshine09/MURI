@@ -21,9 +21,10 @@ var locationTable = {};
 var sourceDataset = {};
 var srcData = null;
 var dataset = {};
+var gCondition = {};
 
 function CreateSource() {
-    d3.json("data", function(error, result) {
+    $.post("data", null, function(result) {
         // Various formatters.
         var data = result.events;
         var wktParser = new OpenLayers.Format.WKT();
@@ -44,15 +45,16 @@ function CreateSource() {
         });
         srcData = data;
         return data;
-        alert("end loading data!");
-
     });
-    //alert("end of create source");
 }
 
-function CopySource() {
-    var response = {};
-    response['set'] = crossfilter(srcData); //jQuery.extend(true, {}, sourceDataset);
+function CopySource(rawdata) {
+    alert("enterCopy=>rawdata:" + rawdata);
+    var response = {}, dsource = rawdata || srcData;
+    if (rawdata) {
+        alert(rawdata.length + " is raw ; " + srcData.length + "is sourceCopy; !! USED is" + dsource.length);
+    }
+    response['set'] = crossfilter(dsource); //jQuery.extend(true, {}, sourceDataset);
     response['dDate'] = response['set'].dimension(function(d) {
         return d.date;
     });
@@ -91,26 +93,92 @@ $(document).ready(function() {
 
 });
 
+function FilterSource(cond, newSID) {
+    var instances = null;
+    // $.ajax({
+    //     url: 'data',
+    //     type: "POST",
+    //     data: cond,
+    alert("inside FIlter condition =" + cond);
+    $.post("data", cond, function(dt, status) {
+        // success: function(result) {
+        alert("Filter from backend:" + dt.events);
+        instances = dt.events;
+        var wktParser = new OpenLayers.Format.WKT();
+        var footprints = [];
+        instances.forEach(function(d, i) {
+            alert(d.date);
+            d.date = new Date(d.date);
+            var fp = d.footprint;
+            if (fp.shape) {
+                var feature = wktParser.read(fp.shape);
+                var origin_prj = new OpenLayers.Projection("EPSG:" + fp.srid);
+                var dest_prj = new OpenLayers.Projection("EPSG:900913");
+                feature.geometry.transform(origin_prj, dest_prj); // projection of google map
+                feature.attributes.id = fp.uid;
+                feature.attributes.name = fp.name;
+                fp.shape = feature;
+            }
+        });
+
+
+        // },
+        // failure: function(xhr) {
+        //     alert("failed to add claim!");
+        // },
+        alert("FilterSource returns " + instances.length + " first event is " + instances);
+        dataset[newSID] = CopySource(instances);
+        delete gCondition["events_id"];
+        network[newSID].update();
+    });
+
+}
 //dynamic generation coordinated windows
-function generateOthers(div, vis) {
-    alert(div + vis);
+function generateOthers(div, vis) { //div is source, vis is target
+    //alert("from " + div + " detail: " + div.split("_")[0] + " to " + vis);
+    //type = typeof type !== 'undefined' ? type : "simultaneous";//default parameter value for function
+    //condition = typeof condition !== 'undefined' ? condition : null;
+
     self = {};
     self.SID = div.split("_")[2];
-    self.Type = div.split("_")[0].split("#")[1];
+    self.Type = div.split("_")[0];
 
     switch (vis) {
-        case "Timeline":
+        case "timeline":
             // alert("Yet to come");
             break;
-        case "Map":
+        case "map":
             // alert("Yet to come");
             break;
-        case "Network":
-            // var nwNo = (Object.keys(network).length + 1).toString(),
-            //     nw = "network_" + self.SID + '_' + nwNo,
-            //     sbar = "nw-selectbar_" + self.SID,
-            //     cmb = "nw-combobox_" + self.SID,
-            //     cvs = "nw-cvs_" + self.SID;
+        case "network":
+            if (self.Type == vis) {
+                alert("another network to a filtered dataset; and the Condition is " + gCondition["events_id"]);
+                d3.json("dataSetNum", function(error, result) {
+                    var vardlg = "network_dlg_" + result.NewLinkNum,
+                        varbar = "network_selectbar_" + result.NewLinkNum,
+                        cvs = "network_cvs_" + result.NewLinkNum,
+                        bbar = "network_brush_"+result.NewLinkNum,
+                        pbar = "network_pan_"+result.NewLinkNum;
+                    $("#network").clone().attr("id", vardlg).dialog($.extend({
+                        title: "Network of Link " + result.NewLinkNum,
+                        resizeStop: function(event, ui) {
+                            network[result.NewLinkNum].resize();//$('#'+vis+"_cvs_"+).outerWidth() + ", height: " + $(this).outerHeight());
+                        }
+                    }, dialogOptions))
+                        .dialogExtend(dialogExtendOptions);
+                    $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                    $('#' + vardlg + ' > div:eq(2)').attr("id", cvs);
+                    $('#' + vardlg + ' > div:eq(1) > div:eq(1)').attr("id", bbar); 
+                    $('#' + vardlg + ' > div:eq(1) > div:eq(0)' ).attr("id", pbar); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
+                    network[result.NewLinkNum] = new SIIL.Network("#" + cvs);
+                    var dsource = FilterSource(gCondition, result.NewLinkNum);
+                    // dataset[result.NewLinkNum] = CopySource(dsource);
+                    // delete gCondition["events_id"];
+                    // network[result.NewLinkNum].update();
+                });
+                break;
+            }
+
             var vardlg = "network_dlg_" + self.SID,
                 varbar = "network_selectbar_" + self.SID,
                 cvs = "network_cvs_" + self.SID;
@@ -134,7 +202,7 @@ function generateOthers(div, vis) {
 
             break;
 
-        case "Messages":
+        case "message":
             var vardlg = "message_dlg_" + self.SID,
                 vartb = "message_tb_" + self.SID,
                 varbar = "message_selectbar_" + self.SID;
@@ -148,7 +216,6 @@ function generateOthers(div, vis) {
                     var tmp = $(this).attr("id"),
                         sid = tmp.split("_")[2],
                         tb = "message_tb_" + sid;
-                    // alert(tmp);
                     delete messageTable[sid];
                     $(this).dialog('destroy').remove();
                 },
@@ -160,11 +227,10 @@ function generateOthers(div, vis) {
                 .dialogExtend(dialogExtendOptions);
             $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
             $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
-            alert(vartb);
             messageTable[self.SID] = new SIIL.DataTable("#" + vartb); //messageTable's key should include both Id and subID related to the vis type
             messageTable[self.SID].update();
             break;
-        case "Events":
+        case "event":
             var vardlg = "event_dlg_" + self.SID,
                 vartb = "event_tb_" + self.SID,
                 varbar = "event_selectbar_" + self.SID;
@@ -178,7 +244,6 @@ function generateOthers(div, vis) {
                     var tmp = $(this).attr("id"),
                         sid = tmp.split("_")[2],
                         tb = "event_tb_" + sid;
-                    alert(sid);
                     delete eventTable[sid];
                     if ($('#' + tb).hasClass('row_selected')) {
                         dataset[sid]['dEvent'].filterAll();
@@ -199,7 +264,7 @@ function generateOthers(div, vis) {
             eventTable[self.SID] = new SIIL.DataTable("#" + vartb); //messageTable's key should include both Id and subID related to the vis type
             eventTable[self.SID].update();
             break;
-        case "People":
+        case "person":
             var vardlg = "person_dlg_" + self.SID,
                 vartb = "person_tb_" + self.SID,
                 varbar = "person_selectbar_" + self.SID;

@@ -140,7 +140,7 @@ function showDialogs(dialogs) {
                         position: ['left', 36],
                         close: function(event, ui) {
                             var tmp = $(this).attr("id");
-                            alert("deleting"+tmp);
+                            alert("deleting" + tmp);
                             delete eventTable[tmp.split("_")[2]];
                             $(this).dialog('destroy').remove();
                         },
@@ -153,7 +153,7 @@ function showDialogs(dialogs) {
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     eventTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
-                    dataset[result.NewLinkNum] = CopySource();
+                    dataset[result.NewLinkNum] = CopySource(null);
                     eventTable[result.NewLinkNum].update();
                 });
 
@@ -222,7 +222,7 @@ function showDialogs(dialogs) {
                         position: ['left', 36],
                         close: function(event, ui) {
                             var tmp = $(this).attr("id");
-                            alert("deleting"+tmp);
+                            alert("deleting" + tmp);
                             delete personTable[tmp.split("_")[2]];
                             $(this).dialog('destroy').remove();
                         },
@@ -288,16 +288,30 @@ function showDialogs(dialogs) {
                 d3.json("dataSetNum", function(error, result) {
                     var vardlg = "network_dlg_" + result.NewLinkNum,
                         varbar = "network_selectbar_" + result.NewLinkNum,
-                        cvs = "network_cvs_" + result.NewLinkNum;
+                        cvs = "network_cvs_" + result.NewLinkNum,
+                        bbar = "network_brush_"+result.NewLinkNum,
+                        pbar = "network_pan_"+result.NewLinkNum;
                     $("#network").clone().attr("id", vardlg).dialog($.extend({
-                        title: "Network of Link " + result.NewLinkNum
+                        title: "Network of Link " + result.NewLinkNum,
+                        position: ['left', 36],
+                        resize: function() {
+                            network[result.NewLinkNum].resize();
+                        }
                     }, dialogOptions))
                         .dialogExtend(dialogExtendOptions);
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
-                    $('#' + vardlg + ' > div:eq(1)').attr("id", cvs); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
+                    $('#' + vardlg + ' > div:eq(2)').attr("id", cvs);
+                    $('#' + vardlg + ' > div:eq(1) > div:eq(1)').attr("id", bbar); 
+                    $('#' + vardlg + ' > div:eq(1) > div:eq(0)' ).attr("id", pbar);//getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
                     network[result.NewLinkNum] = new SIIL.Network("#" + cvs);
                     dataset[result.NewLinkNum] = CopySource();
-                    network[result.NewLinkNum].update();
+                    events_id = []
+                    dataset[result.NewLinkNum]['dDate'].top(Infinity).forEach(function(p, i) {
+                        events_id.push(p.uid);
+                    });
+                    data = {};
+                    data['events_id'] = events_id;
+                    network[result.NewLinkNum].update(data);
                 });
                 break;
                 //             case "workbench":
