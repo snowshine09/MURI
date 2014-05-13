@@ -10,7 +10,7 @@ var formatNumber = d3.format(",d"),
 
 var network = {};
 var map = {};
-var timeline = {};
+var timelineset = {};
 var resourceTable = {};
 var personTable = {};
 var organizationTable = {};
@@ -142,7 +142,7 @@ function generateOthers(div, vis) { //div is source, vis is target
     self = {};
     self.SID = div.split("_")[2];
     self.Type = div.split("_")[0];
-
+    alert(self.SID+" "+self.Type);
     switch (vis) {
         case "timeline":
             // alert("Yet to come");
@@ -304,11 +304,11 @@ function render(method) {
 }
 
 // Whenever the brush moves, re-render everything.
-function renderAll() {
-    if (map) {
-        map.update();
+function renderAll(sid) {
+    if (map[sid]) {
+        map[sid].update();
     }
-    renderAllButMap();
+    renderAllButMap(sid);
 }
 
 function renderAllExcept(charts) {
@@ -378,58 +378,58 @@ function renderAllExcept(charts) {
 
 }
 
-function renderAllButNetwork() {
-    if (map) {
-        map.update();
+function renderAllButNetwork(sid) {
+    if (map[sid]) {
+        map[sid].update();
     }
-    if (timeline) {
-        timeline.each(render);
+    if (timeline[sid]) {
+        timeline[sid].each(render);
     }
-    if (eventTable) {
-        eventTable.update();
+    if (eventTable[sid]) {
+        eventTable[sid].update();
     }
-    if (locationTable) {
-        locationTable.update();
+    if (locationTable[sid]) {
+        locationTable[sid].update();
     }
-    if (messageTable) {
-        messageTable.update();
+    if (messageTable[sid]) {
+        messageTable[sid].update();
     }
-    if (resourceTable) {
-        resourceTable.update();
+    if (resourceTable[sid]) {
+        resourceTable[sid].update();
     }
-    if (organizationTable) {
-        organizationTable.update();
+    if (organizationTable[sid]) {
+        organizationTable[sid].update();
     }
-    if (personTable) {
-        personTable.update();
+    if (personTable[sid]) {
+        personTable[sid].update();
     }
 
 }
 
-function renderAllButMap() {
-    if (timeline) {
-        timeline.each(render);
+function renderAllButMap(sid) {
+    if (timeline[sid]) {
+        timeline[sid].each(render);
     }
-    if (messageTable) {
-        messageTable.update();
+    if (messageTable[sid]) {
+        messageTable[sid].update();
     }
-    if (resourceTable) {
-        resourceTable.update();
+    if (resourceTable[sid]) {
+        resourceTable[sid].update();
     }
-    if (locationTable) {
-        locationTable.update();
+    if (locationTable[sid]) {
+        locationTable[sid].update();
     }
-    if (eventTable) {
-        eventTable.update();
+    if (eventTable[sid]) {
+        eventTable[sid].update();
     }
-    if (organizationTable) {
-        organizationTable.update();
+    if (organizationTable[sid]) {
+        organizationTable[sid].update();
     }
-    if (personTable) {
-        personTable.update();
+    if (personTable[sid]) {
+        personTable[sid].update();
     }
-    if (network) {
-        network.update();
+    if (network[sid]) {
+        network[sid].update();
     }
 }
 

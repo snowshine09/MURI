@@ -1,21 +1,18 @@
-$.widget("vis.visnetwork", $.vis.viscontainer, {
-  options: {},
-  _create: function() {},
-  destroy: function() {},
-});
+// $.widget("vis.visnetwork", $.vis.viscontainer, {
+//   options: {},
+//   _create: function() {},
+//   destroy: function() {},
+// });
 SIIL.Network = function(div) {
   var self = this;
   this.SID = div.split("_")[2];
   this.Type = div.split("_")[0].split("#")[1];
   this.Name = this.Type + '_cvs_' + this.SID;
   this.width = $("#network_dlg_" + this.SID).innerWidth(); //outerWidth();
-  alert(this.width);
   this.height = $("#network_dlg_" + this.SID).innerHeight();
   this.brushmode = false;
   this.panmode = false;
-  this.SID = div.split("_")[2];
-  this.Type = div.split("_")[0].split("#")[1];
-  this.Name = this.Type + '_cvs_' + this.SID;
+  
   var force = null;
   this.shiftKey = null;
   // color = d3.scale.linear()

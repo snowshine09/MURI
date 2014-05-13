@@ -44,18 +44,28 @@ $(document).ready(function() {
     });
     // timeline dialogue
     $("#timeline_btn").click(function() {
-        $("<div>").dialog($.extend({
-            "title": "Timeline",
-            "width": 1000,
-            "height": 200,
-        }, {
-            "modal": false,
-            "resizable": true,
-            "draggable": true,
-        }))
-            .vistimeline({
-                dimension: dDate,
-            });
+    
+        d3.json("dataSetNum", function(error, result) {
+            var vardlg = "timeline_dlg_" + result.NewLinkNum,
+                varbar = "timeline_selectbar_" + result.NewLinkNum,
+                cvs = "timeline_cvs_" + result.NewLinkNum;
+            var opt = $.extend({title: "Timeline of Link "+result.NewLinkNum}, dialogOptions);
+                opt.height = 200;
+                opt.width = 1000;
+            $("#timeline").clone().attr("id", vardlg).dialog(opt)
+                .dialogExtend(dialogExtendOptions);
+            $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+            $('#' + vardlg + ' > div:eq(1)').attr("id", cvs); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
+            
+            dataset[result.NewLinkNum] = CopySource();
+            
+            timelineset[result.NewLinkNum] = $("#" + cvs).timeline({
+                    "dimension": dataset[result.NewLinkNum]['dDate'],
+                }).data("vis-timeline");
+            timelineset[result.NewLinkNum].update();
+            //$("#"+vardlg).vistimeline("update");
+            // timeline[result.NewLinkNum].vistimeline("update");
+        });
     });
     // network dialogue
     // $("#network_btn").click(function() {
@@ -176,7 +186,7 @@ function showDialogs(dialogs) {
                         },
                     }, dialogOptions))
                         .dialogExtend(dialogExtendOptions);
-                    alert($("#" + vardlg).html());
+                    // alert($("#" + vardlg).html());
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     messageTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
@@ -289,8 +299,8 @@ function showDialogs(dialogs) {
                     var vardlg = "network_dlg_" + result.NewLinkNum,
                         varbar = "network_selectbar_" + result.NewLinkNum,
                         cvs = "network_cvs_" + result.NewLinkNum,
-                        bbar = "network_brush_"+result.NewLinkNum,
-                        pbar = "network_pan_"+result.NewLinkNum;
+                        bbar = "network_brush_" + result.NewLinkNum,
+                        pbar = "network_pan_" + result.NewLinkNum;
                     $("#network").clone().attr("id", vardlg).dialog($.extend({
                         title: "Network of Link " + result.NewLinkNum,
                         position: ['left', 36],
@@ -301,8 +311,8 @@ function showDialogs(dialogs) {
                         .dialogExtend(dialogExtendOptions);
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
                     $('#' + vardlg + ' > div:eq(2)').attr("id", cvs);
-                    $('#' + vardlg + ' > div:eq(1) > div:eq(1)').attr("id", bbar); 
-                    $('#' + vardlg + ' > div:eq(1) > div:eq(0)' ).attr("id", pbar);//getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
+                    $('#' + vardlg + ' > div:eq(1) > div:eq(1)').attr("id", bbar);
+                    $('#' + vardlg + ' > div:eq(1) > div:eq(0)').attr("id", pbar); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
                     network[result.NewLinkNum] = new SIIL.Network("#" + cvs);
                     dataset[result.NewLinkNum] = CopySource();
                     events_id = []
