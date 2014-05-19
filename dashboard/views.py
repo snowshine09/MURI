@@ -93,7 +93,7 @@ def getData(request):
 
 def flatten(dic):
     res = []
-    for person in dic['persons']+[{}]:
+    for person in dic['persons']+[{}]: ## {} is used to confirm that in the case (or event_info) where person is not available, other related entities can still be recorded
     	rec = {}
     	rec['uid'] = dic['uid']
     	rec['name'] = dic['name']

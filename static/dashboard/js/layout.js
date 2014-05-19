@@ -18,6 +18,15 @@ var dialogExtendOptions = {
     "collapsable": true,
     "dblclick": "collapse",
 };
+
+function randomcolor() {
+    return {
+        red: Math.floor(Math.random() * 256),
+        green: Math.floor(Math.random() * 256),
+        blue: Math.floor(Math.random() * 256)
+    };
+};
+
 $(document).ready(function() {
     var container_options = {
         "width": 800,
@@ -44,24 +53,33 @@ $(document).ready(function() {
     });
     // timeline dialogue
     $("#timeline_btn").click(function() {
-    
+
         d3.json("dataSetNum", function(error, result) {
             var vardlg = "timeline_dlg_" + result.NewLinkNum,
                 varbar = "timeline_selectbar_" + result.NewLinkNum,
                 cvs = "timeline_cvs_" + result.NewLinkNum;
-            var opt = $.extend({title: "Timeline of Link "+result.NewLinkNum}, dialogOptions);
-                opt.height = 200;
-                opt.width = 1000;
+            var opt = $.extend({
+                title: "Timeline of Link " + result.NewLinkNum
+            }, dialogOptions);
+            opt.height = 200;
+            opt.width = 1000;
             $("#timeline").clone().attr("id", vardlg).dialog(opt)
                 .dialogExtend(dialogExtendOptions);
             $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
             $('#' + vardlg + ' > div:eq(1)').attr("id", cvs); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
-            
+
             dataset[result.NewLinkNum] = CopySource();
-            
+
             timelineset[result.NewLinkNum] = $("#" + cvs).timeline({
-                    "dimension": dataset[result.NewLinkNum]['dDate'],
-                }).data("vis-timeline");
+                "dimension": dataset[result.NewLinkNum]['dDate'],
+            }).data("vis-timeline");
+
+            DlgTcolor[result.NewLinkNum] = randomcolor();
+                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[result.NewLinkNum].red + "," +
+                        DlgTcolor[result.NewLinkNum].green + "," +
+                        DlgTcolor[result.NewLinkNum].blue + ")"
+                    );
             timelineset[result.NewLinkNum].update();
             //$("#"+vardlg).vistimeline("update");
             // timeline[result.NewLinkNum].vistimeline("update");
@@ -164,6 +182,12 @@ function showDialogs(dialogs) {
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     eventTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
                     dataset[result.NewLinkNum] = CopySource(null);
+                    DlgTcolor[result.NewLinkNum] = randomcolor();
+                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[result.NewLinkNum].red + "," +
+                        DlgTcolor[result.NewLinkNum].green + "," +
+                        DlgTcolor[result.NewLinkNum].blue + ")"
+                    );
                     eventTable[result.NewLinkNum].update();
                 });
 
@@ -191,6 +215,12 @@ function showDialogs(dialogs) {
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     messageTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
                     dataset[result.NewLinkNum] = CopySource();
+                    DlgTcolor[result.NewLinkNum] = randomcolor();
+                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[result.NewLinkNum].red + "," +
+                        DlgTcolor[result.NewLinkNum].green + "," +
+                        DlgTcolor[result.NewLinkNum].blue + ")"
+                    );
                     messageTable[result.NewLinkNum].update();
                 });
 
@@ -210,7 +240,6 @@ function showDialogs(dialogs) {
                             $(this).dialog('destroy').remove();
                         },
                         resize: function() {
-                            //eval(vartb+'\.resize();');
                             locationTable[result.NewLinkNum].resize();
                         },
                     }, dialogOptions))
@@ -219,6 +248,12 @@ function showDialogs(dialogs) {
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     locationTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
                     dataset[result.NewLinkNum] = CopySource();
+                    DlgTcolor[result.NewLinkNum] = randomcolor();
+                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[result.NewLinkNum].red + "," +
+                        DlgTcolor[result.NewLinkNum].green + "," +
+                        DlgTcolor[result.NewLinkNum].blue + ")"
+                    );
                     locationTable[result.NewLinkNum].update();
                 });
                 break;
@@ -242,10 +277,26 @@ function showDialogs(dialogs) {
                         height: 800
                     }, dialogOptions))
                         .dialogExtend(dialogExtendOptions);
+
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
+                    
                     personTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
                     dataset[result.NewLinkNum] = CopySource();
+
+                    
+                    //assign a random color to the dialog's titlebar
+                    // this.titlecolor = randomcolor();
+                    //DlgTcolor[result.NewLinkNum] = this.titlecolor;
+                    DlgTcolor[result.NewLinkNum] = randomcolor();
+                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        // this.titlecolor.red + "," +
+                        // this.titlecolor.green + "," +
+                        // this.titlecolor.blue + ")"
+                        DlgTcolor[result.NewLinkNum].red + "," +
+                        DlgTcolor[result.NewLinkNum].green + "," +
+                        DlgTcolor[result.NewLinkNum].blue + ")"
+                    );
                     personTable[result.NewLinkNum].update();
                 });
                 break;
@@ -291,6 +342,12 @@ function showDialogs(dialogs) {
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     resourceTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
                     dataset[result.NewLinkNum] = CopySource();
+                    DlgTcolor[result.NewLinkNum] = randomcolor();
+                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[result.NewLinkNum].red + "," +
+                        DlgTcolor[result.NewLinkNum].green + "," +
+                        DlgTcolor[result.NewLinkNum].blue + ")"
+                    );
                     resourceTable[result.NewLinkNum].update();
                 });
                 break;
@@ -321,6 +378,12 @@ function showDialogs(dialogs) {
                     });
                     data = {};
                     data['events_id'] = events_id;
+                    DlgTcolor[result.NewLinkNum] = randomcolor();
+                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[result.NewLinkNum].red + "," +
+                        DlgTcolor[result.NewLinkNum].green + "," +
+                        DlgTcolor[result.NewLinkNum].blue + ")"
+                    );
                     network[result.NewLinkNum].update(data);
                 });
                 break;

@@ -22,6 +22,7 @@ var sourceDataset = {};
 var srcData = null;
 var dataset = {};
 var gCondition = {};
+var DlgTcolor = {};
 
 function CreateSource() {
     $.post("data", null, function(result) {
@@ -93,7 +94,7 @@ $(document).ready(function() {
 
 });
 
-function FilterSource(cond, newSID) {
+function FilterSource(cond, newSID, vis) {
     var instances = null;
     // $.ajax({
     //     url: 'data',
@@ -102,7 +103,10 @@ function FilterSource(cond, newSID) {
     alert("inside FIlter condition =" + cond);
     $.post("data", cond, function(dt, status) {
         // success: function(result) {
+        console.log("cond:"+cond);
+        console.log("dt:"+dt);
         alert("Filter from backend:" + dt.events);
+
         instances = dt.events;
         var wktParser = new OpenLayers.Format.WKT();
         var footprints = [];
@@ -129,15 +133,13 @@ function FilterSource(cond, newSID) {
         alert("FilterSource returns " + instances.length + " first event is " + instances);
         dataset[newSID] = CopySource(instances);
         delete gCondition["events_id"];
+
         network[newSID].update();
     });
 
 }
 //dynamic generation coordinated windows
 function generateOthers(div, vis) { //div is source, vis is target
-    //alert("from " + div + " detail: " + div.split("_")[0] + " to " + vis);
-    //type = typeof type !== 'undefined' ? type : "simultaneous";//default parameter value for function
-    //condition = typeof condition !== 'undefined' ? condition : null;
 
     self = {};
     self.SID = div.split("_")[2];
@@ -172,36 +174,14 @@ function generateOthers(div, vis) { //div is source, vis is target
                     $('#' + vardlg + ' > div:eq(1) > div:eq(0)' ).attr("id", pbar); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
                     network[result.NewLinkNum] = new SIIL.Network("#" + cvs);
                     var dsource = FilterSource(gCondition, result.NewLinkNum);
-                    // dataset[result.NewLinkNum] = CopySource(dsource);
-                    // delete gCondition["events_id"];
-                    // network[result.NewLinkNum].update();
+                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[result.NewLinkNum].red + "," +
+                        DlgTcolor[result.NewLinkNum].green + "," +
+                        DlgTcolor[result.NewLinkNum].blue + ")"
+                    );
                 });
                 break;
             }
-
-            var vardlg = "network_dlg_" + self.SID,
-                varbar = "network_selectbar_" + self.SID,
-                cvs = "network_cvs_" + self.SID;
-            if (document.getElementById(vardlg)) {
-                break;
-            }
-            $("#network").clone().attr("id", vardlg).dialog($.extend({
-                title: "Network of Link " + self.SID,
-                close: function(event, ui) {
-                    var tmp = $(this).attr("id"),
-                        sid = tmp.split("_")[2];
-                    delete network[sid];
-                    $(this).dialog('destroy').remove();
-                },
-            }, dialogOptions))
-                .dialogExtend(dialogExtendOptions);
-            $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
-            $('#' + vardlg + ' > div:eq(1)').attr("id", cvs); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
-            network[self.SID] = new SIIL.Network("#" + cvs);
-            network[self.SID].update();
-
-            break;
-
         case "message":
             var vardlg = "message_dlg_" + self.SID,
                 vartb = "message_tb_" + self.SID,
@@ -227,6 +207,11 @@ function generateOthers(div, vis) { //div is source, vis is target
                 .dialogExtend(dialogExtendOptions);
             $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
             $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
+            $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[self.SID].red + "," +
+                        DlgTcolor[self.SID].green + "," +
+                        DlgTcolor[self.SID].blue + ")"
+                    );
             messageTable[self.SID] = new SIIL.DataTable("#" + vartb); //messageTable's key should include both Id and subID related to the vis type
             messageTable[self.SID].update();
             break;
@@ -261,6 +246,11 @@ function generateOthers(div, vis) { //div is source, vis is target
                 .dialogExtend(dialogExtendOptions);
             $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
             $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
+            $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[self.SID].red + "," +
+                        DlgTcolor[self.SID].green + "," +
+                        DlgTcolor[self.SID].blue + ")"
+                    );
             eventTable[self.SID] = new SIIL.DataTable("#" + vartb); //messageTable's key should include both Id and subID related to the vis type
             eventTable[self.SID].update();
             break;
@@ -289,6 +279,11 @@ function generateOthers(div, vis) { //div is source, vis is target
                 .dialogExtend(dialogExtendOptions);
             $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
             $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
+            $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[self.SID].red + "," +
+                        DlgTcolor[self.SID].green + "," +
+                        DlgTcolor[self.SID].blue + ")"
+                    );
             personTable[self.SID] = new SIIL.DataTable("#" + vartb); //messageTable's key should include both Id and subID related to the vis type
             personTable[self.SID].update();
 

@@ -98,6 +98,8 @@ SIIL.DataTable.prototype.resize = function() {
     this.table.fnAdjustColumnSizing();
 }
 
+
+
 SIIL.DataTable.prototype.update = function() {
     // prepare data for DataTable
     var oSettings = this.table.fnSettings(); //for testing whether the aodata is null
