@@ -23,6 +23,7 @@ var srcData = null;
 var dataset = {};
 var gCondition = {};
 var DlgTcolor = {};
+var dindex = {}; //for brushing, record selected index
 
 function CreateSource() {
     $.post("data", null, function(result) {
@@ -230,15 +231,14 @@ function generateOthers(div, vis) { //div is source, vis is target
                         sid = tmp.split("_")[2],
                         tb = "event_tb_" + sid;
                     delete eventTable[sid];
-                    if ($('#' + tb).hasClass('row_selected')) {
-                        dataset[sid]['dEvent'].filterAll();
-                        renderAllExcept([tb]);
-                        $('#' + tb).removeClass('row_selected');
-                    }
+                    // if ($('#' + tb).hasClass('row_selected')) {
+                    //     dataset[sid]['dEvent'].filterAll();
+                    //     renderAllExcept([tb]);
+                    //     $('#' + tb).removeClass('row_selected');
+                    // }
                     $(this).dialog('destroy').remove();
                 },
                 resize: function() {
-                    //eval(vartb+'\.resize();');
                     eventTable[self.SID].resize();
                 },
                 height: 800
@@ -306,7 +306,7 @@ function renderAll(sid) {
     renderAllButMap(sid);
 }
 
-function renderAllExcept(charts) {
+function renderAllExcept(charts,coorType) {
     var toDraw = [],
         except = [],
         SID = charts[0].split("_")[2];
@@ -342,31 +342,31 @@ function renderAllExcept(charts) {
     for (var i = 0, len = toDraw.length; i < len; i++) {
         switch (toDraw[i]) {
             case "map":
-                if (map[SID]) map[SID].update();
+                if (map[SID]) map[SID].update(coorType);
                 break;
             case "timeline":
                 if (timeline[SID]) timeline[SID].each(render);
                 break;
             case "network":
-                if (network[SID]) network[SID].update();
+                if (network[SID]) network[SID].update(coorType);
                 break;
             case "personTable":
-                if (personTable[SID]) personTable[SID].update();
+                if (personTable[SID]) personTable[SID].update(coorType);
                 break;
             case "messageTable":
-                if (messageTable[SID]) messageTable[SID].update();
+                if (messageTable[SID]) messageTable[SID].update(coorType);
                 break;
             case "locationTable":
-                if (locationTable[SID]) locationTable[SID].update();
+                if (locationTable[SID]) locationTable[SID].update(coorType);
                 break;
             case "resourceTable":
-                if (resourceTable[SID]) resourceTable[SID].update();
+                if (resourceTable[SID]) resourceTable[SID].update(coorType);
                 break;
             case "eventTable":
-                if (eventTable[SID]) eventTable[SID].update();
+                if (eventTable[SID]) eventTable[SID].update(coorType);
                 break;
             case "organizationTable":
-                if (organizationTable[SID]) organizationTable[SID].update();
+                if (organizationTable[SID]) organizationTable[SID].update(coorType);
                 break;
         }
     }

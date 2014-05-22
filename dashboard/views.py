@@ -136,7 +136,7 @@ def prepareNetwork(request):
         if node_types == None or events_id == None:
             return
 
-        graph   = nx.DiGraph()
+        graph = nx.DiGraph()
 
         events = Entity.objects.filter(id__in=events_id)
         linked_entities = list(events.select_subclasses())
@@ -152,4 +152,24 @@ def prepareNetwork(request):
             graph.add_edge(relation.source.id, relation.target.id, relation.getAllAttr())
 
         return HttpResponse(json_graph.dumps(graph), mimetype='application/json')
+    return
+
+def related_entities(request):
+    if request.method == 'POST':
+        response = {}
+        response['id'] = []
+        src_id = request.POST.getlist('src_id[]', None)##src entities id
+        print src_id, "is the entities ids for network (related_entities)"
+        if src_id == None:
+            return
+        src_entt = Entity.objects.filter(id__in=src_id)
+        linked_entities = list(src_entt.select_subclasses())
+
+        for ett in src_entt:
+            entities = list(chain(ett.findTargets(), ett.findSources()))
+            print entities
+            linked_entities += entities
+        for entity in linked_entities:
+            response['id'].append(entity.getKeyAttr())
+        return HttpResponse(json.dumps(response), mimetype='application/json')
     return

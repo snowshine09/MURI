@@ -319,6 +319,12 @@ function showDialogs(dialogs) {
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     organizationTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
                     dataset[result.NewLinkNum] = CopySource();
+                    DlgTcolor[result.NewLinkNum] = randomcolor();
+                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[result.NewLinkNum].red + "," +
+                        DlgTcolor[result.NewLinkNum].green + "," +
+                        DlgTcolor[result.NewLinkNum].blue + ")"
+                    );
                     organizationTable[result.NewLinkNum].update();
                 });
                 break;

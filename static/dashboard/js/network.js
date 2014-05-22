@@ -264,49 +264,6 @@ SIIL.Network = function(div) {
 
 
 
-  // function prepareNetworkData() {
-  //   // prepare social network data
-  //   // {
-  //   //     "nodes": [{...}, {...}]
-  //   //     "links": [
-  //   //               {"source": ..., "target": ...},
-  //   //               {"source": ..., "target": ...}
-  //   //              ]
-  //   //  }
-  //   var nodesDict = {}, linksDict = {};
-  //   dDate.top(Infinity).forEach(function(p, i) {
-  //     p.persons.forEach(function(person) {
-  //       person.groups.forEach(function(group) {
-  //         var link_info = {};
-  //         link_info.source = nodesDict[person.id] ||
-  //           (nodesDict[person.id] = {
-  //           id: person.id,
-  //           name: person.name,
-  //           living: person.living,
-  //           alias: person.alias,
-  //           birth: person.birth,
-  //           prof: person.prof,
-  //           type: 'person',
-  //           photo: person.photo
-  //         });
-  //         link_info.target = nodesDict[group.id] ||
-  //           (nodesDict[group.id] = {
-  //           id: group.id,
-  //           name: group.name,
-  //           desc: group.desc,
-  //           category: group.category,
-  //           type: 'group'
-  //         });
-  //         link_info.id = link_info.source.id + '-' + link_info.target.id;
-  //         if (linksDict[link_info.id] == undefined) {
-  //           linksDict[link_info.id] = link_info;
-  //         }
-  //       });
-  //     });
-  //   });
-
-  //   nodes = d3.values(nodesDict); // global variable
-  //   links = d3.values(linksDict); // global variable
-  // }
+  
 
 };

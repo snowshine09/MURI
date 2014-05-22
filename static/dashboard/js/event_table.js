@@ -9,9 +9,6 @@ SIIL.DataTable = function(div) {
     this.SID = div.split("_")[2];
     this.tbType = div.split("_")[0].split("#")[1];
     this.tbName = this.tbType + '_tb_' + this.SID;
-    //alert(div);
-    var stri = $(div).html();
-    //alert(stri);
     this.table = $(div).dataTable({
         "bJQueryUI": true,
         "bDestroy": true,
@@ -52,45 +49,10 @@ SIIL.DataTable = function(div) {
         //      , "aaData": d 
         //        "sPaginationType": "full_numbers"
     });
-    //test temporarily for what aoData is 
-    //var oSettings = this.table.fnSettings();
-    //alert( oSettings.aoData );
+    this.Tinstance = this.table.api();
 
     $("#" + this.tbType + "_dlg_" + this.SID).removeClass("hidden");
-    //$("#"+this.tbType+"_dlg").append($(div));
 
-    // $('div.dataTables_scrollBody').height($('div.dataTables_wrapper').height());
-
-    function mySelectEventHandler(nodes) {
-        if (myDeselectList) {
-            var nodeList = myDeselectList;
-            myDeselectList = null;
-            this.fnDeselect(nodeList);
-        }
-        if (mySelectList) {
-            var nodeList = mySelectList;
-            mySelectList = null;
-            this.fnSelect(nodeList);
-        }
-    }
-
-    function myGetRangeOfRows(oDataTable, fromNode, toNode) {
-        var
-        fromPos = oDataTable.fnGetPosition(fromNode),
-            toPos = oDataTable.fnGetPosition(toNode);
-        oSettings = oDataTable.fnSettings(),
-        fromIndex = $.inArray(fromPos, oSettings.aiDisplay),
-        toIndex = $.inArray(toPos, oSettings.aiDisplay),
-        result = [];
-
-        if (fromIndex >= 0 && toIndex >= 0 && toIndex != fromIndex) {
-            for (var i = Math.min(fromIndex, toIndex); i < Math.max(fromIndex, toIndex); i++) {
-                var dataIndex = oSettings.aiDisplay[i];
-                result.push(oSettings.aoData[dataIndex].nTr);
-            }
-        }
-        return result.length > 0 ? result : null;
-    }
 };
 
 SIIL.DataTable.prototype.resize = function() {
@@ -100,9 +62,10 @@ SIIL.DataTable.prototype.resize = function() {
 
 
 
-SIIL.DataTable.prototype.update = function() {
+SIIL.DataTable.prototype.update = function(uType) {
+    //var coType = coorType || srcData;
     // prepare data for DataTable
-    var oSettings = this.table.fnSettings(); //for testing whether the aodata is null
+
     if (dataset[this.SID]['dDate'] == null) {
         return;
     }
@@ -123,6 +86,7 @@ SIIL.DataTable.prototype.update = function() {
             dataset[this.SID]['dFootprint'].group().top(Infinity).forEach(function(d) {
                 if (d.value != 0 && d.key[0] != undefined) {
                     data.push([d.key[0], d.key[1]].concat([d.value]));
+                    //dindex[self.SID].push(d.key[0]);  
                     //console.log(d);
                 }
             });
@@ -131,6 +95,7 @@ SIIL.DataTable.prototype.update = function() {
             dataset[this.SID]['dMessage'].group().top(Infinity).forEach(function(d) {
                 if (d.value != 0 && d.key[0] != undefined) {
                     data.push(d.key);
+                    //dindex[self.SID].push(d.key[0]);  
                     //console.log("message"+d);
                 }
             });
@@ -139,6 +104,7 @@ SIIL.DataTable.prototype.update = function() {
             dataset[this.SID]['dEvent'].group().top(Infinity).forEach(function(d) {
                 if (d.value != 0 && d.key[0] != undefined) {
                     data.push(d.key);
+                    //dindex[self.SID].push(d.key[0]);  
                     // console.log("event:" + d.key + " value:" + d.value);
                 }
             });
@@ -147,6 +113,7 @@ SIIL.DataTable.prototype.update = function() {
             dataset[this.SID]['dResource'].group().top(Infinity).forEach(function(d) {
                 if (d.value != 0 && d.key[0] != undefined) {
                     data.push(d.key.concat([d.value]));
+                    //dindex[self.SID].push(d.key[0]);  
                 }
             });
             break;
@@ -154,6 +121,7 @@ SIIL.DataTable.prototype.update = function() {
             dataset[this.SID]['dPerson'].group().top(Infinity).forEach(function(d) {
                 if (d.value != 0 && d.key[0] != undefined) {
                     data.push(d.key.concat([d.value]));
+                    //dindex[self.SID].push(d.key[0]);  
                 }
             });
             break;
@@ -161,19 +129,55 @@ SIIL.DataTable.prototype.update = function() {
             dataset[this.SID]['dOrganization'].group().top(Infinity).forEach(function(d) {
                 if (d.value != 0 && d.key[0] != undefined) {
                     data.push(d.key.concat([d.value]));
+                    //dindex[self.SID].push(d.key[0]);  
                 }
             });
             break;
     }
+    //console.log(data);
+    switch (uType) {
+        case "init":
+            this.table.fnClearTable();
+            this.table.fnAddData(data);
+            this.table.fnAdjustColumnSizing();
+            break;
+        case "brush":
 
-    this.table.fnClearTable();
-    this.table.fnAddData(data);
-    this.table.fnAdjustColumnSizing();
+
+            var indexes = this.Tinstance.rows().eq(0).filter(function(rowIdx) {
+                var tmp = self.Tinstance.cell(rowIdx, 0).data();
+                return $.inArray(tmp, dindex[self.SID]) != -1 ? true : false;
+                // var included = $.inArray(tmp, dindex[self.SID])!=-1;
+                // console.log(included);
+                // return included;
+
+            });
+
+            // Add a class to those rows using an index selector
+            this.table.$('tr.row_selected').removeClass("row_selected");
+            console.log(indexes);
+            this.Tinstance.rows(indexes)
+                .nodes()
+                .to$()
+                .addClass('row_selected');
+
+            break;
+        case "filter":
+            break;
+        default:
+            this.Tinstance.clear();
+            this.Tinstance.rows.add(data).draw();
+            this.table.fnAdjustColumnSizing();
+            break;
+
+    }
+
     if (this.tbType != 'message') {
         this.table.fnSetColumnVis(0, false); // set column 1 - id invisible
     }
 
-    var self = this;
+    var self = this,
+        coorType = '';
     this.table.$('tr').click(function(e) {
         if ($(this).hasClass('row_selected')) {
             $(this).removeClass('row_selected');
@@ -206,77 +210,91 @@ SIIL.DataTable.prototype.update = function() {
                     dataset[self.SID]['dOrganization'].filterAll();
                     break;
             }
+            dindex[self.SID] = [];
         } else {
-            records_id = [];
+            var pParam = {};
+            pParam['src_id'] = [];
             self.table.$('tr.row_selected').each(function(idx, $row) {
                 row = self.table.fnGetData($row);
-                records_id.push(row[0]);
+                pParam['src_id'].push(row[0]);
             });
-            var count = 0;
-            switch (self.tbType) {
-                case "location":
-                    dataset[self.SID]['dFootprint'].filter(function(d) {
-                        for (var i = 0; i < records_id.length; i++) {
-                            if (d[0] === records_id[i]) {
-                                count++;
-                                return true;
+            //selected items are not empty, which requires to update the shared dataset (dindex[]) 
+
+            dindex[self.SID] = [];
+            $.post("propagate", pParam, function(eid) {
+
+                for (var i = 0; i < eid['id'].length; i++) {
+                    console.log(eid['id'][i]);
+                    dindex[self.SID].push(eid['id'][i]['uid']);
+                }
+                var count = 0;
+                switch (self.tbType) {
+                    case "location":
+                        dataset[self.SID]['dFootprint'].filter(function(d) {
+                            for (var i = 0; i < dindex[self.SID].length; i++) {
+                                if (d[0] === dindex[self.SID][i]) {
+                                    count++;
+                                    return true;
+                                }
                             }
-                        }
-                    });
-                    break;
-                case "message":
-                    dataset[self.SID]['dMessage'].filter(function(d) {
-                        for (var i = 0; i < records_id.length; i++) {
-                            if (d[0] === records_id[i]) {
-                                count++;
-                                return true;
+                        });
+                        break;
+                    case "message":
+                        dataset[self.SID]['dMessage'].filter(function(d) {
+                            for (var i = 0; i < dindex[self.SID].length; i++) {
+                                if (d[0] === dindex[self.SID][i]) {
+                                    count++;
+                                    return true;
+                                }
                             }
-                        }
-                    });
-                    break;
-                case "event":
-                    dataset[self.SID]['dEvent'].filter(function(d) {
-                        for (var i = 0; i < records_id.length; i++) {
-                            if (d[0] === records_id[i]) {
-                                count++;
-                                return true;
+                        });
+                        break;
+                    case "event":
+                        dataset[self.SID]['dEvent'].filter(function(d) {
+                            for (var i = 0; i < dindex[self.SID].length; i++) {
+                                if (d[0] === dindex[self.SID][i]) {
+                                    count++;
+                                    return true;
+                                }
                             }
-                        }
-                    });
-                    break;
-                case "resource":
-                    dataset[self.SID]['dResource'].filter(function(d) {
-                        for (var i = 0; i < records_id.length; i++) {
-                            if (d[0] === records_id[i]) {
-                                count++;
-                                return true;
+                        });
+                        break;
+                    case "resource":
+                        dataset[self.SID]['dResource'].filter(function(d) {
+                            for (var i = 0; i < dindex[self.SID].length; i++) {
+                                if (d[0] === dindex[self.SID][i]) {
+                                    count++;
+                                    return true;
+                                }
                             }
-                        }
-                    });
-                    break;
-                case "person":
-                    dataset[self.SID]['dPerson'].filter(function(d) {
-                        for (var i = 0; i < records_id.length; i++) {
-                            if (d[0] === records_id[i]) {
-                                count++;
-                                return true;
+                        });
+                        break;
+                    case "person":
+                        dataset[self.SID]['dPerson'].filter(function(d) {
+                            for (var i = 0; i < dindex[self.SID].length; i++) {
+                                if (d[0] === dindex[self.SID][i]) {
+                                    count++;
+                                    return true;
+                                }
                             }
-                        }
-                    });
-                    break;
-                case "organization":
-                    dataset[self.SID]['dOrganization'].filter(function(d) {
-                        for (var i = 0; i < records_id.length; i++) {
-                            if (d[0] === records_id[i]) {
-                                count++;
-                                return true;
+                        });
+                        break;
+                    case "organization":
+                        dataset[self.SID]['dOrganization'].filter(function(d) {
+                            for (var i = 0; i < dindex[self.SID].length; i++) {
+                                if (d[0] === dindex[self.SID][i]) {
+                                    count++;
+                                    return true;
+                                }
                             }
-                        }
-                    });
-                    break;
-            }
+                        });
+                        break;
+                }
+                renderAllExcept([self.tbName], "brush");
+            });
+
         }
-        renderAllExcept([self.tbName]);
+        
     });
 
     this.table.$('tr').mouseover(function() {
@@ -287,14 +305,6 @@ SIIL.DataTable.prototype.update = function() {
     });
     var localtable = this.table;
 
-    //   $("#" + this.tbType + "_dlg").resize(function() {
-    //     var oSettings = localtable.fnSettings();
-    //     oSettings.oScroll.sY = calcDataTableHeight();
-    //     localtable.fnDraw();
-    // });
-    //        function fnGetSelected (OTableLocal) {
-    //            alert('hi');
-    //        }
 };
 
 SIIL.DataTable.prototype.destroy = function() {
