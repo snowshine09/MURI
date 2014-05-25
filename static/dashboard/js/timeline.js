@@ -28,8 +28,8 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 
       });
 
-    var start = dataset[self.SID]['dDate'].top(1)[0], 
-    end = dataset[self.SID]['dDate'].bottom(1)[0];
+    var start = dataset[self.SID]['dDate'].top(1)[0],
+      end = dataset[self.SID]['dDate'].bottom(1)[0];
     console.log(end);
     self.charts = [
       self.barChart() //onlu one chart(vis) method in this list
@@ -48,7 +48,7 @@ $.widget("vis.timeline", $.vis.viscontainer, {
         chart.on("brush", renderAllButNetwork()).on("brushend", renderAll());
       })
       .each(render);
-    
+
   },
   update: function() {
     var self = this;
@@ -56,12 +56,13 @@ $.widget("vis.timeline", $.vis.viscontainer, {
   },
   barChart: function() {
 
-    var margin = {
-      top: 10,
-      right: 10,
-      bottom: 20,
-      left: 10
-    }, //these are all properties with optional default values
+    var self = this,
+      margin = {
+        top: 10,
+        right: 10,
+        bottom: 20,
+        left: 10
+      }, //these are all properties with optional default values
       x,
       y = d3.scale.linear().range([100, 0]),
       id = 0,
@@ -191,29 +192,22 @@ $.widget("vis.timeline", $.vis.viscontainer, {
         dimension.filterAll();
       } else {
         var extent = brush.extent();
-        console.log("extent[0]"+(extent[0]));
+        console.log("extent[0]" + (extent[0]));
         // tmp_dimension = dataset[self.SID]['dDate'];
         // console.log("dataset[self.SID]['dDate'] before filterRange:"+dataset[self.SID]['dDate'].top(2).length);
         // tmp_dimension.filterRange(extent[0], extent[1]);
         dindex[self.SID] = [];
-        // $.post("propagate", pParam, function(eid) {
 
-        //   for (var i = 0; i < eid['id'].length; i++) {
-        //     console.log(eid['id'][i]);
-        //     dindex[self.SID].push(eid['id'][i]['uid']);
-        //   }
-
-        //   renderAllExcept([self.tbName], "brush");
-        // });
-        // console.log("tmp_dimension:"+tmp_dimension.top(2).length);
-        // console.log("dataset[self.SID]['dDate']:"+dataset[self.SID]['dDate'].top(2).length);
-        console.log("dataset[self.SID]['dDate']:"+dataset[self.SID]['dDate'].top(Infinity).length);
+        console.log("dataset[self.SID]['dDate']:" + dataset[self.SID]['dDate'].top(Infinity).length);
         dataset[self.SID]['dDate'].top(Infinity).forEach(function(p, i) {
           dindex[self.SID].push(p.uid);
         });
+        dataset[self.SID]['dMessage'].top(Infinity).forEach(function(p, i) {
+          msgID[self.SID].push(p.uid);
+        });
 
       }
-      renderAllExcept("timeline", "brush");
+      renderAllExcept([self.Name], "brush");
     });
 
     chart.margin = function(_) {

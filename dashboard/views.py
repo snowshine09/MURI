@@ -157,19 +157,46 @@ def prepareNetwork(request):
 def related_entities(request):
     if request.method == 'POST':
         response = {}
-        response['id'] = []
+        response['ett'] = []
+        response['msg'] = []
         src_id = request.POST.getlist('src_id[]', None)##src entities id
-        print src_id, "is the entities ids for network (related_entities)"
-        if src_id == None:
+        ett_id = request.POST.getlist('ett_id[]', None)##src entities id
+        
+        if src_id == None and ett_id == None:
             return
-        src_entt = Entity.objects.filter(id__in=src_id)
-        linked_entities = list(src_entt.select_subclasses())
+        print ett_id, "is the entities ids for linked entities (related_entities)"
+        print src_id, "is the messages ids for linked entities (related_entities)"
+        
+       
+        if len(ett_id) == 0:
+            msgs = Message.objects.filter(uid__in=src_id)
+            ett_id = []
+            for msg in msgs:## comment: search for entities given msgs/entities
+                events = msg.event.all()
+                for eve in events:
+                    print eve.id
+                    ett_id.append(eve.id)
+            src_entt = Entity.objects.filter(id__in=ett_id)
+            linked_entities = list(src_entt.select_subclasses())
+            for ett in src_entt:
+                entities = list(chain(ett.findTargets(), ett.findSources()))
+                #print entities
+                linked_entities += entities
+            for entity in linked_entities:
+                response['ett'].append(entity.getKeyAttr())
+        elif len(src_id) == 0:##search for messages given entities
+            ett_src = Entity.objects.filter(id__in=ett_id)
+            
+            msgs_id = []
+            for ett in ett_src:
+                if(ett.entity_type == "event"):
+                    for mes in ett.message_set.all():
+                        msgs_id.append(mes.uid)
+            msgs = Message.objects.filter(uid__in=msgs_id)        
+            for msg in msgs:
+                response['msg'].append(msg.getKeyAttr())
 
-        for ett in src_entt:
-            entities = list(chain(ett.findTargets(), ett.findSources()))
-            print entities
-            linked_entities += entities
-        for entity in linked_entities:
-            response['id'].append(entity.getKeyAttr())
+
+
         return HttpResponse(json.dumps(response), mimetype='application/json')
     return

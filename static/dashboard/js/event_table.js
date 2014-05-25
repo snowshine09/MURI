@@ -21,6 +21,16 @@ SIIL.DataTable = function(div) {
     this.Tinstance = this.table.api();
 
     $("#" + this.tbType + "_dlg_" + this.SID).removeClass("hidden");
+    var self = this,
+        cmb = self.tbType + "_selectbar_" + self.SID;
+
+    $("#" + cmb).attr("selectedIndex", -1)
+        .change(function() {
+            var x = $("#" + cmb + " option:selected").val();
+            alert(x);
+            generateOthers(self.tbName, x);
+            $("#" + cmb + " option:selected").removeAttr('selected');
+        });
 
 };
 
@@ -37,23 +47,13 @@ SIIL.DataTable.prototype.update = function(uType) {
         return;
     }
 
-    var self = this,
-        cmb = self.tbType + "_selectbar_" + self.SID;
-    //alert(cmb);
-    $("#" + cmb).attr("selectedIndex", -1)
-        .change(function() {
-            var x = $("#" + cmb + " option:selected").val();
-            alert(x);
-            generateOthers(self.tbName, x);
-            $("#" + cmb + " option:selected").removeAttr('selected');
-        });
+    var self = this;
+    self.data = [];
 
-
-    //console.log(data);
     switch (uType) {
         case "init":
             this.table.fnClearTable();
-            this.table.fnAddData(data);
+            this.table.fnAddData(self.data);
             this.table.fnAdjustColumnSizing();
             break;
         case "brush":
@@ -64,40 +64,39 @@ SIIL.DataTable.prototype.update = function(uType) {
         case "filter":
             break;
         default:
-            var data = [];
             switch (this.tbType) {
                 case "location":
                     dataset[this.SID]['dFootprint'].group().top(Infinity).forEach(function(d) {
                         if (d.value != 0 && d.key[0] != undefined) {
-                            data.push([d.key[0], d.key[1]].concat([d.value]));
+                            self.data.push([d.key[0], d.key[1]].concat([d.value]));
                         }
                     });
                     break;
                 case "message":
                     dataset[this.SID]['dMessage'].group().top(Infinity).forEach(function(d) {
                         if (d.value != 0 && d.key[0] != undefined) {
-                            data.push(d.key);
+                            self.data.push(d.key);
                         }
                     });
                     break;
                 case "event":
                     dataset[this.SID]['dEvent'].group().top(Infinity).forEach(function(d) {
                         if (d.value != 0 && d.key[0] != undefined) {
-                            data.push(d.key);
+                            self.data.push(d.key);
                         }
                     });
                     break;
                 case "resource":
                     dataset[this.SID]['dResource'].group().top(Infinity).forEach(function(d) {
                         if (d.value != 0 && d.key[0] != undefined) {
-                            data.push(d.key.concat([d.value]));
+                            self.data.push(d.key.concat([d.value]));
                         }
                     });
                     break;
                 case "person":
                     dataset[this.SID]['dPerson'].group().top(Infinity).forEach(function(d) {
                         if (d.value != 0 && d.key[0] != undefined) {
-                            data.push(d.key.concat([d.value]));
+                            self.data.push(d.key.concat([d.value]));
                             //dindex[self.SID].push(d.key[0]);  
                         }
                     });
@@ -105,20 +104,21 @@ SIIL.DataTable.prototype.update = function(uType) {
                 case "organization":
                     dataset[this.SID]['dOrganization'].group().top(Infinity).forEach(function(d) {
                         if (d.value != 0 && d.key[0] != undefined) {
-                            data.push(d.key.concat([d.value]));
+                            self.data.push(d.key.concat([d.value]));
                             //dindex[self.SID].push(d.key[0]);  
                         }
                     });
                     break;
             }
             this.Tinstance.clear();
-            this.Tinstance.rows.add(data).draw();
+            this.Tinstance.rows.add(self.data).draw();
             this.table.fnAdjustColumnSizing();
             break;
 
     }
-
+    //alert("index highlighting before judging!");
     if (dindex[self.SID].length != 0) {
+        //alert("index highlighting!");
         var indexes = this.Tinstance.rows().eq(0).filter(function(rowIdx) {
             var tmp = self.Tinstance.cell(rowIdx, 0).data();
             return $.inArray(tmp, dindex[self.SID]) != -1 ? true : false;
@@ -131,15 +131,28 @@ SIIL.DataTable.prototype.update = function(uType) {
             .nodes()
             .to$()
             .addClass('row_selected');
-    } 
-    else this.table.$('tr.row_selected').removeClass("row_selected");
+    } else this.table.$('tr.row_selected').removeClass("row_selected");
 
     if (this.tbType != 'message') {
         this.table.fnSetColumnVis(0, false); // set column 1 - id invisible
+    } else {
+        if(msgID[self.SID].length != 0) {
+            var indexes = this.Tinstance.rows().eq(0).filter(function(rowIdx) {
+                var tmp = self.Tinstance.cell(rowIdx, 0).data();
+                return $.inArray(tmp, msgID[self.SID]) != -1 ? true : false;
+            });
+
+            // Add a class to those rows using an index selector
+            this.table.$('tr.row_selected').removeClass("row_selected");
+            console.log(indexes);
+            this.Tinstance.rows(indexes)
+                .nodes()
+                .to$()
+                .addClass('row_selected');
+        } else this.table.$('tr.row_selected').removeClass("row_selected");
+
     }
 
-    var self = this,
-        coorType = '';
     this.table.$('tr').click(function(e) {
         if ($(this).hasClass('row_selected')) {
             $(this).removeClass('row_selected');
@@ -175,19 +188,32 @@ SIIL.DataTable.prototype.update = function(uType) {
             dindex[self.SID] = [];
         } else {
             var pParam = {};
-            pParam['src_id'] = [];
-            self.table.$('tr.row_selected').each(function(idx, $row) {
-                row = self.table.fnGetData($row);
-                pParam['src_id'].push(row[0]);
-            });
+            if (self.tbType == "message") {
+                pParam['src_id'] = [];
+                self.table.$('tr.row_selected').each(function(idx, $row) {
+                    row = self.table.fnGetData($row);
+                    pParam['src_id'].push(row[0]);
+                });
+            } else {
+                pParam['ett_id'] = [];
+                self.table.$('tr.row_selected').each(function(idx, $row) {
+                    row = self.table.fnGetData($row);
+                    pParam['ett_id'].push(row[0]);
+                });
+            }
+
             //selected items are not empty, which requires to update the shared dataset (dindex[]) 
 
             dindex[self.SID] = [];
             $.post("propagate", pParam, function(eid) {
 
-                for (var i = 0; i < eid['id'].length; i++) {
-                    console.log(eid['id'][i]);
-                    dindex[self.SID].push(eid['id'][i]['uid']);
+                for (var i = 0; i < eid['ett'].length; i++) {
+                    //console.log(eid['ett'][i]);
+                    dindex[self.SID].push(eid['ett'][i]['uid']);
+                }
+                for (var i = 0; i < eid['msg'].length; i++) {
+                    //console.log(eid['msg'][i]);
+                    msgID[self.SID].push(eid['msg'][i]['uid']);
                 }
 
                 renderAllExcept([self.tbName], "brush");
@@ -197,13 +223,13 @@ SIIL.DataTable.prototype.update = function(uType) {
 
     });
 
-    this.table.$('tr').mouseover(function() {
-        if (self.name == 'location') {
-            var data = self.table.fnGetData(this);
-            highlight(data[0]); // data[0]: event id
-        }
-    });
-    var localtable = this.table;
+    // this.table.$('tr').mouseover(function() {
+    //     if (self.name == 'location') {
+    //         var data = self.table.fnGetData(this);
+    //         highlight(data[0]); // data[0]: event id
+    //     }
+    // });
+    // var localtable = this.table;
 
 };
 

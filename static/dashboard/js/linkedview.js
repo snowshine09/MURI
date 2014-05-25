@@ -23,7 +23,8 @@ var srcData = null;
 var dataset = {};
 var gCondition = {};
 var DlgTcolor = {};
-var dindex = {}; //for brushing, record selected index
+var dindex = {}; //for brushing, record selected entities' indexes
+var msgID = {};
 
 function CreateSource() {
     $.post("data", null, function(result) {
@@ -239,6 +240,7 @@ function generateOthers(div, vis) { //div is source, vis is target
                         DlgTcolor[self.SID].green + "," +
                         DlgTcolor[self.SID].blue + ")"
                     );
+                    msgID[self.SID] = [];
                     messageTable[self.SID] = new SIIL.DataTable("#" + vartb); //messageTable's key should include both Id and subID related to the vis type
                     messageTable[self.SID].update();
                     break;
@@ -332,6 +334,7 @@ function generateOthers(div, vis) { //div is source, vis is target
                     });
                     break;
                 case "message":
+                    msgID[self.SID] = [];
                     dataset[target.SID]['dMessage'].filter(function(d) {
                         for (var i = 0; i < dindex[self.SID].length; i++) {
                             if (d[0] === dindex[self.SID][i]) {
@@ -476,11 +479,6 @@ function generateOthers(div, vis) { //div is source, vis is target
                                 sid = tmp.split("_")[2],
                                 tb = "event_tb_" + sid;
                             delete eventTable[sid];
-                            // if ($('#' + tb).hasClass('row_selected')) {
-                            //     dataset[sid]['dEvent'].filterAll();
-                            //     renderAllExcept([tb]);
-                            //     $('#' + tb).removeClass('row_selected');
-                            // }
                             $(this).dialog('destroy').remove();
                         },
                         resize: function() {

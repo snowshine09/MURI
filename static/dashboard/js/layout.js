@@ -212,6 +212,7 @@ function showDialogs(dialogs) {
                         DlgTcolor[result.NewLinkNum].green + "," +
                         DlgTcolor[result.NewLinkNum].blue + ")"
                     );
+                    msgID[result.NewLinkNum] = [];
                     dindex[result.NewLinkNum] = [];
                     messageTable[result.NewLinkNum].update();
                 });
