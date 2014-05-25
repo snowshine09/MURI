@@ -9,27 +9,26 @@
 
 <div id="network" class='nw dlg' style='display: none'>
 	<div id="selectbar" class = "selectbar dropdown">Generate the next linked window...
-		<select class="form-control">
-			<option value="timeline">Timeline</option>
-            <option value="network">Network</option>
-            <option value="map">Map</option>
-            <option value="message">Messages</option>
-            <option value="event">Events</option>
-            <option value="person">People</option>
-		</select>
+		<select class="selectpicker form-control">
+            <optgroup label = "other visualizations...">
+                <option value="timeline_self">Timeline</option>
+                <option value="map_self">Map</option>
+                <option value="network_self">Network</option>
+                <option value="message_self">Messages</option>
+                <option value="event_self">Events(shadow)</option>
+                <option value="person_self">People</option>
+            </optgroup>
+            <optgroup label = "Filter to a subset in ...">
+                <option value="network_subset">Network</option>
+            </optgroup>
+        </select>   
 	</div>
-	<div id = "modebar" class = "modebar" display = "inline-block">
-		<div class="radio">
-	  		<label>
-	    		<input type="radio" name="pan" id="pan" value="option1"> <!-- checked -->
-	    		Pan and Zoom mode
-	  		</label>
+	<div class = "interaction">
+		<div class="reset">
+	  		<a href="javascript:void(0)" onclick="reset();return false;">Reset</a>
 		</div>
-		<div class="radio">
-	  		<label>
-	    		<input type="radio" name="brush" id="brush" value="option2">
-	    		Brush mode
-	  		</label>
+		<div class="showcontext">
+	  		<a href="javascript:void(0)" onclick="showcontext();return false;">Show Context (parent view)</a>
 		</div>
 	</div>
 	<div id = "nw_cvs" class="cvs">

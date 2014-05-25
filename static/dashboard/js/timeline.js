@@ -1,96 +1,60 @@
 $.widget("vis.timeline", $.vis.viscontainer, {
-  options: {
-    dimension: null
-  },
+  // options: {
+  //   dimension: null
+  // },
   _create: function() {
     var self = this;
-    this.Name = this.element.attr("id");    
+    this.Name = this.element.attr("id");
+    alert(this.Name);
     this.SID = this.Name.split("_")[2];
     this.Type = this.Name.split("_")[0].split("#")[1];
-
-    // var charts = [
-    //   self.barChart()
-    //   .dimension(self.options.dimension)
-    //   .group(self.options.dimension.group())
-    //   .round(d3.time.day.round)
-    //   .x(d3.time.scale()
-    //     .domain([new Date(2010, 0, 1), new Date(2010, 5, 1)])
-    //     .rangeRound([0, 10 * 90]))
-    //   .filter([new Date(2010, 1, 1), new Date(2010, 2, 1)])
-    // ];
-
-    // // Given our array of charts, which we assume are in the same order as the
-    // // .chart elements in the DOM, bind the charts to the DOM and render them.
-    // // We also listen to the chart's brush events to update the display.
-    // //alert(this.element.html());
-    // d3.selectAll("#"+this.Name)
-    //   .data(charts)
-    //   .each(function(chart) {
-    //     console.log(chart);
-    //     chart.on("brush", renderAllButNetwork()).on("brushend", renderAll());
-    //   })
-    //   .each(render);
-
-
     window.filter = function(filters) {
       filters.forEach(function(d, i) {
-        charts[i].filter(d);
+        self.charts[i].filter(d);
       });
       renderAll();
     };
 
     window.reset = function(i) {
-      charts[i].filter(null);
+      self.charts[i].filter(null);
       renderAll();
     };
     var cmb = "timeline_selectbar_" + self.SID;
-    $("#" + cmb).attr("selectedIndex", -1)
+    $("#" + cmb)
       .change(function() {
         var x = $("#" + cmb + " option:selected").val();
-        // var selectedNodes = svg.selectAll(".selected");
-        // alert(selectedNodes.size());
-        // alert(selectedNodes[0].length);
-        // if (selectedNodes) {
-        //   gCondition["events_id"] = [];
-        //   selectedNodes.each(function(d) {
-        //     gCondition["events_id"].push(d.uid);
-
-        //   });
-        // }
-        alert(self.Name);
         generateOthers(self.Name, x);
-      });
-  },
-  update: function() {
-    var self = this;
+        $("#" + cmb + " option:selected").removeAttr('selected');
 
-    var charts = [
+      });
+
+    var start = dataset[self.SID]['dDate'].top(1)[0], 
+    end = dataset[self.SID]['dDate'].bottom(1)[0];
+    console.log(end);
+    self.charts = [
       self.barChart() //onlu one chart(vis) method in this list
-      .dimension(self.options.dimension)
-      .group(self.options.dimension.group())
+      .dimension(dataset[self.SID]['dDate'])
+      .group(dataset[self.SID]['dDate'].group())
       .round(d3.time.day.round)
       .x(d3.time.scale()
         .domain([new Date(2010, 0, 1), new Date(2010, 5, 1)])
         .rangeRound([0, 10 * 90]))
-      .filter([new Date(2010, 1, 1), new Date(2010, 2, 1)])
+      .filter([dataset[self.SID]['dDate'].top(1)[0].key, dataset[self.SID]['dDate'].bottom(1)[0].key])
     ];
-
-    // Given our array of charts, which we assume are in the same order as the
-    // .chart elements in the DOM, bind the charts to the DOM and render them.
-    // We also listen to the chart's brush events to update the display.
-    //alert(this.element.html());
-    d3.selectAll("#"+this.Name)
-      .data(charts)
+    d3.selectAll("#" + this.Name)
+      .data(self.charts)
       .each(function(chart) {
-        console.log(chart);
+        // console.log(chart);
         chart.on("brush", renderAllButNetwork()).on("brushend", renderAll());
       })
       .each(render);
-
+    
+  },
+  update: function() {
+    var self = this;
 
   },
   barChart: function() {
-    // if (barChart.id==undefiend) barChart.id = 0;
 
     var margin = {
       top: 10,
@@ -111,8 +75,7 @@ $.widget("vis.timeline", $.vis.viscontainer, {
     function chart(div) {
       var width = x.range()[1],
         height = y.range()[0];
-      console.log("x width:" + width);
-      console.log("y height:" + height);
+
       alert("x within chart: " + x);
       y.domain([0, group.top(1)[0].value]);
 
@@ -122,11 +85,11 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 
         // Create the skeletal chart.
         if (g.empty()) {
-          div.select(".ui-dialog-title").append("a")
-            .attr("href", "javascript:reset(" + id + ")")
-            .attr("class", "reset")
-            .text("reset")
-            .style("display", "none");
+          // div.select(".ui-dialog-title").append("a")
+          //   .attr("href", "javascript:reset(" + id + ")")
+          //   .attr("class", "reset")
+          //   .text("reset")
+          //   .style("display", "none");
 
           g = div.append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -226,7 +189,31 @@ $.widget("vis.timeline", $.vis.viscontainer, {
         div.select(".title a").style("display", "none");
         div.select("#clip-" + id + " rect").attr("x", null).attr("width", "100%");
         dimension.filterAll();
+      } else {
+        var extent = brush.extent();
+        console.log("extent[0]"+(extent[0]));
+        // tmp_dimension = dataset[self.SID]['dDate'];
+        // console.log("dataset[self.SID]['dDate'] before filterRange:"+dataset[self.SID]['dDate'].top(2).length);
+        // tmp_dimension.filterRange(extent[0], extent[1]);
+        dindex[self.SID] = [];
+        // $.post("propagate", pParam, function(eid) {
+
+        //   for (var i = 0; i < eid['id'].length; i++) {
+        //     console.log(eid['id'][i]);
+        //     dindex[self.SID].push(eid['id'][i]['uid']);
+        //   }
+
+        //   renderAllExcept([self.tbName], "brush");
+        // });
+        // console.log("tmp_dimension:"+tmp_dimension.top(2).length);
+        // console.log("dataset[self.SID]['dDate']:"+dataset[self.SID]['dDate'].top(2).length);
+        console.log("dataset[self.SID]['dDate']:"+dataset[self.SID]['dDate'].top(Infinity).length);
+        dataset[self.SID]['dDate'].top(Infinity).forEach(function(p, i) {
+          dindex[self.SID].push(p.uid);
+        });
+
       }
+      renderAllExcept("timeline", "brush");
     });
 
     chart.margin = function(_) {

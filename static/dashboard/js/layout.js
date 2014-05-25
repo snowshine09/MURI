@@ -66,7 +66,7 @@ $(document).ready(function() {
             $("#timeline").clone().attr("id", vardlg).dialog(opt)
                 .dialogExtend(dialogExtendOptions);
             $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
-            $('#' + vardlg + ' > div:eq(1)').attr("id", cvs); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
+            $('#' + vardlg + ' > div:eq(2)').attr("id", cvs); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
 
             dataset[result.NewLinkNum] = CopySource();
 
@@ -81,19 +81,9 @@ $(document).ready(function() {
                         DlgTcolor[result.NewLinkNum].blue + ")"
                     );
             timelineset[result.NewLinkNum].update();
-            //$("#"+vardlg).vistimeline("update");
-            // timeline[result.NewLinkNum].vistimeline("update");
         });
     });
-    // network dialogue
-    // $("#network_btn").click(function() {
-    //     $("#network").dialog($.extend({
-    //         "title": "Network",
-    //          "width": 1000,
-    //         "height": 200,
-    //     }))
-    //     .visnetwork();
-    // });
+    
     // Location dialogue
     $("#location_table_btn").click(function() {
         showDialogs(["location_table"]);
@@ -188,6 +178,7 @@ function showDialogs(dialogs) {
                         DlgTcolor[result.NewLinkNum].green + "," +
                         DlgTcolor[result.NewLinkNum].blue + ")"
                     );
+                    dindex[result.NewLinkNum] = [];
                     eventTable[result.NewLinkNum].update();
                 });
 
@@ -221,6 +212,7 @@ function showDialogs(dialogs) {
                         DlgTcolor[result.NewLinkNum].green + "," +
                         DlgTcolor[result.NewLinkNum].blue + ")"
                     );
+                    dindex[result.NewLinkNum] = [];
                     messageTable[result.NewLinkNum].update();
                 });
 
@@ -254,6 +246,7 @@ function showDialogs(dialogs) {
                         DlgTcolor[result.NewLinkNum].green + "," +
                         DlgTcolor[result.NewLinkNum].blue + ")"
                     );
+                    dindex[result.NewLinkNum] = [];
                     locationTable[result.NewLinkNum].update();
                 });
                 break;
@@ -297,6 +290,7 @@ function showDialogs(dialogs) {
                         DlgTcolor[result.NewLinkNum].green + "," +
                         DlgTcolor[result.NewLinkNum].blue + ")"
                     );
+                    dindex[result.NewLinkNum] = [];
                     personTable[result.NewLinkNum].update();
                 });
                 break;
@@ -325,6 +319,7 @@ function showDialogs(dialogs) {
                         DlgTcolor[result.NewLinkNum].green + "," +
                         DlgTcolor[result.NewLinkNum].blue + ")"
                     );
+                    dindex[result.NewLinkNum] = [];
                     organizationTable[result.NewLinkNum].update();
                 });
                 break;
@@ -354,6 +349,7 @@ function showDialogs(dialogs) {
                         DlgTcolor[result.NewLinkNum].green + "," +
                         DlgTcolor[result.NewLinkNum].blue + ")"
                     );
+                    dindex[result.NewLinkNum] = [];
                     resourceTable[result.NewLinkNum].update();
                 });
                 break;
@@ -390,6 +386,7 @@ function showDialogs(dialogs) {
                         DlgTcolor[result.NewLinkNum].green + "," +
                         DlgTcolor[result.NewLinkNum].blue + ")"
                     );
+                    dindex[result.NewLinkNum] = [];
                     network[result.NewLinkNum].update(data);
                 });
                 break;
