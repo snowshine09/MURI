@@ -7,5 +7,17 @@
 <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/timeline.css' %}">
 {% endblock %}
 
-<div id="timeline" class="hidden">
+<div id="timeline" class='timeline' style='display: none'>
+	<div id="selectbar" class = "selectbar dropdown">Generate the next linked window...
+		<select class="form-control">
+			<option value="Timeline">Timeline</option>
+			<option value="Network">Network</option>
+			<option value="Map">Map</option>
+			<option value="Messages">Messages</option>
+			<option value="Events">Events</option>
+			<option value="People">People</option>
+		</select>
+	</div>
+	<div id = "timeline_cvs">
+	</div>
 </div>

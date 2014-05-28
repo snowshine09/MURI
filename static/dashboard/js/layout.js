@@ -28,7 +28,7 @@ $(document).ready(function() {
     };
     // workbench dialogue
     $("#workbench_btn").click(function() {
-        $("<div>").dialog($.extend({
+        $("#workbench_container").dialog($.extend({
             "title": "Workbench",
         }, container_options))
             .visworkbench();
@@ -44,6 +44,21 @@ $(document).ready(function() {
     });
     // timeline dialogue
     $("#timeline_btn").click(function() {
+        d3.json("dataSetNum", function(error, result) {
+                    var vardlg = "timeline_dlg_" + result.NewLinkNum,
+                        varbar = "timeline_selectbar_" + result.NewLinkNum,
+                        cvs = "timeline_cvs_" + result.NewLinkNum;
+                    $("#timeline").clone().attr("id", vardlg).dialog($.extend({
+                        title: "Timeline of Link " + result.NewLinkNum
+                    }, dialogOptions))
+                        .dialogExtend(dialogExtendOptions);
+                    $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                    $('#' + vardlg + ' > div:eq(1)').attr("id", cvs); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
+                    timeline[result.NewLinkNum] = vardlg.Network("#" + cvs);
+                    dataset[result.NewLinkNum] = CopySource();
+                    timeline[result.NewLinkNum].update();
+                });
+
         $("<div>").dialog($.extend({
             "title": "Timeline",
             "width": 1000,
