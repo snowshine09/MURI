@@ -414,6 +414,6 @@ SIIL.Map = function(div) {
 
     this.destroy = function() {
         map.destroy();
-        this = null;
+        // this = null;
     };
 };

@@ -1,26 +1,39 @@
 {% load static %}
 {% load compress %}
 {% block extralib %}
-<script type="text/javascript" language="javascript" src="{% static 'dashboard/lib/DataTables-1.9.4/media/js/jquery.dataTables.js' %}"></script>
+<script type="text/javascript" language="javascript" src="{% static 'dashboard/lib/DataTables-1.10.0/media/js/jquery.dataTables.js' %}"></script>
 <script type="text/javascript" language="javascript" src="{% static 'dashboard/lib/DataTables-1.9.4/plugin/ColReorderWithResize.js' %}"></script>
-<!--        <link rel="stylesheet" type="text/css" href="lib/DataTables-1.9.4/media/css/jquery.dataTables.css"> -->
+<!--        <link rel="stylesheet" type="text/css" href="lib/DataTables-1.9.4/media/css/"> -->
 <link rel="stylesheet" type="text/css" href="{% static 'dashboard/lib/DataTables-1.9.4/media/css/demo_table_jui.css' %}"> 
 
 <script type="text/javascript" language="javascript" src="{% static 'dashboard/js/event_table.js' %}"></script>
 {% compress css %}
-<!-- <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/map.css' %}">  -->
 {% endcompress %}
 {% endblock %}
 <div id="location_dlg" class="hidden">
     <div id="selectbar" class="selectbar dropdown">Generate the next linked window...
-        <select class="view-dropdown">
-            <option value="Timeline">Timeline</option>
-            <option value="Network">Network</option>
-            <option value="Map">Map</option>
-            <option value="Messages">Messages</option>
-            <option value="Events">Events</option>
-            <option value="People">People</option>
+        <select class="selectpicker form-control">
+            <option value="">---</option>
+            <optgroup label = "other visualizations...">
+                <option value="timeline">Timeline</option>
+                <option value="map">Map</option>
+                <option value="network">Network</option>
+                <option value="message_self">Messages</option>
+                <option value="event">Events(shadow)</option>
+                <option value="person">People</option>
+            </optgroup>
+            <optgroup label = "Filter to a subset in ...">
+                <option value="message_subset">Messages</option>
+            </optgroup>
         </select>
+    </div>
+    <div class = "interaction">
+        <div class="reset">
+            <a href="javascript:void(0)" onclick="reset();return false;">Reset</a>
+        </div>
+        <div class="showcontext">
+            <a href="javascript:void(0)" onclick="showcontext();return false;">Show Context (parent view)</a>
+        </div>
     </div>
     <table id="location_table">
         <thead>
@@ -34,15 +47,29 @@
     </table>
 </div>
 <div id = "message_dlg" class="hidden">
-    <div id="selectbar" class="selectbar dropdown">Generate the next linked window...
-        <select class="view-dropdown">
-            <option value="Timeline">Timeline</option>
-            <option value="Network">Network</option>
-            <option value="Map">Map</option>
-            <option value="Messages">Messages</option>
-            <option value="Events">Events</option>
-            <option value="People">People</option>
-        </select>
+    <div id="selectbar" class="selectbar dropdown">Generate the next linked window...       
+        <select class="selectpicker form-control">
+            <option value="">---</option>
+            <optgroup label = "other visualizations...">
+                <option value="timeline_self">Timeline</option>
+                <option value="map_self">Map</option>
+                <option value="network_self">Network</option>
+                <option value="message_self">Messages</option>
+                <option value="event_self">Events(shadow)</option>
+                <option value="person_self">People</option>
+            </optgroup>
+            <optgroup label = "Filter to a subset in ...">
+                <option value="message_subset">Messages</option>
+            </optgroup>
+        </select>   
+    </div>
+    <div class = "interaction">
+        <div class="reset">
+            <a href="javascript:void(0)" onclick="reset();return false;">Reset</a>
+        </div>
+        <div class="showcontext">
+            <a href="javascript:void(0)" onclick="showcontext();return false;">Show Context (parent view)</a>
+        </div>
     </div>
     <table id="message_table">
         <thead>
@@ -56,31 +83,30 @@
     </table>
 </div>
 <div id="event_dlg" class="hidden">
-    <div id="selectbar" class="selectbar dropdown">Generate the next linked window...
-      <!-- <a id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="/page.html">
-        Dropdown <span class="caret"></span>
-      </a>
-
-
-      <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-        ...
-      </ul> -->
-        <select class="form-control">
-            <option value="Timeline">Timeline</option>
-            <option value="Network">Network</option>
-            <option value="Map">Map</option>
-            <option value="Messages">Messages</option>
-            <option value="Events">Events</option>
-            <option value="People">People</option>
+           
+   <div id="selectbar" class="selectbar dropdown">Generate the next linked window...
+        <select class="selectpicker form-control">
+            <option value="">---</option>
+            <optgroup label = "other visualizations...">
+                <option value="timeline_self">Timeline</option>
+                <option value="map_self">Map</option>
+                <option value="network_self">Network</option>
+                <option value="message_self">Messages</option>
+                <option value="event_self">Events(shadow)</option>
+                <option value="person_self">People</option>
+            </optgroup>
+            <optgroup label = "Filter to a subset in ...">
+                <option value="event_subset">Event</option>
+            </optgroup>
         </select>   
-        <!-- <select class="view-dropdown" id="nw-combobox">
-            <option value="Timeline">Timeline</option>
-            <option value="Network">Network</option>
-            <option value="Map">Map</option>
-            <option value="Messages">Messages</option>
-            <option value="Events">Events</option>
-            <option value="People">People</option>
-        </select> -->
+    </div>
+    <div class = "interaction">
+        <div class="reset">
+            <a href="javascript:void(0)" onclick="reset();return false;">Reset</a>
+        </div>
+        <div class="showcontext">
+            <a href="javascript:void(0)" onclick="showcontext();return false;">Show Context (parent view)</a>
+        </div>
     </div>
     <table id="event_table">
         <thead>
@@ -97,14 +123,28 @@
 </div>
 <div id="person_dlg" class="hidden">
     <div id="selectbar" class="selectbar dropdown">Generate the next linked window...
-        <select class="view-dropdown" id="nw-combobox">
-            <option value="Timeline">Timeline</option>
-            <option value="Network">Network</option>
-            <option value="Map">Map</option>
-            <option value="Messages">Messages</option>
-            <option value="Events">Events</option>
-            <option value="People">People</option>
-        </select>
+        <select class="selectpicker form-control">
+            <option value="">---</option>
+            <optgroup label = "other visualizations...">
+                <option value="timeline_self">Timeline</option>
+                <option value="map_self">Map</option>
+                <option value="network_self">Network</option>
+                <option value="message_self">Messages</option>
+                <option value="event_self">Events(shadow)</option>
+                <option value="person_self">People</option>
+            </optgroup>
+            <optgroup label = "Filter to a subset in ...">
+                <option value="person_subset">People</option>
+            </optgroup>
+        </select>   
+    </div>
+    <div class = "interaction">
+        <div class="reset">
+            <a href="javascript:void(0)" onclick="reset();return false;">Reset</a>
+        </div>
+        <div class="showcontext">
+            <a href="javascript:void(0)" onclick="showcontext();return false;">Show Context (parent view)</a>
+        </div>
     </div>
     <table id="person_table">
         <thead>
@@ -121,14 +161,23 @@
 </div>
 <div id="organization_dlg" class="hidden">
     <div id="selectbar" class="selectbar dropdown">Generate the next linked window...
-        <select class="view-dropdown" id="nw-combobox">
-            <option value="Timeline">Timeline</option>
-            <option value="Network">Network</option>
-            <option value="Map">Map</option>
-            <option value="Messages">Messages</option>
-            <option value="Events">Events</option>
-            <option value="People">People</option>
+        <select class="form-control">
+            <option value="">---</option>
+            <option value="timeline">Timeline</option>
+            <option value="network">Network</option>
+            <option value="map">Map</option>
+            <option value="message">Messages</option>
+            <option value="event">Events</option>
+            <option value="person">People</option>
         </select>
+    </div>
+    <div class = "interaction">
+        <div class="reset">
+            <a href="javascript:void(0)" onclick="reset();return false;">Reset</a>
+        </div>
+        <div class="showcontext">
+            <a href="javascript:void(0)" onclick="showcontext();return false;">Show Context (parent view)</a>
+        </div>
     </div>
     <table id="organization_table">
         <thead>
@@ -146,14 +195,23 @@
 </div>
 <div id="resource_dlg" class="hidden">
     <div id="selectbar" class="selectbar dropdown">Generate the next linked window...
-        <select class="view-dropdown" id="nw-combobox">
-            <option value="Timeline">Timeline</option>
-            <option value="Network">Network</option>
-            <option value="Map">Map</option>
-            <option value="Messages">Messages</option>
-            <option value="Events">Events</option>
-            <option value="People">People</option>
+        <select class="form-control">
+            <option value="">---</option>
+            <option value="timeline">Timeline</option>
+            <option value="network">Network</option>
+            <option value="map">Map</option>
+            <option value="message">Messages</option>
+            <option value="event">Events</option>
+            <option value="person">People</option>
         </select>
+    </div>
+    <div class = "interaction">
+        <div class="reset">
+            <a href="javascript:void(0)" onclick="reset();return false;">Reset</a>
+        </div>
+        <div class="showcontext">
+            <a href="javascript:void(0)" onclick="showcontext();return false;">Show Context (parent view)</a>
+        </div>
     </div>
     <table id="resource_table">
         <thead>

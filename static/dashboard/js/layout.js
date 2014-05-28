@@ -18,6 +18,15 @@ var dialogExtendOptions = {
     "collapsable": true,
     "dblclick": "collapse",
 };
+
+function randomcolor() {
+    return {
+        red: Math.floor(Math.random() * 256),
+        green: Math.floor(Math.random() * 256),
+        blue: Math.floor(Math.random() * 256)
+    };
+};
+
 $(document).ready(function() {
     var container_options = {
         "width": 800,
@@ -44,43 +53,37 @@ $(document).ready(function() {
     });
     // timeline dialogue
     $("#timeline_btn").click(function() {
-        d3.json("dataSetNum", function(error, result) {
-                    var vardlg = "timeline_dlg_" + result.NewLinkNum,
-                        varbar = "timeline_selectbar_" + result.NewLinkNum,
-                        cvs = "timeline_cvs_" + result.NewLinkNum;
-                    $("#timeline").clone().attr("id", vardlg).dialog($.extend({
-                        title: "Timeline of Link " + result.NewLinkNum
-                    }, dialogOptions))
-                        .dialogExtend(dialogExtendOptions);
-                    $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
-                    $('#' + vardlg + ' > div:eq(1)').attr("id", cvs); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
-                    timeline[result.NewLinkNum] = vardlg.Network("#" + cvs);
-                    dataset[result.NewLinkNum] = CopySource();
-                    timeline[result.NewLinkNum].update();
-                });
 
-        $("<div>").dialog($.extend({
-            "title": "Timeline",
-            "width": 1000,
-            "height": 200,
-        }, {
-            "modal": false,
-            "resizable": true,
-            "draggable": true,
-        }))
-            .vistimeline({
-                dimension: dDate,
-            });
+        d3.json("dataSetNum", function(error, result) {
+            var vardlg = "timeline_dlg_" + result.NewLinkNum,
+                varbar = "timeline_selectbar_" + result.NewLinkNum,
+                cvs = "timeline_cvs_" + result.NewLinkNum;
+            var opt = $.extend({
+                title: "Timeline of Link " + result.NewLinkNum
+            }, dialogOptions);
+            opt.height = 200;
+            opt.width = 1000;
+            $("#timeline").clone().attr("id", vardlg).dialog(opt)
+                .dialogExtend(dialogExtendOptions);
+            $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+            $('#' + vardlg + ' > div:eq(2)').attr("id", cvs); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
+
+            dataset[result.NewLinkNum] = CopySource();
+            timeextent[result.NewLinkNum] = [];
+            timelineset[result.NewLinkNum] = $("#" + cvs).timeline({
+                "dimension": dataset[result.NewLinkNum]['dDate'],
+            }).data("vis-timeline");
+
+            DlgTcolor[result.NewLinkNum] = randomcolor();
+                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[result.NewLinkNum].red + "," +
+                        DlgTcolor[result.NewLinkNum].green + "," +
+                        DlgTcolor[result.NewLinkNum].blue + ")"
+                    );
+            timelineset[result.NewLinkNum].update();
+        });
     });
-    // network dialogue
-    // $("#network_btn").click(function() {
-    //     $("#network").dialog($.extend({
-    //         "title": "Network",
-    //          "width": 1000,
-    //         "height": 200,
-    //     }))
-    //     .visnetwork();
-    // });
+    
     // Location dialogue
     $("#location_table_btn").click(function() {
         showDialogs(["location_table"]);
@@ -155,7 +158,7 @@ function showDialogs(dialogs) {
                         position: ['left', 36],
                         close: function(event, ui) {
                             var tmp = $(this).attr("id");
-                            alert("deleting"+tmp);
+                            alert("deleting" + tmp);
                             delete eventTable[tmp.split("_")[2]];
                             $(this).dialog('destroy').remove();
                         },
@@ -168,7 +171,14 @@ function showDialogs(dialogs) {
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     eventTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
-                    dataset[result.NewLinkNum] = CopySource();
+                    dataset[result.NewLinkNum] = CopySource(null);
+                    DlgTcolor[result.NewLinkNum] = randomcolor();
+                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[result.NewLinkNum].red + "," +
+                        DlgTcolor[result.NewLinkNum].green + "," +
+                        DlgTcolor[result.NewLinkNum].blue + ")"
+                    );
+                    dindex[result.NewLinkNum] = [];
                     eventTable[result.NewLinkNum].update();
                 });
 
@@ -191,11 +201,19 @@ function showDialogs(dialogs) {
                         },
                     }, dialogOptions))
                         .dialogExtend(dialogExtendOptions);
-                    alert($("#" + vardlg).html());
+                    // alert($("#" + vardlg).html());
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     messageTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
                     dataset[result.NewLinkNum] = CopySource();
+                    DlgTcolor[result.NewLinkNum] = randomcolor();
+                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[result.NewLinkNum].red + "," +
+                        DlgTcolor[result.NewLinkNum].green + "," +
+                        DlgTcolor[result.NewLinkNum].blue + ")"
+                    );
+                    msgID[result.NewLinkNum] = [];
+                    dindex[result.NewLinkNum] = [];
                     messageTable[result.NewLinkNum].update();
                 });
 
@@ -215,7 +233,6 @@ function showDialogs(dialogs) {
                             $(this).dialog('destroy').remove();
                         },
                         resize: function() {
-                            //eval(vartb+'\.resize();');
                             locationTable[result.NewLinkNum].resize();
                         },
                     }, dialogOptions))
@@ -224,6 +241,13 @@ function showDialogs(dialogs) {
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     locationTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
                     dataset[result.NewLinkNum] = CopySource();
+                    DlgTcolor[result.NewLinkNum] = randomcolor();
+                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[result.NewLinkNum].red + "," +
+                        DlgTcolor[result.NewLinkNum].green + "," +
+                        DlgTcolor[result.NewLinkNum].blue + ")"
+                    );
+                    dindex[result.NewLinkNum] = [];
                     locationTable[result.NewLinkNum].update();
                 });
                 break;
@@ -237,7 +261,7 @@ function showDialogs(dialogs) {
                         position: ['left', 36],
                         close: function(event, ui) {
                             var tmp = $(this).attr("id");
-                            alert("deleting"+tmp);
+                            alert("deleting" + tmp);
                             delete personTable[tmp.split("_")[2]];
                             $(this).dialog('destroy').remove();
                         },
@@ -247,10 +271,27 @@ function showDialogs(dialogs) {
                         height: 800
                     }, dialogOptions))
                         .dialogExtend(dialogExtendOptions);
+
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
+                    
                     personTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
                     dataset[result.NewLinkNum] = CopySource();
+
+                    
+                    //assign a random color to the dialog's titlebar
+                    // this.titlecolor = randomcolor();
+                    //DlgTcolor[result.NewLinkNum] = this.titlecolor;
+                    DlgTcolor[result.NewLinkNum] = randomcolor();
+                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        // this.titlecolor.red + "," +
+                        // this.titlecolor.green + "," +
+                        // this.titlecolor.blue + ")"
+                        DlgTcolor[result.NewLinkNum].red + "," +
+                        DlgTcolor[result.NewLinkNum].green + "," +
+                        DlgTcolor[result.NewLinkNum].blue + ")"
+                    );
+                    dindex[result.NewLinkNum] = [];
                     personTable[result.NewLinkNum].update();
                 });
                 break;
@@ -273,6 +314,13 @@ function showDialogs(dialogs) {
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     organizationTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
                     dataset[result.NewLinkNum] = CopySource();
+                    DlgTcolor[result.NewLinkNum] = randomcolor();
+                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[result.NewLinkNum].red + "," +
+                        DlgTcolor[result.NewLinkNum].green + "," +
+                        DlgTcolor[result.NewLinkNum].blue + ")"
+                    );
+                    dindex[result.NewLinkNum] = [];
                     organizationTable[result.NewLinkNum].update();
                 });
                 break;
@@ -296,6 +344,13 @@ function showDialogs(dialogs) {
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     resourceTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
                     dataset[result.NewLinkNum] = CopySource();
+                    DlgTcolor[result.NewLinkNum] = randomcolor();
+                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[result.NewLinkNum].red + "," +
+                        DlgTcolor[result.NewLinkNum].green + "," +
+                        DlgTcolor[result.NewLinkNum].blue + ")"
+                    );
+                    dindex[result.NewLinkNum] = [];
                     resourceTable[result.NewLinkNum].update();
                 });
                 break;
@@ -303,16 +358,37 @@ function showDialogs(dialogs) {
                 d3.json("dataSetNum", function(error, result) {
                     var vardlg = "network_dlg_" + result.NewLinkNum,
                         varbar = "network_selectbar_" + result.NewLinkNum,
-                        cvs = "network_cvs_" + result.NewLinkNum;
+                        cvs = "network_cvs_" + result.NewLinkNum,
+                        bbar = "network_brush_" + result.NewLinkNum,
+                        pbar = "network_pan_" + result.NewLinkNum;
                     $("#network").clone().attr("id", vardlg).dialog($.extend({
-                        title: "Network of Link " + result.NewLinkNum
+                        title: "Network of Link " + result.NewLinkNum,
+                        position: ['left', 36],
+                        resize: function() {
+                            network[result.NewLinkNum].resize();
+                        }
                     }, dialogOptions))
                         .dialogExtend(dialogExtendOptions);
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
-                    $('#' + vardlg + ' > div:eq(1)').attr("id", cvs); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
+                    $('#' + vardlg + ' > div:eq(2)').attr("id", cvs);
+                    $('#' + vardlg + ' > div:eq(1) > div:eq(1)').attr("id", bbar);
+                    $('#' + vardlg + ' > div:eq(1) > div:eq(0)').attr("id", pbar); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
                     network[result.NewLinkNum] = new SIIL.Network("#" + cvs);
                     dataset[result.NewLinkNum] = CopySource();
-                    network[result.NewLinkNum].update();
+                    events_id = []
+                    dataset[result.NewLinkNum]['dDate'].top(Infinity).forEach(function(p, i) {
+                        events_id.push(p.uid);
+                    });
+                    data = {};
+                    data['events_id'] = events_id;
+                    DlgTcolor[result.NewLinkNum] = randomcolor();
+                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[result.NewLinkNum].red + "," +
+                        DlgTcolor[result.NewLinkNum].green + "," +
+                        DlgTcolor[result.NewLinkNum].blue + ")"
+                    );
+                    dindex[result.NewLinkNum] = [];
+                    network[result.NewLinkNum].update(data);
                 });
                 break;
                 //             case "workbench":

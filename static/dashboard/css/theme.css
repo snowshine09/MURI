@@ -8,9 +8,9 @@
 }
 
 .selectbar {
-  width:inherit;
+  width:100%;
   background-color: rgba(102,196,226,0.5);
-  margin:1px;
+  margin:0px!important;
   padding: 0!important;
   z-index: 9999;
   
@@ -18,9 +18,20 @@
 
 div.ui-dialog-content {
   padding: 0!important;
-  overflow:inherit!important;
+  /*overflow:inherit!important;*/
 }
 
+div.dlg {
+  overflow:hidden!important;
+}
+
+div.cvs {
+  overflow:scroll!important;
+}
+
+div.selectbar.ui-dialog-content {
+  overflow:inherit!important;
+}
 
 /*div.dataTables_length{
     width:inherit!important;

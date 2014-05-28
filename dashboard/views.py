@@ -53,7 +53,13 @@ def queryEvent(request):
 def getData(request):
     response = {}
     response['events'] = []
-    events = Event.objects.all().order_by('date_begin')
+    events_id = request.POST.getlist('events_id[]', None)
+    if events_id != []:
+        print "condition is not empty", events_id
+        events = Event.objects.filter(id__in=events_id).order_by('date_begin')
+    else: 
+        events = Event.objects.all().order_by('date_begin')
+    ##events = Event.objects.all().order_by('date_begin')
     for event in events:
         e_info = {}
         e_info = event.getKeyAttr()
@@ -82,12 +88,12 @@ def getData(request):
                 e_info['footprints'].append(entity.getKeyAttr())
 
         response['events'] += flatten(e_info)
-    #print len(response['events']),sys.getsizeof(response['events'])
+    print "returned object len:",len(response['events']),sys.getsizeof(response['events'])
     return HttpResponse(json.dumps(response), mimetype='application/json')
 
 def flatten(dic):
     res = []
-    for person in dic['persons']+[{}]:
+    for person in dic['persons']+[{}]: ## {} is used to confirm that in the case (or event_info) where person is not available, other related entities can still be recorded
     	rec = {}
     	rec['uid'] = dic['uid']
     	rec['name'] = dic['name']
@@ -126,11 +132,11 @@ def prepareNetwork(request):
         response['links'] = []
         node_types = request.POST.getlist('entities[]', None)
         events_id = request.POST.getlist('events_id[]', None)
-
+        print events_id, "is the events ids for network (prepareNetwork)"
         if node_types == None or events_id == None:
             return
 
-        graph   = nx.DiGraph()
+        graph = nx.DiGraph()
 
         events = Entity.objects.filter(id__in=events_id)
         linked_entities = list(events.select_subclasses())
@@ -146,4 +152,57 @@ def prepareNetwork(request):
             graph.add_edge(relation.source.id, relation.target.id, relation.getAllAttr())
 
         return HttpResponse(json_graph.dumps(graph), mimetype='application/json')
+    return
+
+def related_entities(request):
+    if request.method == 'POST':
+        response = {}
+        response['ett'] = []
+        response['msg'] = []
+        src_id = request.POST.getlist('src_id[]', None)##src entities id
+        ett_id = request.POST.getlist('ett_id[]', None)##src entities id
+        
+        if src_id == None and ett_id == None:
+            return
+        print ett_id, "is the entities ids for linked entities (related_entities)"
+        print src_id, "is the messages ids for linked entities (related_entities)"
+        
+       
+        if len(ett_id) == 0:
+            msgs = Message.objects.filter(uid__in=src_id)
+            ett_id = []
+            for msg in msgs:## comment: search for entities given msgs/entities
+                events = msg.event.all()
+                for eve in events:
+                    print eve.id
+                    ett_id.append(eve.id)
+            src_entt = Entity.objects.filter(id__in=ett_id)
+            linked_entities = list(src_entt.select_subclasses())
+            for ett in src_entt:
+                entities = list(chain(ett.findTargets(), ett.findSources()))
+                #print entities
+                linked_entities += entities
+            for entity in linked_entities:
+                response['ett'].append(entity.getKeyAttr())
+        elif len(src_id) == 0:##search for messages given entities
+            src_entt = Entity.objects.filter(id__in=ett_id)
+            linked_entities = list(src_entt.select_subclasses())
+            for ett in src_entt:
+                entities = list(chain(ett.findTargets(), ett.findSources()))
+                for single_ett in entities:
+                    ett_id.append(single_ett.id)
+                #print entities
+            ett_src = Event.objects.filter(id__in=ett_id)##first propagate to broad entities than settle to event_type and search for related mesgs
+            
+            msgs_id = []
+            for ett in ett_src:
+                for mes in ett.message_set.all():
+                    msgs_id.append(mes.uid)
+            msgs = Message.objects.filter(uid__in=msgs_id)        
+            for msg in msgs:
+                response['msg'].append(msg.getKeyAttr())
+
+
+
+        return HttpResponse(json.dumps(response), mimetype='application/json')
     return
