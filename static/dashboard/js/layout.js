@@ -69,7 +69,7 @@ $(document).ready(function() {
             $('#' + vardlg + ' > div:eq(2)').attr("id", cvs); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
 
             dataset[result.NewLinkNum] = CopySource();
-
+            timeextent[result.NewLinkNum] = [];
             timelineset[result.NewLinkNum] = $("#" + cvs).timeline({
                 "dimension": dataset[result.NewLinkNum]['dDate'],
             }).data("vis-timeline");

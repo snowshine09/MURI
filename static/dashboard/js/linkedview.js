@@ -25,6 +25,8 @@ var gCondition = {};
 var DlgTcolor = {};
 var dindex = {}; //for brushing, record selected entities' indexes
 var msgID = {};
+var timeextent = {};//two elements array to control and reflect change of timeline
+// var totimeextent = {};//boolean time
 
 function CreateSource() {
     $.post("data", null, function(result) {
@@ -52,7 +54,7 @@ function CreateSource() {
 }
 
 function CopySource(rawdata) {
-    alert("enterCopy=>rawdata:" + rawdata);
+    //alert("enterCopy=>rawdata:" + rawdata);
     var response = {}, dsource = rawdata || srcData;
     if (rawdata) {
         alert(rawdata.length + " is raw ; " + srcData.length + "is sourceCopy; !! USED is" + dsource.length);
@@ -141,7 +143,7 @@ function FilterSource(cond, newSID, vis) {
 
 }
 //dynamic generation coordinated windows
-function generateOthers(div, vis) { //div is source, vis is target
+function generateOthers(div, vis, arg) { //div is source, vis is target
 
     self = {};
     self.SID = div.split("_")[2];
@@ -150,12 +152,12 @@ function generateOthers(div, vis) { //div is source, vis is target
     target.Type = vis.split("_")[0]; // e.g. message_self , message_subset
     target.Src = vis.split("_")[1];
 
-    alert(self.SID + " " + self.Type);
+    //alert(self.SID + " " + self.Type);
     switch (target.Src) { //data source /result sets are equivalent or not
         case 'self': //data equivalent
             switch (target.Type) {
                 case "timeline":
-                    alert("timeline");
+                    
                     var vardlg = "timeline_dlg_" + self.SID,
                         varbar = "timeline_selectbar_" + self.SID,
                         cvs = "timeline_cvs_" + self.SID;
@@ -164,6 +166,10 @@ function generateOthers(div, vis) { //div is source, vis is target
                     }, dialogOptions);
                     opt.height = 200;
                     opt.width = 1000;
+                    // if(dindex[self.SID].length == 0 && msgID[self.SID].length == 0){
+                    //     totimeextent[self.SID] = false;
+                    // }
+                    timeextent[self.SID] = [];
                     $("#timeline").clone().attr("id", vardlg).dialog(opt)
                         .dialogExtend(dialogExtendOptions);
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
@@ -208,7 +214,7 @@ function generateOthers(div, vis) { //div is source, vis is target
                         DlgTcolor[self.SID].green + "," +
                         DlgTcolor[self.SID].blue + ")"
                     );
-                    network[result.NewLinkNum].update();
+                    network[self.SID].update();
                     break;
                 case "message":
                     var vardlg = "message_dlg_" + self.SID,
@@ -321,70 +327,8 @@ function generateOthers(div, vis) { //div is source, vis is target
             break;
         case 'subset':
             var count = 0;
-            dindex[result.NewLinkNum] = [];
-            switch (target.Type) {
-                case "location":
-                    dataset[target.SID]['dFootprint'].filter(function(d) {
-                        for (var i = 0; i < dindex[self.SID].length; i++) {
-                            if (d[0] === dindex[self.SID][i]) {
-                                count++;
-                                return true;
-                            }
-                        }
-                    });
-                    break;
-                case "message":
-                    msgID[self.SID] = [];
-                    dataset[target.SID]['dMessage'].filter(function(d) {
-                        for (var i = 0; i < dindex[self.SID].length; i++) {
-                            if (d[0] === dindex[self.SID][i]) {
-                                count++;
-                                return true;
-                            }
-                        }
-                    });
-                    break;
-                case "event":
-                    dataset[target.SID]['dEvent'].filter(function(d) {
-                        for (var i = 0; i < dindex[self.SID].length; i++) {
-                            if (d[0] === dindex[self.SID][i]) {
-                                count++;
-                                return true;
-                            }
-                        }
-                    });
-                    break;
-                case "resource":
-                    dataset[target.SID]['dResource'].filter(function(d) {
-                        for (var i = 0; i < dindex[self.SID].length; i++) {
-                            if (d[0] === dindex[self.SID][i]) {
-                                count++;
-                                return true;
-                            }
-                        }
-                    });
-                    break;
-                case "person":
-                    dataset[target.SID]['dPerson'].filter(function(d) {
-                        for (var i = 0; i < dindex[self.SID].length; i++) {
-                            if (d[0] === dindex[self.SID][i]) {
-                                count++;
-                                return true;
-                            }
-                        }
-                    });
-                    break;
-                case "organization":
-                    dataset[target.SID]['dOrganization'].filter(function(d) {
-                        for (var i = 0; i < dindex[self.SID].length; i++) {
-                            if (d[0] === dindex[self.SID][i]) {
-                                count++;
-                                return true;
-                            }
-                        }
-                    });
-                    break;
-            }
+            // dindex[result.NewLinkNum] = [];!!!
+            // msgID[result.NewLinkNum] = [];
             switch (target.Type) {
                 case "timeline":
                     // alert("Yet to come");

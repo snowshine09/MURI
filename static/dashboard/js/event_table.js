@@ -27,7 +27,6 @@ SIIL.DataTable = function(div) {
     $("#" + cmb).attr("selectedIndex", -1)
         .change(function() {
             var x = $("#" + cmb + " option:selected").val();
-            alert(x);
             generateOthers(self.tbName, x);
             $("#" + cmb + " option:selected").removeAttr('selected');
         });
@@ -136,7 +135,7 @@ SIIL.DataTable.prototype.update = function(uType) {
     if (this.tbType != 'message') {
         this.table.fnSetColumnVis(0, false); // set column 1 - id invisible
     } else {
-        if(msgID[self.SID].length != 0) {
+        if (msgID[self.SID].length != 0) {
             var indexes = this.Tinstance.rows().eq(0).filter(function(rowIdx) {
                 var tmp = self.Tinstance.cell(rowIdx, 0).data();
                 return $.inArray(tmp, msgID[self.SID]) != -1 ? true : false;
@@ -187,14 +186,31 @@ SIIL.DataTable.prototype.update = function(uType) {
             // }
             dindex[self.SID] = [];
         } else {
+            if (timeextent[self.SID] != undefined) {
+                var start, end; //for the brushed range reflected on timeline
+                self.table.$('tr.row_selected').each(function(idx, $row) {
+                    row = self.table.fnGetData($row);
+                    if (start == null) {
+                        start = end = row[2];
+                    } else {
+                        start = start < row[2] ? start : row[2];
+                        end = end > row[2] ? end : row[2];
+                    }
+                });
+                timeextent[self.SID] = [];
+                timeextent[self.SID].push(start);
+                timeextent[self.SID].push(end);
+            }
+
             var pParam = {};
-            if (self.tbType == "message") {
+            if (self.tbType == "message") { //message propogating
                 pParam['src_id'] = [];
+
                 self.table.$('tr.row_selected').each(function(idx, $row) {
                     row = self.table.fnGetData($row);
                     pParam['src_id'].push(row[0]);
                 });
-            } else {
+            } else { //entities propogating
                 pParam['ett_id'] = [];
                 self.table.$('tr.row_selected').each(function(idx, $row) {
                     row = self.table.fnGetData($row);

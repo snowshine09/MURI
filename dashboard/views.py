@@ -185,13 +185,19 @@ def related_entities(request):
             for entity in linked_entities:
                 response['ett'].append(entity.getKeyAttr())
         elif len(src_id) == 0:##search for messages given entities
-            ett_src = Entity.objects.filter(id__in=ett_id)
+            src_entt = Entity.objects.filter(id__in=ett_id)
+            linked_entities = list(src_entt.select_subclasses())
+            for ett in src_entt:
+                entities = list(chain(ett.findTargets(), ett.findSources()))
+                for single_ett in entities:
+                    ett_id.append(single_ett.id)
+                #print entities
+            ett_src = Event.objects.filter(id__in=ett_id)##first propagate to broad entities than settle to event_type and search for related mesgs
             
             msgs_id = []
             for ett in ett_src:
-                if(ett.entity_type == "event"):
-                    for mes in ett.message_set.all():
-                        msgs_id.append(mes.uid)
+                for mes in ett.message_set.all():
+                    msgs_id.append(mes.uid)
             msgs = Message.objects.filter(uid__in=msgs_id)        
             for msg in msgs:
                 response['msg'].append(msg.getKeyAttr())
