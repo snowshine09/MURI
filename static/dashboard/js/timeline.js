@@ -20,13 +20,13 @@ $.widget("vis.timeline", $.vis.viscontainer, {
     //   renderAll();
     // };
     var cmb = "timeline_selectbar_" + self.SID;
-    $("#" + cmb)
+
+    $("#" + cmb).attr("selectedIndex", 0)
       .change(function() {
         var x = $("#" + cmb + " option:selected").val();
-        if (x == timeline_)
-          generateOthers(self.Name, x);
+        generateOthers(self.Name, x);
         $("#" + cmb + " option:selected").removeAttr('selected');
-
+        $("#" + cmb).attr("selectedIndex", 0);
       });
 
     var start = dataset[self.SID]['dDate'].top(1)[0],

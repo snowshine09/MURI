@@ -24,11 +24,12 @@ SIIL.DataTable = function(div) {
     var self = this,
         cmb = self.tbType + "_selectbar_" + self.SID;
 
-    $("#" + cmb).attr("selectedIndex", -1)
+    $("#" + cmb).attr("selectedIndex", 0)
         .change(function() {
             var x = $("#" + cmb + " option:selected").val();
             generateOthers(self.tbName, x);
             $("#" + cmb + " option:selected").removeAttr('selected');
+            $("#" + cmb).attr("selectedIndex", 0);
         });
 
 };

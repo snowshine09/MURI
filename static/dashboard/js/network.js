@@ -104,7 +104,7 @@ SIIL.Network = function(div) {
 
 
     var cmb = "network_selectbar_" + self.SID;
-    $("#" + cmb).attr("selectedIndex", -1)
+    $("#" + cmb).attr("selectedIndex", 0)
       .change(function() {
         var x = $("#" + cmb + " option:selected").val();
         var selectedNodes = svg.selectAll(".selected");
@@ -118,6 +118,8 @@ SIIL.Network = function(div) {
           });
         }
         generateOthers(self.Name, x);
+        $("#" + cmb + " option:selected").removeAttr('selected');
+        $("#" + cmb).attr("selectedIndex", 0);
       });
 
     events_id = []
