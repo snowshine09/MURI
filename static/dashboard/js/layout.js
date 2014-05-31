@@ -37,7 +37,7 @@ $(document).ready(function() {
     };
     // workbench dialogue
     $("#workbench_btn").click(function() {
-        $("<div>").dialog($.extend({
+        $("#workbench_container").dialog($.extend({
             "title": "Workbench",
         }, container_options))
             .visworkbench();

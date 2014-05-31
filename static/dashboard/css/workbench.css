@@ -1,7 +1,11 @@
-#workbench {
-    padding: 0 0 0 0; !important
+#workbench_container {
+    padding: 0 0 0 0!important; 
+    height: inherit!important; 
 }
-
+#workbench {
+    padding: 0 0 0 0!important; 
+    height: inherit!important; 
+}
 .jqte {
     margin: 0em 0em;
     border: 0px;
@@ -27,15 +31,15 @@
 }
 .claim {
     background: rgba(102, 163, 180, .5);
-    margin-left: 4em; !important
+    margin-left: 4em!important; 
 }
 .evidence {
     background: rgba(255, 253, 115, .5);
-    margin-left: 8em; !important
+    margin-left: 8em!important; 
 }
 .conclusion {
     background: rgba(138, 120, 215, .5);
 }
 .inner-center .ui-layout-center .ui-layout-pane {
-    padding:0px; !important
+    padding:0px!important; 
 }
