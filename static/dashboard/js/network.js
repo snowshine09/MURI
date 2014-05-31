@@ -12,7 +12,7 @@ SIIL.Network = function(div) {
   this.height = $("#network_dlg_" + this.SID).innerHeight();
   this.brushmode = false;
   this.panmode = false;
-  
+
   var force = null;
   this.shiftKey = null;
   // color = d3.scale.linear()
@@ -23,11 +23,11 @@ SIIL.Network = function(div) {
 
   var svg = d3.select(div)
     .attr("tabindex", 1)
-    .on("keyup", keyflip)//.brush
-    .on("keydown", keyflip)//.brush
-    .each(function() {
-      this.focus();
-    })
+    .on("keyup", keyflip) //.brush
+  .on("keydown", keyflip) //.brush
+  .each(function() {
+    this.focus();
+  })
     .append("svg:svg")
   // .attr("width", 1800)
   // .attr("height", 1300)
@@ -99,7 +99,7 @@ SIIL.Network = function(div) {
     // svg.style("height", $('#' + self.Name).outerHeight())
     //   .style("width", $('#' + self.Name).outerWidth())
   }
-  this.update = function() {
+  this.update = function(coType) {
 
 
 
@@ -111,11 +111,12 @@ SIIL.Network = function(div) {
         // alert(selectedNodes.size());
         // alert(selectedNodes[0].length);
         if (selectedNodes) {
-          gCondition["events_id"] = [];
+          dindex[self.SID] = [];
           selectedNodes.each(function(d) {
-            gCondition["events_id"].push(d.uid);
+            dindex[self.SID].push(d.uid);
 
           });
+
         }
         generateOthers(self.Name, x);
         $("#" + cmb + " option:selected").removeAttr('selected');
@@ -265,7 +266,5 @@ SIIL.Network = function(div) {
   );
 
 
-
-  
 
 };

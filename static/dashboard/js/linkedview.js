@@ -25,7 +25,7 @@ var gCondition = {};
 var DlgTcolor = {};
 var dindex = {}; //for brushing, record selected entities' indexes
 var msgID = {};
-var timeextent = {};//two elements array to control and reflect change of timeline
+var timeextent = {}; //two elements array to control and reflect change of timeline
 // var totimeextent = {};//boolean time
 
 function CreateSource() {
@@ -55,7 +55,8 @@ function CreateSource() {
 
 function CopySource(rawdata) {
     //alert("enterCopy=>rawdata:" + rawdata);
-    var response = {}, dsource = rawdata || srcData;
+    var response = {},
+        dsource = rawdata || srcData;
     if (rawdata) {
         alert(rawdata.length + " is raw ; " + srcData.length + "is sourceCopy; !! USED is" + dsource.length);
     }
@@ -98,50 +99,50 @@ $(document).ready(function() {
 
 });
 
-function FilterSource(cond, newSID, vis) {
-    var instances = null;
-    // $.ajax({
-    //     url: 'data',
-    //     type: "POST",
-    //     data: cond,
-    alert("inside FIlter condition =" + cond);
-    $.post("data", cond, function(dt, status) {
-        // success: function(result) {
-        console.log("cond:" + cond);
-        console.log("dt:" + dt);
-        alert("Filter from backend:" + dt.events);
+// function FilterSource(cond, newSID, vis) {
+//     var instances = null;
+//     // $.ajax({
+//     //     url: 'data',
+//     //     type: "POST",
+//     //     data: cond,
+//     alert("inside FIlter condition =" + cond);
+//     $.post("data", cond, function(dt, status) {
+//         // success: function(result) {
+//         console.log("cond:" + cond);
+//         console.log("dt:" + dt);
+//         alert("Filter from backend:" + dt.events);
 
-        instances = dt.events;
-        var wktParser = new OpenLayers.Format.WKT();
-        var footprints = [];
-        instances.forEach(function(d, i) {
-            alert(d.date);
-            d.date = new Date(d.date);
-            var fp = d.footprint;
-            if (fp.shape) {
-                var feature = wktParser.read(fp.shape);
-                var origin_prj = new OpenLayers.Projection("EPSG:" + fp.srid);
-                var dest_prj = new OpenLayers.Projection("EPSG:900913");
-                feature.geometry.transform(origin_prj, dest_prj); // projection of google map
-                feature.attributes.id = fp.uid;
-                feature.attributes.name = fp.name;
-                fp.shape = feature;
-            }
-        });
+//         instances = dt.events;
+//         var wktParser = new OpenLayers.Format.WKT();
+//         var footprints = [];
+//         instances.forEach(function(d, i) {
+//             alert(d.date);
+//             d.date = new Date(d.date);
+//             var fp = d.footprint;
+//             if (fp.shape) {
+//                 var feature = wktParser.read(fp.shape);
+//                 var origin_prj = new OpenLayers.Projection("EPSG:" + fp.srid);
+//                 var dest_prj = new OpenLayers.Projection("EPSG:900913");
+//                 feature.geometry.transform(origin_prj, dest_prj); // projection of google map
+//                 feature.attributes.id = fp.uid;
+//                 feature.attributes.name = fp.name;
+//                 fp.shape = feature;
+//             }
+//         });
 
 
-        // },
-        // failure: function(xhr) {
-        //     alert("failed to add claim!");
-        // },
-        alert("FilterSource returns " + instances.length + " first event is " + instances);
-        dataset[newSID] = CopySource(instances);
-        delete gCondition["events_id"];
+//         // },
+//         // failure: function(xhr) {
+//         //     alert("failed to add claim!");
+//         // },
+//         alert("FilterSource returns " + instances.length + " first event is " + instances);
+//         dataset[newSID] = CopySource(instances);
+//         delete gCondition["events_id"];
 
-        network[newSID].update();
-    });
+//         network[newSID].update();
+//     });
 
-}
+// }
 //dynamic generation coordinated windows
 function generateOthers(div, vis, arg) { //div is source, vis is target
 
@@ -157,7 +158,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
         case 'self': //data equivalent
             switch (target.Type) {
                 case "timeline":
-                    
+
                     var vardlg = "timeline_dlg_" + self.SID,
                         varbar = "timeline_selectbar_" + self.SID,
                         cvs = "timeline_cvs_" + self.SID;
@@ -175,7 +176,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
                     $('#' + vardlg + ' > div:eq(2)').attr("id", cvs); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
 
-                    dataset[self.SID] = CopySource();
+                    //dataset[self.SID] = CopySource();
 
                     timelineset[self.SID] = $("#" + cvs).timeline({
                         "dimension": dataset[self.SID]['dDate'],
@@ -254,9 +255,6 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                     var vardlg = "event_dlg_" + self.SID,
                         vartb = "event_tb_" + self.SID,
                         varbar = "event_selectbar_" + self.SID;
-                    // if (document.getElementById(vardlg)) {
-                    //     break;
-                    // }
                     $("#event_dlg").clone().attr("id", vardlg).dialog($.extend({
                         title: "Events of Link " + self.SID,
                         position: ['left', 36 + 800],
@@ -265,11 +263,6 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                                 sid = tmp.split("_")[2],
                                 tb = "event_tb_" + sid;
                             delete eventTable[sid];
-                            // if ($('#' + tb).hasClass('row_selected')) {
-                            //     dataset[sid]['dEvent'].filterAll();
-                            //     renderAllExcept([tb]);
-                            //     $('#' + tb).removeClass('row_selected');
-                            // }
                             $(this).dialog('destroy').remove();
                         },
                         resize: function() {
@@ -325,21 +318,88 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
 
             }
             break;
-        case 'subset':
+        case 'subset': //self is like the source related info, whilst the result related is the target subset
             var count = 0;
-            // dindex[result.NewLinkNum] = [];!!!
-            // msgID[result.NewLinkNum] = [];
-            switch (target.Type) {
-                case "timeline":
-                    // alert("Yet to come");
-                    break;
-                case "map":
-                    // alert("Yet to come");
-                    break;
-                case "network":
 
-                    alert("another network using a filtered dataset; and the Condition is " + gCondition["events_id"]);
-                    d3.json("dataSetNum", function(error, result) {
+            if (self.Type == 'message' && msgID[self.SID].length == 0) {
+                alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
+                break;
+            } else if (self.Type == 'timeline' && timeextent[self.SID].length == 0) {
+                alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
+                break;
+            } else if (dindex[self.SID].length == 0) {
+                alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
+                break;
+            }
+            $.ajaxSetup({
+                async: false
+            });
+            d3.json("dataSetNum", function(error, result) {
+                dataset[result.NewLinkNum] = CopySource();
+                alert("length of dataset " + result.NewLinkNum + ' ' + dataset[result.NewLinkNum]['set'].groupAll().value());
+                pParam = {};
+                switch (self.Type) {
+                    case "message":
+                        alert("before filtering:length of dataset " + result.NewLinkNum + " " + dataset[result.NewLinkNum]['set'].groupAll().value());
+                        console.log(dataset[result.NewLinkNum]['dMessage'].top(Infinity));
+                        dataset[result.NewLinkNum]['FilterdMessage'] = dataset[result.NewLinkNum]['set'].dimension(function(d) {
+                            var mes = d.message;
+                            return [mes.uid, mes.content, mes.date]
+                        });
+                        dataset[result.NewLinkNum]['FilterdMessage'].filter(function(d) {
+                            // alert("dMessage dimension data " + d);
+                            for (var i = 0; i < msgID[self.SID].length; i++) {
+                                if (d[0] === msgID[self.SID][i]) {
+                                    return true;
+                                }
+                            }
+                        });
+                        alert("after: length of dataset " + result.NewLinkNum + ' ' + dataset[result.NewLinkNum]['set'].groupAll().value());
+                        break;
+                    case "timeline":
+                        dataset[result.NewLinkNum]['FilterdDate'] = dataset[result.NewLinkNum]['set'].dimension(function(d) {
+                            return d.date;
+                        });
+                        dataset[result.NewLinkNum]['FilterdDate'].filter(function(d) {
+                            if (+d.date >= +timeextent[self.SID][0] && +d.date <= +timeextent[self.SID][1]) {
+                                return true;
+                            }
+                        });
+                        break;
+                    case "network":
+                    case "person":
+                    case "organization":
+                    case "event":
+                        // alert("before filtering:length of dataset " + result.NewLinkNum + " " + dataset[result.NewLinkNum]['set'].groupAll().value());
+                        // alert("len of dindex " + dindex[self.SID].length);
+                        // console.log(dindex[self.SID]);
+                        // console.log(dataset[result.NewLinkNum]['dDate'].top(Infinity));
+                        dataset[result.NewLinkNum]['FilterdEvent'] = dataset[result.NewLinkNum]['set'].dimension(function(d) {
+                            return [d.uid, d.name, d.types, d.excerpt, d.date];
+                        });
+                        dataset[result.NewLinkNum]['FilterdEvent'].filter(function(d) {
+                            for (var i = 0; i < dindex[self.SID].length; i++) {
+                                if (d[0] == dindex[self.SID][i]) {
+                                    return true;
+                                }
+                            }
+                        });
+                        alert("after: length of dataset " + result.NewLinkNum + ' ' + dataset[result.NewLinkNum]['set'].groupAll().value());
+                        break;
+                    default:
+                        alert("not captured self type!");
+                }
+
+                dindex[result.NewLinkNum] = [];
+                msgID[result.NewLinkNum] = [];
+                switch (target.Type) {
+                    case "timeline":
+                        // alert("Yet to come");
+                        break;
+                    case "map":
+                        // alert("Yet to come");
+                        break;
+                    case "network":
                         var vardlg = "network_dlg_" + result.NewLinkNum,
                             varbar = "network_selectbar_" + result.NewLinkNum,
                             cvs = "network_cvs_" + result.NewLinkNum,
@@ -348,17 +408,21 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                         $("#network").clone().attr("id", vardlg).dialog($.extend({
                             title: "Network of Link " + result.NewLinkNum,
                             resizeStop: function(event, ui) {
-                                network[result.NewLinkNum].resize(); //$('#'+vis+"_cvs_"+).outerWidth() + ", height: " + $(this).outerHeight());
+                                network[result.NewLinkNum].resize();
                             }
                         }, dialogOptions))
                             .dialogExtend(dialogExtendOptions);
                         $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
                         $('#' + vardlg + ' > div:eq(2)').attr("id", cvs);
                         $('#' + vardlg + ' > div:eq(1) > div:eq(1)').attr("id", bbar);
-                        $('#' + vardlg + ' > div:eq(1) > div:eq(0)').attr("id", pbar); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
+                        $('#' + vardlg + ' > div:eq(1) > div:eq(0)').attr("id", pbar);
                         network[result.NewLinkNum] = new SIIL.Network("#" + cvs);
-                        dataset[result.NewLinkNum] = CopySource();
-                        events_id = []
+                        events_id = [];
+
+                        // alert("another network using a filtered dataset; and the Condition is " + gCondition["events_id"]);
+
+
+
                         dataset[result.NewLinkNum]['dDate'].top(Infinity).forEach(function(p, i) {
                             events_id.push(p.uid);
                         });
@@ -370,119 +434,152 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                             DlgTcolor[result.NewLinkNum].green + "," +
                             DlgTcolor[result.NewLinkNum].blue + ")"
                         );
-                        network[result.NewLinkNum].update(data);
-                    });
+                        network[result.NewLinkNum].update();
 
 
-                    break;
-                case "message":
-                    var vardlg = "message_dlg_" + self.SID,
-                        vartb = "message_tb_" + self.SID,
-                        varbar = "message_selectbar_" + self.SID;
-                    if (document.getElementById(vardlg)) {
+
                         break;
-                    }
-                    $("#message_dlg").clone().attr("id", vardlg).dialog($.extend({
-                        title: "Messages of Link " + self.SID,
-                        position: ['left', 36],
-                        close: function(event, ui) {
-                            var tmp = $(this).attr("id"),
-                                sid = tmp.split("_")[2],
-                                tb = "message_tb_" + sid;
-                            delete messageTable[sid];
-                            $(this).dialog('destroy').remove();
-                        },
-                        resize: function() {
-                            messageTable[self.SID].resize();
-                        },
-                        height: 800
-                    }, dialogOptions))
-                        .dialogExtend(dialogExtendOptions);
-                    $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
-                    $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
-                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-                        DlgTcolor[self.SID].red + "," +
-                        DlgTcolor[self.SID].green + "," +
-                        DlgTcolor[self.SID].blue + ")"
-                    );
-                    messageTable[self.SID] = new SIIL.DataTable("#" + vartb); //messageTable's key should include both Id and subID related to the vis type
-                    messageTable[self.SID].update();
-                    break;
-                case "event":
-                    var vardlg = "event_dlg_" + self.SID,
-                        vartb = "event_tb_" + self.SID,
-                        varbar = "event_selectbar_" + self.SID;
-                    if (document.getElementById(vardlg)) {
+                    case "message":
+                        var vardlg = "message_dlg_" + result.NewLinkNum,
+                            vartb = "message_tb_" + result.NewLinkNum,
+                            varbar = "message_selectbar_" + result.NewLinkNum;
+                        if (document.getElementById(vardlg)) {
+                            break;
+                        }
+                        $("#message_dlg").clone().attr("id", vardlg).dialog($.extend({
+                            title: "Messages of Link " + result.NewLinkNum,
+                            position: ['left', 36],
+                            close: function(event, ui) {
+                                var tmp = $(this).attr("id"),
+                                    sid = tmp.split("_")[2],
+                                    tb = "message_tb_" + sid;
+                                delete messageTable[sid];
+                                $(this).dialog('destroy').remove();
+                            },
+                            resize: function() {
+                                messageTable[result.NewLinkNum].resize();
+                            },
+                            height: 800
+                        }, dialogOptions))
+                            .dialogExtend(dialogExtendOptions);
+                        $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                        $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
+                        DlgTcolor[result.NewLinkNum] = randomcolor();
+                        $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                            DlgTcolor[result.NewLinkNum].red + "," +
+                            DlgTcolor[result.NewLinkNum].green + "," +
+                            DlgTcolor[result.NewLinkNum].blue + ")"
+                        );
+                        alert("generating a new messageTable");
+                        messageTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb); //messageTable's key should include both Id and subID related to the vis type
+                        messageTable[result.NewLinkNum].update();
                         break;
-                    }
-                    $("#event_dlg").clone().attr("id", vardlg).dialog($.extend({
-                        title: "Events of Link " + self.SID,
-                        position: ['left', 36 + 800],
-                        close: function(event, ui) {
-                            var tmp = $(this).attr("id"),
-                                sid = tmp.split("_")[2],
-                                tb = "event_tb_" + sid;
-                            delete eventTable[sid];
-                            $(this).dialog('destroy').remove();
-                        },
-                        resize: function() {
-                            eventTable[self.SID].resize();
-                        },
-                        height: 800
-                    }, dialogOptions))
-                        .dialogExtend(dialogExtendOptions);
-                    $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
-                    $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
-                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-                        DlgTcolor[self.SID].red + "," +
-                        DlgTcolor[self.SID].green + "," +
-                        DlgTcolor[self.SID].blue + ")"
-                    );
-                    eventTable[self.SID] = new SIIL.DataTable("#" + vartb); //messageTable's key should include both Id and subID related to the vis type
-                    eventTable[self.SID].update();
-                    break;
-                case "person":
-                    var vardlg = "person_dlg_" + self.SID,
-                        vartb = "person_tb_" + self.SID,
-                        varbar = "person_selectbar_" + self.SID;
-                    if (document.getElementById(vardlg)) {
+                    case "event":
+                        var vardlg = "event_dlg_" + result.NewLinkNum,
+                            vartb = "event_tb_" + result.NewLinkNum,
+                            varbar = "event_selectbar_" + result.NewLinkNum;
+                        if (document.getElementById(vardlg)) {
+                            alert("already exist!");
+                            break;
+                        }
+                        $("#event_dlg").clone().attr("id", vardlg).dialog($.extend({
+                            title: "Events of Link " + result.NewLinkNum,
+                            position: ['left', 36 + 800],
+                            close: function(event, ui) {
+                                var tmp = $(this).attr("id"),
+                                    sid = tmp.split("_")[2],
+                                    tb = "event_tb_" + sid;
+                                delete eventTable[sid];
+                                $(this).dialog('destroy').remove();
+                            },
+                            resize: function() {
+                                eventTable[result.NewLinkNum].resize();
+                            },
+                            height: 800
+                        }, dialogOptions))
+                            .dialogExtend(dialogExtendOptions);
+                        $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                        $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
+                        DlgTcolor[result.NewLinkNum] = randomcolor();
+                        $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                            DlgTcolor[result.NewLinkNum].red + "," +
+                            DlgTcolor[result.NewLinkNum].green + "," +
+                            DlgTcolor[result.NewLinkNum].blue + ")"
+                        );
+                        eventTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb); //messageTable's key should include both Id and subID related to the vis type
+                        eventTable[result.NewLinkNum].update();
                         break;
-                    }
-                    $("#person_dlg").clone().attr("id", vardlg).dialog($.extend({
-                        title: "People of Link " + self.SID,
-                        position: ['left', 36 + 800 * 2],
-                        close: function(event, ui) {
-                            var tmp = $(this).attr("id");
-                            // alert(tmp);
-                            delete personTable[tmp.split("_")[1]];
-                            $(this).dialog('destroy').remove();
-                        },
-                        resize: function() {
-                            //eval(vartb+'\.resize();');
-                            personTable[self.SID].resize();
-                        },
-                        height: 800
-                    }, dialogOptions))
-                        .dialogExtend(dialogExtendOptions);
-                    $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
-                    $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
-                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-                        DlgTcolor[self.SID].red + "," +
-                        DlgTcolor[self.SID].green + "," +
-                        DlgTcolor[self.SID].blue + ")"
-                    );
-                    personTable[self.SID] = new SIIL.DataTable("#" + vartb); //messageTable's key should include both Id and subID related to the vis type
-                    personTable[self.SID].update();
+                    case "person":
+                        var vardlg = "person_dlg_" + result.NewLinkNum,
+                            vartb = "person_tb_" + result.NewLinkNum,
+                            varbar = "person_selectbar_" + result.NewLinkNum;
+                        if (document.getElementById(vardlg)) {
+                            break;
+                        }
+                        $("#person_dlg").clone().attr("id", vardlg).dialog($.extend({
+                            title: "People of Link " + result.NewLinkNum,
+                            position: ['left', 36 + 800 * 2],
+                            close: function(event, ui) {
+                                var tmp = $(this).attr("id");
+                                // alert(tmp);
+                                delete personTable[tmp.split("_")[1]];
+                                $(this).dialog('destroy').remove();
+                            },
+                            resize: function() {
+                                //eval(vartb+'\.resize();');
+                                personTable[result.NewLinkNum].resize();
+                            },
+                            height: 800
+                        }, dialogOptions))
+                            .dialogExtend(dialogExtendOptions);
+                        $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                        $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
+                        DlgTcolor[result.NewLinkNum] = randomcolor();
+                        $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                            DlgTcolor[result.NewLinkNum].red + "," +
+                            DlgTcolor[result.NewLinkNum].green + "," +
+                            DlgTcolor[result.NewLinkNum].blue + ")"
+                        );
+                        personTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb); //messageTable's key should include both Id and subID related to the vis type
+                        personTable[result.NewLinkNum].update();
 
-                    break;
+                        break;
+                    case "organization":
+                        var vardlg = "organization_dlg_" + result.NewLinkNum,
+                            vartb = "organization_tb_" + result.NewLinkNum,
+                            varbar = "organization_selectbar_" + result.NewLinkNum;
+                        $("#organization_dlg").clone().attr("id", vardlg).dialog($.extend({
+                            title: "Organizations of Link " + result.NewLinkNum,
+                            position: ['left', 36],
+                            resize: function() {
+                                //eval(vartb+'\.resize();');
+                                organizationTable[result.NewLinkNum].resize();
+                            },
+                            height: 800
+                        }, dialogOptions))
+                            .dialogExtend(dialogExtendOptions);
+                        $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                        $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
+                        organizationTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
+                        DlgTcolor[result.NewLinkNum] = randomcolor();
+                        $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                            DlgTcolor[result.NewLinkNum].red + "," +
+                            DlgTcolor[result.NewLinkNum].green + "," +
+                            DlgTcolor[result.NewLinkNum].blue + ")"
+                        );
+                        organizationTable[result.NewLinkNum].update();
+                        break;
+                    default:
+                        alert("not captured target type -- subset goal unclear");
+                }
 
-            }
+
+            });
             break;
+
         default:
-            alert("not captured variation type -- result source unclear");
+            alert("not captured variation(target.src) type -- result source unclear");
     }
-
-
 }
 //
 // Renders the specified chart or list.
@@ -499,42 +596,15 @@ function renderAll(sid) {
 }
 
 
-function renderAllExcept(charts, coorType) {
+function renderAllExcept(except_name, coorType) {
+    //alert("renderAllExcept from "+except_name);
     var toDraw = [],
-        except = [],
-        SID = charts[0].split("_")[2];
-    switch (charts[0].split("_")[0]) {
-        case "location":
-            except = ["locationTable"]
-            break;
-        case "message":
-            except = ["messageTable"]
-            break;
-        case "event":
-            except = ["eventTable"]
-            break;
-        case "resource":
-            except = ["resourceTable"]
-            break;
-        case "person":
-            except = ["personTable"]
-            break;
-        case "organization":
-            except = ["organizationTable"]
-            break;
-        case "network":
-            except = ["network"]
-            break;
-        case "timeline":
-            except = ["timeline"]
-            break;
-        case "map":
-            except = ["map"]
-            break;
-    }
-    var all = ['map', 'locationTable', 'timeline', 'network', 'personTable', 'messageTable', 'resourceTable', 'eventTable', 'organizationTable'];
+        except_type = except_name.split("_")[0],
+        SID = except_name.split("_")[2];
+
+    var all = ['map', 'location', 'timeline', 'network', 'person', 'message', 'resource', 'event', 'organization'];
     for (var i = 0, len = all.length; i < len; i++) {
-        if (except.indexOf(all[i]) === -1) {
+        if (all[i] != except_type) {
             toDraw.push(all[i])
         }
     }
@@ -544,28 +614,27 @@ function renderAllExcept(charts, coorType) {
                 if (map[SID]) map[SID].update(coorType);
                 break;
             case "timeline":
-                
                 if (timelineset[SID]) timelineset[SID].update();
                 break;
             case "network":
                 if (network[SID]) network[SID].update(coorType);
                 break;
-            case "personTable":
+            case "person":
                 if (personTable[SID]) personTable[SID].update(coorType);
                 break;
-            case "messageTable":
+            case "message":
                 if (messageTable[SID]) messageTable[SID].update(coorType);
                 break;
-            case "locationTable":
+            case "location":
                 if (locationTable[SID]) locationTable[SID].update(coorType);
                 break;
-            case "resourceTable":
+            case "resource":
                 if (resourceTable[SID]) resourceTable[SID].update(coorType);
                 break;
-            case "eventTable":
+            case "event":
                 if (eventTable[SID]) eventTable[SID].update(coorType);
                 break;
-            case "organizationTable":
+            case "organization":
                 if (organizationTable[SID]) organizationTable[SID].update(coorType);
                 break;
         }

@@ -52,9 +52,21 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 
   },
   update: function() {
-    var self = this;
-    if(timeextent[self.SID].length!=0)
+    var self = this,
+      x = d3.time.scale()
+      .domain([new Date(2010, 0, 1), new Date(2010, 5, 1)])
+      .rangeRound([0, 10 * 90]);
+    if (timeextent[self.SID].length != 0) {
       self.brush.extent(timeextent[self.SID]);
+      // brushDirty = true;
+      g = d3.select("#" + this.Name).select("g");
+      g.selectAll(".brush").call(self.brush);
+
+      g.selectAll("#clip-0" + " rect")
+        .attr("x", x(timeextent[self.SID][0]))
+        .attr("width", x(timeextent[self.SID][1]) - x(timeextent[self.SID][0]));
+    }
+
   },
   barChart: function() {
 
@@ -75,6 +87,7 @@ $.widget("vis.timeline", $.vis.viscontainer, {
       group,
       round;
     self.brush = d3.svg.brush();
+
     function chart(div) {
       var width = x.range()[1],
         height = y.range()[0];
@@ -196,7 +209,7 @@ $.widget("vis.timeline", $.vis.viscontainer, {
       } else {
 
         timeextent[self.SID] = self.brush.extent();
-        
+
         // tmp_dimension = dataset[self.SID]['dDate'];
         // console.log("dataset[self.SID]['dDate'] before filterRange:"+dataset[self.SID]['dDate'].top(2).length);
         // tmp_dimension.filterRange(extent[0], extent[1]);
@@ -205,22 +218,20 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 
         console.log("dataset[self.SID]['dDate']:" + dataset[self.SID]['dDate'].top(Infinity).length);
         dataset[self.SID]['dDate'].top(Infinity).forEach(function(p, i) {
-          // if (p.date <= timeextent[self.SID][1] && p.date >= timeextent[0]) {
-          //   dindex[self.SID].push(p.uid);
-          // }
-          if(+p.date >= +timeextent[self.SID][0] && +p.date <= +timeextent[self.SID][1]){
-            if($.inArray(p.uid, dindex[self.SID])==-1)dindex[self.SID].push(p.uid);
+
+          if (+p.date >= +timeextent[self.SID][0] && +p.date <= +timeextent[self.SID][1]) {
+            if ($.inArray(p.uid, dindex[self.SID]) == -1) dindex[self.SID].push(p.uid);
           }
 
         });
         dataset[self.SID]['dMessage'].group().top(Infinity).forEach(function(p, i) {
-          if(+Date.parse(p.key[2]) >= +Date.parse(timeextent[self.SID][0]) && +Date.parse(p.key[2]) <= +Date.parse(timeextent[self.SID][1])){
-            if($.inArray(p.key[0], msgID[self.SID])==-1)msgID[self.SID].push(p.key[0]);
+          if (+Date.parse(p.key[2]) >= +Date.parse(timeextent[self.SID][0]) && +Date.parse(p.key[2]) <= +Date.parse(timeextent[self.SID][1])) {
+            if ($.inArray(p.key[0], msgID[self.SID]) == -1) msgID[self.SID].push(p.key[0]);
           }
         });
 
       }
-      renderAllExcept([self.Name], "brush");
+      renderAllExcept(self.Name, "brush");
     });
 
     chart.margin = function(_) {

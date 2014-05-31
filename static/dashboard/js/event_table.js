@@ -73,11 +73,21 @@ SIIL.DataTable.prototype.update = function(uType) {
                     });
                     break;
                 case "message":
+                    // alert("during updating the DT: length of dataset /set/" + self.SID + ' ' + dataset[self.SID]['set'].groupAll().value());
+                    // alert("during updating the DT: length of dataset /dmessage/" + self.SID + ' ' +dataset[this.SID]['dMessage'].group().top(Infinity).length);
                     dataset[this.SID]['dMessage'].group().top(Infinity).forEach(function(d) {
                         if (d.value != 0 && d.key[0] != undefined) {
+                            //if(d.value ==0) alert("such dimesion of message does not exist!");
+                            //else 
                             self.data.push(d.key);
                         }
                     });
+                    // dataset[this.SID]['dMessage'].top(Infinity).forEach(function(d) {
+                    //     //console.log("filtered dMessage "+d);
+                    //     if (d.message.uid!= undefined && d.message.content!= undefined && d.message.date!=undefined) {
+                    //         self.data.push([d.message.uid,d.message.content,d.message.date]);
+                    //     }
+                    // });
                     break;
                 case "event":
                     dataset[this.SID]['dEvent'].group().top(Infinity).forEach(function(d) {
@@ -110,50 +120,51 @@ SIIL.DataTable.prototype.update = function(uType) {
                     });
                     break;
             }
-            this.Tinstance.clear();
-            this.Tinstance.rows.add(self.data).draw();
-            this.table.fnAdjustColumnSizing();
+            self.Tinstance.clear();
+            self.Tinstance.rows.add(self.data).draw();
+            self.table.fnAdjustColumnSizing();
             break;
 
     }
     //alert("index highlighting before judging!");
     if (dindex[self.SID].length != 0) {
         //alert("index highlighting!");
-        var indexes = this.Tinstance.rows().eq(0).filter(function(rowIdx) {
+        var indexes = self.Tinstance.rows().eq(0).filter(function(rowIdx) {
             var tmp = self.Tinstance.cell(rowIdx, 0).data();
             return $.inArray(tmp, dindex[self.SID]) != -1 ? true : false;
         });
 
         // Add a class to those rows using an index selector
-        this.table.$('tr.row_selected').removeClass("row_selected");
+        self.table.$('tr.row_selected').removeClass("row_selected");
         console.log(indexes);
-        this.Tinstance.rows(indexes)
+        self.Tinstance.rows(indexes)
             .nodes()
             .to$()
             .addClass('row_selected');
-    } else this.table.$('tr.row_selected').removeClass("row_selected");
+    } else self.table.$('tr.row_selected').removeClass("row_selected");
 
-    if (this.tbType != 'message') {
-        this.table.fnSetColumnVis(0, false); // set column 1 - id invisible
+    if (self.tbType != 'message') {
+        self.table.fnSetColumnVis(0, false); // set column 1 - id invisible
     } else {
         if (msgID[self.SID].length != 0) {
-            var indexes = this.Tinstance.rows().eq(0).filter(function(rowIdx) {
+            var indexes = self.Tinstance.rows().eq(0).filter(function(rowIdx) {
                 var tmp = self.Tinstance.cell(rowIdx, 0).data();
                 return $.inArray(tmp, msgID[self.SID]) != -1 ? true : false;
             });
 
             // Add a class to those rows using an index selector
-            this.table.$('tr.row_selected').removeClass("row_selected");
+            self.table.$('tr.row_selected').removeClass("row_selected");
             console.log(indexes);
-            this.Tinstance.rows(indexes)
+            self.Tinstance.rows(indexes)
                 .nodes()
                 .to$()
                 .addClass('row_selected');
-        } else this.table.$('tr.row_selected').removeClass("row_selected");
+        } else self.table.$('tr.row_selected').removeClass("row_selected");
 
     }
 
-    this.table.$('tr').click(function(e) {
+    self.table.$('tr').unbind("click").bind("click", function(e) { //not clear why if not unbind the click event, the clicking will be triggered multiple times
+        // alert("click event triggered");
         if ($(this).hasClass('row_selected')) {
             $(this).removeClass('row_selected');
         } else {
@@ -163,6 +174,7 @@ SIIL.DataTable.prototype.update = function(uType) {
             document.getSelection().removeAllRanges(); // disable text selection when shift+clik
             $(this).addClass('row_selected');
         }
+
         var selected_rows = self.table.$('tr.row_selected');
         if (selected_rows.length == 0) {
             // switch (self.tbType) {
@@ -187,15 +199,17 @@ SIIL.DataTable.prototype.update = function(uType) {
             // }
             dindex[self.SID] = [];
         } else {
-            if (timeextent[self.SID] != undefined) {
+            if (timeextent[self.SID] != undefined) { //&& timeextent[self.SID].length != 0
                 var start, end; //for the brushed range reflected on timeline
                 self.table.$('tr.row_selected').each(function(idx, $row) {
-                    row = self.table.fnGetData($row);
+                    var row = self.table.fnGetData($row), 
+                    dDate = self.tbType == "message"? new Date(row[2]):row[4];
+
                     if (start == null) {
-                        start = end = row[2];
+                        start = end = dDate;
                     } else {
-                        start = start < row[2] ? start : row[2];
-                        end = end > row[2] ? end : row[2];
+                        start = start < dDate ? start : dDate;
+                        end = end > dDate ? end : dDate;
                     }
                 });
                 timeextent[self.SID] = [];
@@ -211,29 +225,38 @@ SIIL.DataTable.prototype.update = function(uType) {
                     row = self.table.fnGetData($row);
                     pParam['src_id'].push(row[0]);
                 });
+                msgID[self.SID] = pParam['src_id'];
+                dindex[self.SID] = [];
             } else { //entities propogating
                 pParam['ett_id'] = [];
                 self.table.$('tr.row_selected').each(function(idx, $row) {
                     row = self.table.fnGetData($row);
                     pParam['ett_id'].push(row[0]);
                 });
+                dindex[self.SID] = pParam['ett_id'];
+                msgID[self.SID] = [];
             }
 
             //selected items are not empty, which requires to update the shared dataset (dindex[]) 
 
-            dindex[self.SID] = [];
-            $.post("propagate", pParam, function(eid) {
+            $.ajaxSetup({
+                async: false
+            });
 
+            $.post("propagate", pParam, function(eid) {
+                console.log(eid);
                 for (var i = 0; i < eid['ett'].length; i++) {
-                    //console.log(eid['ett'][i]);
-                    dindex[self.SID].push(eid['ett'][i]['uid']);
+
+                    if ($.inArray(eid['ett'][i]['uid'], dindex[self.SID]) == -1) dindex[self.SID].push(eid['ett'][i]['uid']);
                 }
                 for (var i = 0; i < eid['msg'].length; i++) {
-                    //console.log(eid['msg'][i]);
-                    msgID[self.SID].push(eid['msg'][i]['uid']);
-                }
 
-                renderAllExcept([self.tbName], "brush");
+                    if ($.inArray(eid['msg'][i]['uid'], msgID[self.SID]) == -1) msgID[self.SID].push(eid['msg'][i]['uid']);
+                }
+                if (dindex[self.SID].length == 0) alert("dindex is empty");
+                else if (msgID[self.SID].length == 0) alert("msgID is empty");
+                renderAllExcept(self.tbName, "brush");
+                // alert("renderAllExcept finished! for "+self.tbName);
             });
 
         }

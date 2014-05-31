@@ -167,42 +167,58 @@ def related_entities(request):
         print ett_id, "is the entities ids for linked entities (related_entities)"
         print src_id, "is the messages ids for linked entities (related_entities)"
         
-       
-        if len(ett_id) == 0:
-            msgs = Message.objects.filter(uid__in=src_id)
+        ## comment: search for entities given msgs/entities
+        msgs = Message.objects.filter(uid__in=src_id)
+        if(len(ett_id)==0): 
             ett_id = []
-            for msg in msgs:## comment: search for entities given msgs/entities
-                events = msg.event.all()
-                for eve in events:
-                    print eve.id
-                    ett_id.append(eve.id)
+        for msg in msgs:
+            events = msg.event.all()
+            for eve in events:
+                print eve.id
+                ett_id.append(eve.id)
+        src_entt = Entity.objects.filter(id__in=ett_id)
+        linked_entities = list(src_entt.select_subclasses())
+        for ett in src_entt:
+            entities = list(chain(ett.findTargets(), ett.findSources()))
+            #print entities
+            linked_entities += entities
+        for entity in linked_entities:
+            response['ett'].append(entity.getKeyAttr())
+        if len(src_id) == 0:##search for messages given entities
             src_entt = Entity.objects.filter(id__in=ett_id)
             linked_entities = list(src_entt.select_subclasses())
             for ett in src_entt:
                 entities = list(chain(ett.findTargets(), ett.findSources()))
-                #print entities
-                linked_entities += entities
-            for entity in linked_entities:
-                response['ett'].append(entity.getKeyAttr())
-        elif len(src_id) == 0:##search for messages given entities
-            src_entt = Entity.objects.filter(id__in=ett_id)
-            linked_entities = list(src_entt.select_subclasses())
-            for ett in src_entt:
-                entities = list(chain(ett.findTargets(), ett.findSources()))
-                for single_ett in entities:
+                linked_entities+=entities
+            for single_ett in linked_entities:
+                if(single_ett.id not in ett_id):
                     ett_id.append(single_ett.id)
+            ##function used to calculate the complete connected enntites recursively
+            ##ett_id = connected_entities(ett_id,len(ett_id));
                 #print entities
             ett_src = Event.objects.filter(id__in=ett_id)##first propagate to broad entities than settle to event_type and search for related mesgs
             
             msgs_id = []
             for ett in ett_src:
                 for mes in ett.message_set.all():
+                    print "message", mes
                     msgs_id.append(mes.uid)
             msgs = Message.objects.filter(uid__in=msgs_id)        
             for msg in msgs:
                 response['msg'].append(msg.getKeyAttr())
-
-
-
         return HttpResponse(json.dumps(response), mimetype='application/json')
     return
+def connected_entities(ett_id,length):
+    src_entt = Entity.objects.filter(id__in=ett_id)
+    linked_entities = list(src_entt.select_subclasses())
+    for ett in src_entt:
+        entities = list(chain(ett.findTargets(), ett.findSources()))
+        linked_entities+=entities
+    for single_ett in linked_entities:
+        if(single_ett.id not in ett_id):
+            ett_id.append(single_ett.id)
+    if(len(ett_id)==length): 
+        return length
+    else:
+        print "recursing", len(ett_id)
+        return connected_entities(ett_id,len(ett_id))

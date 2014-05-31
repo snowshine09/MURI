@@ -16,10 +16,12 @@
 
 .background.bar {
   fill: #ccc;
+  /*stroke: #000;*/
 }
 
 .foreground.bar {
   fill: steelblue;
+  
 }
 
 .axis path, .axis line {

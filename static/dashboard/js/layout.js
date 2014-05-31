@@ -261,7 +261,7 @@ function showDialogs(dialogs) {
                         position: ['left', 36],
                         close: function(event, ui) {
                             var tmp = $(this).attr("id");
-                            alert("deleting" + tmp);
+                            //alert("deleting" + tmp);
                             delete personTable[tmp.split("_")[2]];
                             $(this).dialog('destroy').remove();
                         },
