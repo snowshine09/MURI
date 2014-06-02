@@ -53,6 +53,7 @@ $.widget("vis.timeline", $.vis.viscontainer, {
   },
   update: function() {
     var self = this,
+      g = d3.select("#" + this.Name).select("g"),
       x = d3.time.scale()
       .domain([new Date(2010, 0, 1), new Date(2010, 5, 1)])
       .rangeRound([0, 10 * 90]);
@@ -66,6 +67,34 @@ $.widget("vis.timeline", $.vis.viscontainer, {
         .attr("x", x(timeextent[self.SID][0]))
         .attr("width", x(timeextent[self.SID][1]) - x(timeextent[self.SID][0]));
     }
+    g.selectAll("#clip-1 rect")
+      .attr("width", 0);
+    d3.select("#clip-1").selectAll("rect").remove();
+    // d3.select("#clip-1").remove();
+
+    for (var i = 0; i < htimeline[self.SID].length; i++) {
+      d3.select("#clip-1")
+        .append("rect")
+        .attr("x", x(htimeline[self.SID][i]))
+        .attr("width", 9)
+        .attr("height", 100);
+    }
+    g.selectAll(".highlight.bar")
+      .attr("clip-path", "url(#clip-1)"); //.attr("clip-path", "url(#clip-" + id + ")");
+    // g.selectAll("#clip-" + id + " rect")
+    //   .attr("x", x(extent[0]))
+    //   .attr("width", x(extent[1]) - x(extent[0]));
+
+    // if (dataset[result.NewLinkNum]['FilterdDate'] == undefined)
+    //   dataset[result.NewLinkNum]['FilterdDate'] = dataset[result.NewLinkNum]['set'].dimension(function(d) {
+    //     return d.date;
+    //   });
+    // dataset[result.NewLinkNum]['FilterdDate'].filter(function(d) {
+    //   if (+d.date >= +timeextent[self.SID][0] && +d.date <= +timeextent[self.SID][1]) {
+    //     //if($.inArray(d.date, htimeline[self.SID]) != -1) {
+    //     return true;
+    //   }
+    // });
 
   },
   barChart: function() {
@@ -119,8 +148,11 @@ $.widget("vis.timeline", $.vis.viscontainer, {
             .attr("width", width)
             .attr("height", height);
 
+          g.append("clipPath")
+            .attr("id", "clip-1");
+
           g.selectAll(".bar")
-            .data(["background", "foreground"])
+            .data(["background", "foreground", "highlight"])
             .enter().append("path")
             .attr("class", function(d) {
               return d + " bar";
@@ -128,7 +160,9 @@ $.widget("vis.timeline", $.vis.viscontainer, {
             .datum(group.all());
 
           g.selectAll(".foreground.bar")
-            .attr("clip-path", "url(#clip-" + id + ")");
+            .attr("clip-path", "url(#clip-0");
+          g.selectAll(".highlight.bar")
+            .attr("clip-path", "url(#clip-1)");
 
           g.append("g")
             .attr("class", "axis")

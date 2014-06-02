@@ -16,6 +16,10 @@
   
 }
 
+div.ui-dialog {
+  padding: 0!important;
+}
+
 div.ui-dialog-content {
   padding: 0!important;
   /*overflow:inherit!important;*/

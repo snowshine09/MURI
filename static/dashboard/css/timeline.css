@@ -21,7 +21,12 @@
 
 .foreground.bar {
   fill: steelblue;
-  
+
+}
+
+.highlight.bar {
+  fill: red;
+  /*fill-opacity: .125;*/
 }
 
 .axis path, .axis line {
@@ -38,6 +43,7 @@
   fill: steelblue;
   fill-opacity: .125;
 }
+
 
 .brush .resize path {
   fill: #eee;

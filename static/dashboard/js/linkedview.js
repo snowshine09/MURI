@@ -26,7 +26,7 @@ var DlgTcolor = {};
 var dindex = {}; //for brushing, record selected entities' indexes
 var msgID = {};
 var timeextent = {}; //two elements array to control and reflect change of timeline
-// var totimeextent = {};//boolean time
+var htimeline = {};//boolean time
 
 function CreateSource() {
     $.post("data", null, function(result) {
@@ -167,9 +167,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                     }, dialogOptions);
                     opt.height = 200;
                     opt.width = 1000;
-                    // if(dindex[self.SID].length == 0 && msgID[self.SID].length == 0){
-                    //     totimeextent[self.SID] = false;
-                    // }
+                    htimeline[self.SID] = [];
                     timeextent[self.SID] = [];
                     $("#timeline").clone().attr("id", vardlg).dialog(opt)
                         .dialogExtend(dialogExtendOptions);
@@ -192,23 +190,49 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                     // alert("Yet to come");
                     break;
                 case "network":
+                    // var vardlg = "network_dlg_" + self.SID,
+                    //     varbar = "network_selectbar_" + self.SID,
+                    //     cvs = "network_cvs_" + self.SID,
+                    //     bbar = "network_brush_" + self.SID,
+                    //     pbar = "network_pan_" + self.SID;
+                    // $("#network").clone().attr("id", vardlg).dialog($.extend({
+                    //     title: "Network of Link " + self.SID,
+                    //     resizeStop: function(event, ui) {
+                    //         network[self.SID].resize(); //$('#'+vis+"_cvs_"+).outerWidth() + ", height: " + $(this).outerHeight());
+                    //     }
+                    // }, dialogOptions))
+                    //     .dialogExtend(dialogExtendOptions);
+                    // $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                    // $('#' + vardlg + ' > div:eq(2)').attr("id", cvs);
+                    // $('#' + vardlg + ' > div:eq(1) > div:eq(1)').attr("id", bbar);
+                    // $('#' + vardlg + ' > div:eq(1) > div:eq(0)').attr("id", pbar); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
+
                     var vardlg = "network_dlg_" + self.SID,
                         varbar = "network_selectbar_" + self.SID,
                         cvs = "network_cvs_" + self.SID,
+                        rs_bar = "network_reset_" + self.SID,
+                        ctxt_bar = "network_ctxt_" + self.SID,
+                        grav_bar = "network_gravity_" + self.SID,
                         bbar = "network_brush_" + self.SID,
                         pbar = "network_pan_" + self.SID;
-                    $("#network").clone().attr("id", vardlg).dialog($.extend({
+                    var opt = $.extend({
                         title: "Network of Link " + self.SID,
+                        position: ['left', 36],
                         resizeStop: function(event, ui) {
-                            network[self.SID].resize(); //$('#'+vis+"_cvs_"+).outerWidth() + ", height: " + $(this).outerHeight());
+                            network[self.SID].resize();
                         }
-                    }, dialogOptions))
+                    }, dialogOptions);
+                    opt.height = 660;
+                    opt.width = 996;
+                    $("#network").clone().attr("id", vardlg).dialog(opt)
                         .dialogExtend(dialogExtendOptions);
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
-                    $('#' + vardlg + ' > div:eq(2)').attr("id", cvs);
-                    $('#' + vardlg + ' > div:eq(1) > div:eq(1)').attr("id", bbar);
-                    $('#' + vardlg + ' > div:eq(1) > div:eq(0)').attr("id", pbar); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
-
+                    $('#' + vardlg + ' > div:eq(1) > div:eq(1)').attr("id", ctxt_bar);
+                    $('#' + vardlg + ' > div:eq(1) > div:eq(0)').attr("id", rs_bar);
+                    $('#' + vardlg + ' > div:eq(1) > div:eq(2) > div:eq(0)').attr("id", grav_bar);
+                    $('#' + vardlg + ' > div:eq(2) > div:eq(0) > label:eq(0) > input:eq(0)').attr("id", pbar);
+                    $('#' + vardlg + ' > div:eq(2) > div:eq(1) > label:eq(0) > input:eq(0)').attr("id", bbar);
+                    $('#' + vardlg + ' > div:eq(3)').attr("id", cvs);
                     network[self.SID] = new SIIL.Network("#" + cvs);
                     $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
                         DlgTcolor[self.SID].red + "," +
@@ -324,7 +348,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
             if (self.Type == 'message' && msgID[self.SID].length == 0) {
                 alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
                 break;
-            } else if (self.Type == 'timeline' && timeextent[self.SID].length == 0) {
+            } else if (self.Type == 'timeline' && htimeline[self.SID].length == 0) {
                 alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
                 break;
             } else if (dindex[self.SID].length == 0) {
@@ -336,11 +360,11 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
             });
             d3.json("dataSetNum", function(error, result) {
                 dataset[result.NewLinkNum] = CopySource();
-                alert("length of dataset " + result.NewLinkNum + ' ' + dataset[result.NewLinkNum]['set'].groupAll().value());
+                //alert("length of dataset " + result.NewLinkNum + ' ' + dataset[result.NewLinkNum]['set'].groupAll().value());
                 pParam = {};
                 switch (self.Type) {
                     case "message":
-                        alert("before filtering:length of dataset " + result.NewLinkNum + " " + dataset[result.NewLinkNum]['set'].groupAll().value());
+                        //("before filtering:length of dataset " + result.NewLinkNum + " " + dataset[result.NewLinkNum]['set'].groupAll().value());
                         console.log(dataset[result.NewLinkNum]['dMessage'].top(Infinity));
                         dataset[result.NewLinkNum]['FilterdMessage'] = dataset[result.NewLinkNum]['set'].dimension(function(d) {
                             var mes = d.message;
@@ -354,7 +378,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                                 }
                             }
                         });
-                        alert("after: length of dataset " + result.NewLinkNum + ' ' + dataset[result.NewLinkNum]['set'].groupAll().value());
+                        //alert("after: length of dataset " + result.NewLinkNum + ' ' + dataset[result.NewLinkNum]['set'].groupAll().value());
                         break;
                     case "timeline":
                         dataset[result.NewLinkNum]['FilterdDate'] = dataset[result.NewLinkNum]['set'].dimension(function(d) {
@@ -362,6 +386,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                         });
                         dataset[result.NewLinkNum]['FilterdDate'].filter(function(d) {
                             if (+d.date >= +timeextent[self.SID][0] && +d.date <= +timeextent[self.SID][1]) {
+                            //if($.inArray(d.date, htimeline[self.SID]) != -1) {
                                 return true;
                             }
                         });
@@ -384,7 +409,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                                 }
                             }
                         });
-                        alert("after: length of dataset " + result.NewLinkNum + ' ' + dataset[result.NewLinkNum]['set'].groupAll().value());
+                        //alert("after: length of dataset " + result.NewLinkNum + ' ' + dataset[result.NewLinkNum]['set'].groupAll().value());
                         break;
                     default:
                         alert("not captured self type!");
@@ -400,22 +425,33 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                         // alert("Yet to come");
                         break;
                     case "network":
+                        
                         var vardlg = "network_dlg_" + result.NewLinkNum,
                             varbar = "network_selectbar_" + result.NewLinkNum,
                             cvs = "network_cvs_" + result.NewLinkNum,
+                            rs_bar = "network_reset_" + result.NewLinkNum,
+                            ctxt_bar = "network_ctxt_" + result.NewLinkNum,
+                            grav_bar = "network_gravity_" + result.NewLinkNum,
                             bbar = "network_brush_" + result.NewLinkNum,
                             pbar = "network_pan_" + result.NewLinkNum;
-                        $("#network").clone().attr("id", vardlg).dialog($.extend({
+                        var opt = $.extend({
                             title: "Network of Link " + result.NewLinkNum,
-                            resizeStop: function(event, ui) {
+                            position: ['left', 36],
+                            resize: function() {
                                 network[result.NewLinkNum].resize();
                             }
-                        }, dialogOptions))
+                        }, dialogOptions);
+                        opt.height = 660;
+                        opt.width = 996;
+                        $("#network").clone().attr("id", vardlg).dialog(opt)
                             .dialogExtend(dialogExtendOptions);
                         $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
-                        $('#' + vardlg + ' > div:eq(2)').attr("id", cvs);
-                        $('#' + vardlg + ' > div:eq(1) > div:eq(1)').attr("id", bbar);
-                        $('#' + vardlg + ' > div:eq(1) > div:eq(0)').attr("id", pbar);
+                        $('#' + vardlg + ' > div:eq(1) > div:eq(1)').attr("id", ctxt_bar);
+                        $('#' + vardlg + ' > div:eq(1) > div:eq(0)').attr("id", rs_bar);
+                        $('#' + vardlg + ' > div:eq(1) > div:eq(2) > div:eq(0)').attr("id", grav_bar);
+                        $('#' + vardlg + ' > div:eq(2) > div:eq(0) > label:eq(0) > input:eq(0)').attr("id", pbar);
+                        $('#' + vardlg + ' > div:eq(2) > div:eq(1) > label:eq(0) > input:eq(0)').attr("id", bbar);
+                        $('#' + vardlg + ' > div:eq(3)').attr("id", cvs);
                         network[result.NewLinkNum] = new SIIL.Network("#" + cvs);
                         events_id = [];
 

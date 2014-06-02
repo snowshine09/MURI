@@ -2,7 +2,7 @@ $.widget("vis.visworkbench", $.vis.viscontainer, {
     options: {
     },
     _create: function() {
-    $("#workbench").removeClass("hidden");
+    //$("#workbench").removeClass("hidden");
     $("#workbench_container").removeClass("hidden");
 
 	var editor = CKEDITOR.replace("workbench");
