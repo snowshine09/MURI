@@ -167,7 +167,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                     }, dialogOptions);
                     opt.height = 200;
                     opt.width = 1000;
-                    htimeline[self.SID] = [];
+                    // htimeline[self.SID] = [];
                     timeextent[self.SID] = [];
                     $("#timeline").clone().attr("id", vardlg).dialog(opt)
                         .dialogExtend(dialogExtendOptions);
@@ -348,7 +348,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
             if (self.Type == 'message' && msgID[self.SID].length == 0) {
                 alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
                 break;
-            } else if (self.Type == 'timeline' && htimeline[self.SID].length == 0) {
+            } else if (self.Type == 'timeline' && timeextent[self.SID].length == 0) {
                 alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
                 break;
             } else if (dindex[self.SID].length == 0) {

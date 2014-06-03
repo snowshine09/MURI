@@ -198,34 +198,33 @@ SIIL.DataTable.prototype.update = function(uType) {
             //         break;
             // }
             dindex[self.SID] = [];
-            htimeline [self.SID] = [];
+            htimeline[self.SID] = [];
         } else {
-            if (htimeline[self.SID] != undefined) { //timeextent[self.SID] != undefined
-                // var start, end; //for the brushed range reflected on timeline
-                // self.table.$('tr.row_selected').each(function(idx, $row) {
-                //     var row = self.table.fnGetData($row), 
-                //     dDate = self.tbType == "message"? new Date(row[2]):row[4];
-                
-                //     if (start == null) {
-                //         start = end = dDate;
-                //     } else {
-                //         start = start < dDate ? start : dDate;
-                //         end = end > dDate ? end : dDate;
-                //     }
-                // });
-                // timeextent[self.SID] = [];
-                // timeextent[self.SID].push(start);
-                // timeextent[self.SID].push(end);
-                htimeline[self.SID] = [];
-                
-                self.table.$('tr.row_selected').each(function(idx, $row) {
-                    var row = self.table.fnGetData($row), 
-                    dDate = self.tbType == "message"? new Date(row[2]):row[4];
-                    if($.inArray(dDate,htimeline[self.SID]) == -1)htimeline[self.SID].push(dDate);
-                    
-                });
-                
-            }
+            //timeextent[self.SID] != undefined
+            // var start, end; //for the brushed range reflected on timeline
+            // self.table.$('tr.row_selected').each(function(idx, $row) {
+            //     var row = self.table.fnGetData($row), 
+            //     dDate = self.tbType == "message"? new Date(row[2]):row[4];
+
+            //     if (start == null) {
+            //         start = end = dDate;
+            //     } else {
+            //         start = start < dDate ? start : dDate;
+            //         end = end > dDate ? end : dDate;
+            //     }
+            // });
+            // timeextent[self.SID] = [];
+            // timeextent[self.SID].push(start);
+            // timeextent[self.SID].push(end);
+            htimeline[self.SID] = [];
+
+            self.table.$('tr.row_selected').each(function(idx, $row) {
+                var row = self.table.fnGetData($row),
+                    dDate = self.tbType == "message" ? new Date(row[2]) : row[4];
+                if ($.inArray(dDate, htimeline[self.SID]) == -1) htimeline[self.SID].push(dDate);
+
+            });
+
 
             var pParam = {};
             if (self.tbType == "message") { //message propogating
@@ -258,10 +257,12 @@ SIIL.DataTable.prototype.update = function(uType) {
                 for (var i = 0; i < eid['ett'].length; i++) {
 
                     if ($.inArray(eid['ett'][i]['uid'], dindex[self.SID]) == -1) dindex[self.SID].push(eid['ett'][i]['uid']);
+                    if (eid['ett'][i]['date'] != undefined && eid['ett'][i]['date'].length!=0 && $.inArray(eid['ett'][i]['date'], htimeline[self.SID]) == -1) htimeline[self.SID].push(eid['ett'][i]['date']);
                 }
                 for (var i = 0; i < eid['msg'].length; i++) {
 
                     if ($.inArray(eid['msg'][i]['uid'], msgID[self.SID]) == -1) msgID[self.SID].push(eid['msg'][i]['uid']);
+                    if (eid['msg'][i]['date'] != undefined && eid['msg'][i]['date'].length!=0 && $.inArray(eid['msg'][i]['date'], htimeline[self.SID]) == -1) htimeline[self.SID].push(eid['msg'][i]['date']);
                 }
                 if (dindex[self.SID].length == 0) alert("dindex is empty");
                 else if (msgID[self.SID].length == 0) alert("msgID is empty");

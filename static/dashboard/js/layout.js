@@ -179,6 +179,7 @@ function showDialogs(dialogs) {
                         DlgTcolor[result.NewLinkNum].blue + ")"
                     );
                     dindex[result.NewLinkNum] = [];
+                    htimeline[result.NewLinkNum] = [];
                     eventTable[result.NewLinkNum].update();
                 });
 
@@ -214,6 +215,7 @@ function showDialogs(dialogs) {
                     );
                     msgID[result.NewLinkNum] = [];
                     dindex[result.NewLinkNum] = [];
+                    htimeline[result.NewLinkNum] = [];
                     messageTable[result.NewLinkNum].update();
                 });
 
@@ -248,6 +250,7 @@ function showDialogs(dialogs) {
                         DlgTcolor[result.NewLinkNum].blue + ")"
                     );
                     dindex[result.NewLinkNum] = [];
+                    htimeline[result.NewLinkNum] = [];
                     locationTable[result.NewLinkNum].update();
                 });
                 break;
@@ -292,6 +295,7 @@ function showDialogs(dialogs) {
                         DlgTcolor[result.NewLinkNum].blue + ")"
                     );
                     dindex[result.NewLinkNum] = [];
+                    htimeline[result.NewLinkNum] = [];
                     personTable[result.NewLinkNum].update();
                 });
                 break;
@@ -321,6 +325,7 @@ function showDialogs(dialogs) {
                         DlgTcolor[result.NewLinkNum].blue + ")"
                     );
                     dindex[result.NewLinkNum] = [];
+                    htimeline[result.NewLinkNum] = [];
                     organizationTable[result.NewLinkNum].update();
                 });
                 break;
@@ -351,6 +356,7 @@ function showDialogs(dialogs) {
                         DlgTcolor[result.NewLinkNum].blue + ")"
                     );
                     dindex[result.NewLinkNum] = [];
+                    htimeline[result.NewLinkNum] = [];
                     resourceTable[result.NewLinkNum].update();
                 });
                 break;
@@ -397,6 +403,7 @@ function showDialogs(dialogs) {
                         DlgTcolor[result.NewLinkNum].blue + ")"
                     );
                     dindex[result.NewLinkNum] = [];
+                    htimeline[result.NewLinkNum] = [];
                     network[result.NewLinkNum].update(data);
                 });
                 break;

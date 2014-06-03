@@ -147,7 +147,7 @@ SIIL.Network = function(div) {
 
         }
         generateOthers(self.Name, x);
-        
+
         $("#" + cmb + " option:selected").removeAttr('selected');
         $("#" + cmb).attr("selectedIndex", 0);
       });
@@ -303,13 +303,16 @@ SIIL.Network = function(div) {
       .on("brushend", function() {
         d3.event.target.clear();
         d3.select(this).call(d3.event.target);
+        htimeline[self.SID] = [];
+        dindex[self.SID] = [];
         var selectedNodes = svg.selectAll(".selected");
-        // alert(selectedNodes.size());
-        // alert(selectedNodes[0].length);
+
         if (selectedNodes) {
-          dindex[self.SID] = [];
+          
           selectedNodes.each(function(d) {
-            dindex[self.SID].push(d.uid);
+            if($.inArray(d.uid,dindex[self.SID])==-1)dindex[self.SID].push(d.uid);
+            var dDate = new Date(d.date);
+            if ($.inArray(dDate, htimeline[self.SID]) == -1) htimeline[self.SID].push(dDate);
 
           });
 
