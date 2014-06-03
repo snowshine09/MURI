@@ -9,33 +9,33 @@ SIIL.Network = function(div) {
   this.Type = div.split("_")[0].split("#")[1];
   this.Name = this.Type + '_cvs_' + this.SID;
   this.width = $("#network_dlg_" + this.SID).innerWidth(); //outerWidth();
-  this.height = $("#network_dlg_" + this.SID).innerHeight();
+  this.height = $("#network_dlg_" + this.SID).innerHeight() - 121;
   this.brushmode = false;
   this.panmode = false;
-  
+
   var force = null;
   this.shiftKey = null;
   // color = d3.scale.linear()
   //     .domain([-1, 0, 1])
   //     .range(["red", "white", "green"]);
-  var Xcordscale = d3.scale.linear().domain([-300.0, 1000.0]).range([0, parseFloat(this.width)]),
-    Ycordscale = d3.scale.linear().domain([-300.0, 1000.0]).range([0, parseFloat(this.height)]);
+  // var Xcordscale = d3.scale.linear().domain([-300.0, 1000.0]).range([0, parseFloat(this.width)]),
+  //   Ycordscale = d3.scale.linear().domain([-300.0, 1000.0]).range([0, parseFloat(this.height)]);
 
   var svg = d3.select(div)
     .attr("tabindex", 1)
-    .on("keyup", keyflip)//.brush
-    .on("keydown", keyflip)//.brush
+    .on("keyup", keyflip) //.brush
+    .on("keydown", keyflip) //.brush
     .each(function() {
       this.focus();
     })
     .append("svg:svg")
-  // .attr("width", 1800)
-  // .attr("height", 1300)
-  // .attr("viewBox", "0 0 " + 1000 + " " + 800)
-  // .attr("preserveAspectRatio", "xMidYMid meet")
-  .attr("pointer-events", "all")
+    // .attr("width", 1800)
+    // .attr("height", 1300)
+    // .attr("viewBox", "0 0 " + 1000 + " " + 800)
+    // .attr("preserveAspectRatio", "xMidYMid meet")
+    .attr("pointer-events", "all")
     .style("overflow", "scroll") //;
-  .append('svg:g')
+    .append('svg:g')
     .call(d3.behavior.zoom().on("zoom", redraw))
     .append('svg:g')
     .on("mousedown", mousedown);
@@ -46,11 +46,27 @@ SIIL.Network = function(div) {
   force = d3.layout.force()
     .nodes([])
     .links([])
-    .gravity(0.1)
+    .gravity(0.2)
     .charge(-400)
-    .linkDistance(120)
-    .size([self.width, self.height])
+  // .linkDistance(120)
+  .size([self.width, self.height])
     .on("tick", tick);
+
+  $("#network_gravity_" + self.SID).slider({
+    value: 0.2,
+    max: 1,
+    step: 0.01,
+    animate: true,
+    slide: function(event, ui) {
+      force.gravity(ui.value);
+      $("#network_gravity_" + self.SID).siblings('.gravity_text').val(ui.value);
+      if (force.alpha() == 0) force.start();
+      // force.alpha(0.1);
+    }
+  });
+  $("#network_gravity_" + self.SID).siblings('.gravity_text').val($("#network_gravity_" + self.SID).slider("value"));
+  // $( "#amount" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) +
+  //   " - $" + $( "#slider-range" ).slider( "values", 1 ) );
 
   var nodes = force.nodes();
   var links = force.links();
@@ -65,22 +81,34 @@ SIIL.Network = function(div) {
     svg.attr("transform",
       "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
   }
+  // var leftedge = 1000, rightedge = 0, topedge = 100, bottomedge = 0;
+  var leftedge, rightedge, topedge, bottomedge;
 
   function tick() {
     link.attr("x1", function(d) {
-      return Xcordscale(parseFloat(d.source.x));
+      return d.source.x; //Xcordscale(parseFloat(d.source.x));
     })
       .attr("y1", function(d) {
-        return Ycordscale(parseFloat(d.source.y));
+        return d.source.y; //Ycordscale(parseFloat(d.source.y));
       })
       .attr("x2", function(d) {
-        return Xcordscale(parseFloat(d.target.x));
+        return d.target.x; //Xcordscale(parseFloat(d.target.x));
       })
       .attr("y2", function(d) {
-        return Ycordscale(parseFloat(d.target.y));
+        return d.target.y; //Ycordscale(parseFloat(d.target.y));
       })
     node.attr("transform", function(d) {
-      return "translate(" + Xcordscale(parseFloat(d.x)) + "," + Ycordscale(parseFloat(d.y)) + ")";
+      if (leftedge == undefined) leftedge = d.x;
+      if (rightedge == undefined) rightedge = d.x;
+      if (topedge == undefined) topedge = d.y;
+      if (bottomedge == undefined) bottomedge = d.y;
+
+      if (d.x < leftedge) leftedge = d.x;
+      if (d.x > rightedge) rightedge = d.x;
+      if (d.y < topedge) topedge = d.y;
+      if (d.y > bottomedge) bottomedge = d.y;
+      //return "translate(" + Xcordscale(parseFloat(d.x)) + "," + Ycordscale(parseFloat(d.y)) + ")";
+      return "translate(" + d.x + "," + d.y + ")";
     });
   }
 
@@ -99,25 +127,27 @@ SIIL.Network = function(div) {
     // svg.style("height", $('#' + self.Name).outerHeight())
     //   .style("width", $('#' + self.Name).outerWidth())
   }
-  this.update = function() {
+  this.update = function(coType) {
 
 
 
     var cmb = "network_selectbar_" + self.SID;
-    $("#" + cmb).attr("selectedIndex", 0)
-      .change(function() {
+    $("#" + cmb).attr("selectedIndex", 0)//self.table.$('tr').unbind("click").bind("click", function(e) { 
+      .unbind("change").bind("change",function() {
         var x = $("#" + cmb + " option:selected").val();
         var selectedNodes = svg.selectAll(".selected");
         // alert(selectedNodes.size());
         // alert(selectedNodes[0].length);
         if (selectedNodes) {
-          gCondition["events_id"] = [];
+          dindex[self.SID] = [];
           selectedNodes.each(function(d) {
-            gCondition["events_id"].push(d.uid);
+            dindex[self.SID].push(d.uid);
 
           });
+
         }
         generateOthers(self.Name, x);
+        
         $("#" + cmb + " option:selected").removeAttr('selected');
         $("#" + cmb).attr("selectedIndex", 0);
       });
@@ -146,6 +176,7 @@ SIIL.Network = function(div) {
 
       //   node = node.data(nodes, function(d) { return d.id;});
       node = node.data(d.nodes);
+      console.log(node);
       node.enter().append("g")
         .attr("class", "node")
         .call(force.drag)
@@ -194,7 +225,17 @@ SIIL.Network = function(div) {
           return d.name
         });
 
+      node.classed("selected", function(d) {
+        if ($.inArray(d.uid, dindex[self.SID]) == -1)
+          return false;
+        else return true;
+      });
+
       force.start();
+      force.on("end", function() {
+        // alert(self.height + "  " + self.width);
+        // alert("top: " + topedge + " bottom: " + bottomedge + "left: " + leftedge + "right: " + rightedge);
+      })
     });
     // end new code request data on the fly
 
@@ -218,18 +259,18 @@ SIIL.Network = function(div) {
   }
 
   function mousedown() {
-    self.brushmode = document.getElementById("network_brush_" + self.SID).checked;
-    self.brushmode = document.getElementById("network_pan_" + self.SID).checked;
-    if (self.brushmode) {
-      d.fixed = true;
-      d3.select(this).classed("sticky", true);
-      if (self.shiftKey) d3.select(this).classed("selected", d.selected = !d.selected);
-      else node.classed("selected", function(p) {
-        return p.selected = d === p;
-      });
-    } else if (self.panmode) {
-      redraw();
-    }
+    // self.brushmode = document.getElementById("network_brush_" + self.SID).checked;
+    // self.panmode = document.getElementById("network_pan_" + self.SID).checked;
+    // if (self.brushmode) {
+    //   d.fixed = true;
+    //   d3.select(this).classed("sticky", true);
+    //   if (self.shiftKey) d3.select(this).classed("selected", d.selected = !d.selected);
+    //   else node.classed("selected", function(p) {
+    //     return p.selected = d === p;
+    //   });
+    // } else if (self.panmode) {
+    redraw();
+    // }
   }
   var brush = svg.append("g")
     .datum(function() {
@@ -254,6 +295,7 @@ SIIL.Network = function(div) {
           // if(d.previouslySelected ^
           //   (extent[0][0] <= d.x && d.x < extent[1][0] && extent[0][1] <= d.y && d.y < extent[1][1]))
           //   alert(d.node+" is selected");
+          // (Xcordscale(parseFloat(extent[0][0])) <= Xcordscale(parseFloat(d.x)) && Xcordscale(parseFloat(d.x)) < Xcordscale(parseFloat(extent[1][0])) && extent[0][1] <= Xcordscale(parseFloat(d.y))  && Ycordscale(parseFloat(d.y))  < Ycordscale(parseFloat(extent[1][1])) );
           return d.selected = d.previouslySelected ^
             (extent[0][0] <= d.x && d.x < extent[1][0] && extent[0][1] <= d.y && d.y < extent[1][1]);
         });
@@ -261,11 +303,21 @@ SIIL.Network = function(div) {
       .on("brushend", function() {
         d3.event.target.clear();
         d3.select(this).call(d3.event.target);
+        var selectedNodes = svg.selectAll(".selected");
+        // alert(selectedNodes.size());
+        // alert(selectedNodes[0].length);
+        if (selectedNodes) {
+          dindex[self.SID] = [];
+          selectedNodes.each(function(d) {
+            dindex[self.SID].push(d.uid);
+
+          });
+
+        }
+        renderAllExcept(self.Name, "brush");
       })
-  );
+    );
 
 
-
-  
 
 };

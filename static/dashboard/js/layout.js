@@ -1,5 +1,4 @@
 var dialogOptions = {
-    //        "title" : "Workbench",
     "width": 800,
     "height": 500,
     "modal": false,
@@ -96,20 +95,21 @@ $(document).ready(function() {
 
             dataset[result.NewLinkNum] = CopySource();
             timeextent[result.NewLinkNum] = [];
+            htimeline[result.NewLinkNum] = [];
             timelineset[result.NewLinkNum] = $("#" + cvs).timeline({
                 "dimension": dataset[result.NewLinkNum]['dDate'],
             }).data("vis-timeline");
 
             DlgTcolor[result.NewLinkNum] = randomcolor();
-                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-                        DlgTcolor[result.NewLinkNum].red + "," +
-                        DlgTcolor[result.NewLinkNum].green + "," +
-                        DlgTcolor[result.NewLinkNum].blue + ")"
-                    );
+            $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                DlgTcolor[result.NewLinkNum].red + "," +
+                DlgTcolor[result.NewLinkNum].green + "," +
+                DlgTcolor[result.NewLinkNum].blue + ")"
+            );
             timelineset[result.NewLinkNum].update();
         });
     });
-    
+
     // Location dialogue
     $("#location_table_btn").click(function() {
         showDialogs(["location_table"]);
@@ -287,7 +287,7 @@ function showDialogs(dialogs) {
                         position: ['left', 36],
                         close: function(event, ui) {
                             var tmp = $(this).attr("id");
-                            alert("deleting" + tmp);
+                            //alert("deleting" + tmp);
                             delete personTable[tmp.split("_")[2]];
                             $(this).dialog('destroy').remove();
                         },
@@ -300,11 +300,11 @@ function showDialogs(dialogs) {
 
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
-                    
+
                     personTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
                     dataset[result.NewLinkNum] = CopySource();
 
-                    
+
                     //assign a random color to the dialog's titlebar
                     // this.titlecolor = randomcolor();
                     //DlgTcolor[result.NewLinkNum] = this.titlecolor;
@@ -385,20 +385,29 @@ function showDialogs(dialogs) {
                     var vardlg = "network_dlg_" + result.NewLinkNum,
                         varbar = "network_selectbar_" + result.NewLinkNum,
                         cvs = "network_cvs_" + result.NewLinkNum,
+                        rs_bar = "network_reset_"+result.NewLinkNum,
+                        ctxt_bar = "network_ctxt_"+result.NewLinkNum,
+                        grav_bar = "network_gravity_"+result.NewLinkNum,
                         bbar = "network_brush_" + result.NewLinkNum,
                         pbar = "network_pan_" + result.NewLinkNum;
-                    $("#network").clone().attr("id", vardlg).dialog($.extend({
+                    var opt = $.extend({
                         title: "Network of Link " + result.NewLinkNum,
                         position: ['left', 36],
                         resize: function() {
                             network[result.NewLinkNum].resize();
                         }
-                    }, dialogOptions))
+                    }, dialogOptions);
+                    opt.height = 660;
+                    opt.width = 996;
+                    $("#network").clone().attr("id", vardlg).dialog(opt)
                         .dialogExtend(dialogExtendOptions);
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
-                    $('#' + vardlg + ' > div:eq(2)').attr("id", cvs);
-                    $('#' + vardlg + ' > div:eq(1) > div:eq(1)').attr("id", bbar);
-                    $('#' + vardlg + ' > div:eq(1) > div:eq(0)').attr("id", pbar); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
+                    $('#' + vardlg + ' > div:eq(1) > div:eq(1)').attr("id", ctxt_bar);
+                    $('#' + vardlg + ' > div:eq(1) > div:eq(0)').attr("id", rs_bar); 
+                    $('#' + vardlg + ' > div:eq(1) > div:eq(2) > div:eq(0)').attr("id", grav_bar); 
+                    $('#' + vardlg + ' > div:eq(2) > div:eq(0) > label:eq(0) > input:eq(0)').attr("id", pbar);
+                    $('#' + vardlg + ' > div:eq(2) > div:eq(1) > label:eq(0) > input:eq(0)').attr("id", bbar);
+                    $('#' + vardlg + ' > div:eq(3)').attr("id", cvs);
                     network[result.NewLinkNum] = new SIIL.Network("#" + cvs);
                     dataset[result.NewLinkNum] = CopySource();
                     events_id = []
