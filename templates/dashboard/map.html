@@ -12,7 +12,34 @@
 {% endcompress %}
 {% endblock %}
 
-<div id="map" class='map hidden'></div>                
+<div id="map" class='hidden'>
+	<div id="selectbar" class="selectbar dropdown">Generate the next linked window...
+        <select class="selectpicker form-control" label="Other views...">
+            <option value="">---</option>
+            <optgroup label = "other visualizations...">
+                <option value="timeline_self">Timeline</option>
+                <option value="map_self">Map</option>
+                <option value="network_self">Network</option>
+                <option value="message_self">Messages</option>
+                <option value="event_self">Events(shadow)</option>
+                <option value="person_self">People</option>
+            </optgroup>
+            <optgroup label = "Filter to a subset in ...">
+                <option value="map_subset">Event</option>
+            </optgroup>
+        </select>   
+    </div>
+    <div class = "interaction">
+        <div class="reset">
+            <a href="javascript:void(0)" onclick="reset();return false;">Reset</a>
+        </div>
+        <div class="showcontext">
+            <a href="javascript:void(0)" onclick="showcontext();return false;">Show Context (parent view)</a>
+        </div>
+    </div>
+	<div id = "map_cvs" class = "map" style = "width: 100%; height: 100%">
+	</div>
+</div>                
 <div id="footprint_popup" class="hidden">
     <label class="header">ID: </label><span style="width:15px"></span><label id="footprint_id"></label><br>
     <label class="header">Name: </label><span style="width:15px"></span><label id="footprint_name"></label><br>

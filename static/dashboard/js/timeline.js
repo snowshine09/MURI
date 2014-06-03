@@ -5,9 +5,9 @@ $.widget("vis.timeline", $.vis.viscontainer, {
   _create: function() {
     var self = this;
     this.Name = this.element.attr("id");
-    alert(this.Name);
+    // alert(this.Name);
     this.SID = this.Name.split("_")[2];
-    this.Type = this.Name.split("_")[0].split("#")[1];
+    this.Type = this.Name.split("_")[0];
     // window.filter = function(filters) {
     //   filters.forEach(function(d, i) {
     //     self.charts[i].filter(d);
@@ -79,7 +79,7 @@ $.widget("vis.timeline", $.vis.viscontainer, {
       var width = x.range()[1],
         height = y.range()[0];
 
-      alert("x within chart: " + x);
+      //alert("x within chart: " + x);
       y.domain([0, group.top(1)[0].value]);
 
       div.each(function() {
