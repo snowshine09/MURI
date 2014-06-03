@@ -43,12 +43,38 @@ $(document).ready(function() {
     });
     // map dialogue
     $("#map_btn").click(function() {
-        $("<div>").dialog($.extend({
-            "title": "Map",
-        }, container_options))
-            .vismap({
-                dimension: dFootprint,
+        // $("<div>").dialog($.extend({
+        //     "title": "Map",
+        // }, container_options))
+        //     .vismap({
+        //         dimension: dFootprint,
+        //     });
+        d3.json("dataSetNum", function(error, result) {
+            var vardlg = "map_dlg_" + result.NewLinkNum,
+                varbar = "map_selectbar_" + result.NewLinkNum,
+                cvs = "map_cvs_" + result.NewLinkNum;
+            var opt = $.extend({
+                title: "Map of Link " + result.NewLinkNum
+            }, dialogOptions);
+            $("#map").clone().attr("id", vardlg).dialog(opt)
+                .dialogExtend(dialogExtendOptions);
+            $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+            $('#' + vardlg + ' > div:eq(2)').attr("id", cvs); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
+
+            dataset[result.NewLinkNum] = CopySource();
+            map[result.NewLinkNum] = $("#" + cvs).vismap({
+                "dimension": dataset[result.NewLinkNum]['dFootprint'],
             });
+
+            DlgTcolor[result.NewLinkNum] = randomcolor();
+                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[result.NewLinkNum].red + "," +
+                        DlgTcolor[result.NewLinkNum].green + "," +
+                        DlgTcolor[result.NewLinkNum].blue + ")"
+                    );
+            //map[result.NewLinkNum].update();
+        });
+
     });
     // timeline dialogue
     $("#timeline_btn").click(function() {

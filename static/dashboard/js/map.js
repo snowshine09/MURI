@@ -4,7 +4,11 @@ $.widget("vis.vismap", $.vis.viscontainer, {
     },
     _create: function() {
         this.element.addClass("vismap");
-        
+        var self = this;
+        this.Name = this.element.attr("id");
+        // alert(this.Name);
+        this.SID = this.Name.split("_")[2];
+        this.Type = this.Name.split("_")[0];
         this.map = null;
         this.layers = [];
 
@@ -92,11 +96,12 @@ $.widget("vis.vismap", $.vis.viscontainer, {
         this.linelayer = linelayer;
         this.pointlayer = pointlayer;
         this.mapControls = mapControls;
-
-        this._super("_create");
+        $("#" + this.Type + "_dlg_"+this.SID).removeClass("hidden");
+        //this._super("_create");
         this.update();
     },
     update: function() {
+        var self = this;
         var linelayer = this.linelayer;
         var pointlayer = this.pointlayer;
         linelayer.removeAllFeatures();
@@ -312,7 +317,7 @@ SIIL.Map = function(div) {
 
         var points = [], lines = [];
 
-        dFootprint.group().top(Infinity).forEach(function(d, i) {
+        dataset[self.SID]['dFootprint'].group().top(Infinity).forEach(function(d, i) {
             // d = {key: [id, name, shape, srid], value: Integer}
             var fp = d.key;
             if (fp[0] != undefined && d.value != 0) {
@@ -387,11 +392,11 @@ SIIL.Map = function(div) {
         });
 
         if (selectedFeas.length == 0) {
-            dFootprint.filterAll();
+            dataset[self.SID]['dFootprint'].filterAll();
         } else {
             // filter event data by above feature ids
             var count = 0;
-            dFootprint.filter(function(fp) { // fp is an array [id, name, shape, srid]
+            dataset[self.SID]['dFootprint'].filter(function(fp) { // fp is an array [id, name, shape, srid]
                 if (fp[0] == undefined) {
                     return false;
                 }
