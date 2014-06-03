@@ -25,7 +25,10 @@
 }
 
 .highlight.bar {
-  fill: red;
+  fill: rgb(250,150,0);
+  /*#9FAFD1;*/
+  stroke: rgb(250,150,0);
+  /*rgb(150,150,256);*/
   /*fill-opacity: .125;*/
 }
 
