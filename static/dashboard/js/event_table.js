@@ -163,8 +163,29 @@ SIIL.DataTable.prototype.update = function(uType) {
 
     }
 
+    if (self.tbType == "location") {
+        if (hshape[self.SID].length != 0) {
+            var indexes = self.Tinstance.rows().eq(0).filter(function(rowIdx) {
+                var tmp = self.Tinstance.cell(rowIdx, 0).data();
+                return $.inArray(tmp, hshape[self.SID]) != -1 ? true : false;
+            });
+
+            // Add a class to those rows using an index selector
+            self.table.$('tr.row_selected').removeClass("row_selected");
+
+            self.Tinstance.rows(indexes)
+                .nodes()
+                .to$()
+                .addClass('row_selected');
+        } else self.table.$('tr.row_selected').removeClass("row_selected");
+    }
+
     self.table.$('tr').unbind("click").bind("click", function(e) { //not clear why if not unbind the click event, the clicking will be triggered multiple times
-        // alert("click event triggered");
+        dindex[self.SID] = [];
+        msgID[self.SID] = [];
+        hshape[self.SID] = [];
+        htimeline[self.SID] = [];
+        //alert("enter click");
         if ($(this).hasClass('row_selected')) {
             $(this).removeClass('row_selected');
         } else {
@@ -176,30 +197,7 @@ SIIL.DataTable.prototype.update = function(uType) {
         }
 
         var selected_rows = self.table.$('tr.row_selected');
-        if (selected_rows.length == 0) {
-            // switch (self.tbType) {
-            //     case "location":
-            //         dataset[self.SID]['dFootprint'].filterAll();
-            //         break;
-            //     case "message":
-            //         dataset[self.SID]['dMessage'].filterAll();
-            //         break;
-            //     case "event":
-            //         dataset[self.SID]['dEvent'].filterAll();
-            //         break;
-            //     case "resource":
-            //         dataset[self.SID]['dResource'].filterAll();
-            //         break;
-            //     case "person":
-            //         dataset[self.SID]['dPerson'].filterAll();
-            //         break;
-            //     case "organization":
-            //         dataset[self.SID]['dOrganization'].filterAll();
-            //         break;
-            // }
-            dindex[self.SID] = [];
-            htimeline[self.SID] = [];
-        } else {
+        if (selected_rows.length != 0) {
             //timeextent[self.SID] != undefined
             // var start, end; //for the brushed range reflected on timeline
             // self.table.$('tr.row_selected').each(function(idx, $row) {
@@ -217,13 +215,19 @@ SIIL.DataTable.prototype.update = function(uType) {
             // timeextent[self.SID].push(start);
             // timeextent[self.SID].push(end);
             htimeline[self.SID] = [];
-
             self.table.$('tr.row_selected').each(function(idx, $row) {
                 var row = self.table.fnGetData($row),
-                    dDate = self.tbType == "message" ? new Date(row[2]) : row[4];
+                    dDate = (self.tbType == "message" ? (new Date(row[2])) : row[4]);
                 if ($.inArray(dDate, htimeline[self.SID]) == -1) htimeline[self.SID].push(dDate);
 
             });
+
+            if (self.tbType == "location") {
+                self.table.$('tr.row_selected').each(function(idx, $row) {
+                    row = self.table.fnGetData($row);
+                    if ($.inArray(row[0], hshape[self.SID]) == -1) hshape[self.SID].push(row[0]);
+                });
+            }
 
 
             var pParam = {};
@@ -257,12 +261,12 @@ SIIL.DataTable.prototype.update = function(uType) {
                 for (var i = 0; i < eid['ett'].length; i++) {
 
                     if ($.inArray(eid['ett'][i]['uid'], dindex[self.SID]) == -1) dindex[self.SID].push(eid['ett'][i]['uid']);
-                    if (eid['ett'][i]['date'] != undefined && eid['ett'][i]['date'].length!=0 && $.inArray(eid['ett'][i]['date'], htimeline[self.SID]) == -1) htimeline[self.SID].push(eid['ett'][i]['date']);
+                    if (eid['ett'][i]['date'] != undefined && eid['ett'][i]['date'].length != 0 && $.inArray(new Date(eid['ett'][i]['date']), htimeline[self.SID]) == -1) htimeline[self.SID].push(new Date(eid['ett'][i]['date']));
                 }
                 for (var i = 0; i < eid['msg'].length; i++) {
 
                     if ($.inArray(eid['msg'][i]['uid'], msgID[self.SID]) == -1) msgID[self.SID].push(eid['msg'][i]['uid']);
-                    if (eid['msg'][i]['date'] != undefined && eid['msg'][i]['date'].length!=0 && $.inArray(eid['msg'][i]['date'], htimeline[self.SID]) == -1) htimeline[self.SID].push(eid['msg'][i]['date']);
+                    if (eid['msg'][i]['date'] != undefined && eid['msg'][i]['date'].length != 0 && $.inArray(new Date(eid['msg'][i]['date']), htimeline[self.SID]) == -1) htimeline[self.SID].push(new Date(eid['msg'][i]['date']));
                 }
                 if (dindex[self.SID].length == 0) alert("dindex is empty");
                 else if (msgID[self.SID].length == 0) alert("msgID is empty");
@@ -271,6 +275,7 @@ SIIL.DataTable.prototype.update = function(uType) {
             });
 
         }
+        else renderAllExcept(self.tbName, "brush");
 
     });
 

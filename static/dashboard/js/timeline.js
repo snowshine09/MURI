@@ -7,13 +7,14 @@ $.widget("vis.timeline", $.vis.viscontainer, {
     this.Name = this.element.attr("id");
     //alert(this.Name);
     this.SID = this.Name.split("_")[2];
-    this.Type = this.Name.split("_")[0].split("#")[1];
+    this.Type = this.Name.split("_")[0];
+    // alert(this.Type);
     // window.filter = function(filters) {
     //   filters.forEach(function(d, i) {
     //     self.charts[i].filter(d);
     //   });
     //   renderAll();
-    // };
+    // };re
 
     // window.reset = function(i) {
     //   self.charts[i].filter(null);
@@ -44,10 +45,10 @@ $.widget("vis.timeline", $.vis.viscontainer, {
     ];
     d3.selectAll("#" + this.Name)
       .data(self.charts)
-      .each(function(chart) {
-        // console.log(chart);
-        chart.on("brush", renderAllButNetwork()).on("brushend", renderAll());
-      })
+      // .each(function(chart) {
+      //   // console.log(chart);
+      //   chart.on("brush", renderAllButNetwork()).on("brushend", renderAll());
+      // })
       .each(render);
 
   },
@@ -64,20 +65,20 @@ $.widget("vis.timeline", $.vis.viscontainer, {
     //   g.selectAll(".brush").call(self.brush);
     if (htimeline[self.SID].length != 0) {
       self.brush.clear();
-      g.selectAll(".brush").call(self.brush);
-      g.selectAll("#clip-0 rect")
+      g.select(".brush").call(self.brush);
+      g.select("#clip-0-"+self.SID+" rect")
         .attr("width", 0);
       // g.selectAll("#clip-0" + " rect")
       //   .attr("x", x(timeextent[self.SID][0]))
       //   .attr("width", x(timeextent[self.SID][1]) - x(timeextent[self.SID][0]));
     }
-    g.selectAll("#clip-1 rect")
-      .attr("width", 0);
-    d3.select("#clip-1").selectAll("rect").remove();
+    // g.selectAll("#clip-1 rect")
+    //   .attr("width", 0);
+    g.select("#clip-1-"+self.SID).selectAll("rect").remove();
     // d3.select("#clip-1").remove();
 
     for (var i = 0; i < htimeline[self.SID].length; i++) {
-      d3.select("#clip-1")
+      g.select("#clip-1-"+self.SID)
         .append("rect")
         .attr("x", x(htimeline[self.SID][i]))
         .attr("width", 9)
@@ -147,13 +148,13 @@ $.widget("vis.timeline", $.vis.viscontainer, {
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
           g.append("clipPath")
-            .attr("id", "clip-" + id)
+            .attr("id", "clip-0-"+self.SID)
             .append("rect")
             .attr("width", width)
             .attr("height", height);
 
           g.append("clipPath")
-            .attr("id", "clip-1")
+            .attr("id", "clip-1-"+self.SID)
             .attr("width", 0);
 
           g.selectAll(".bar")
@@ -165,9 +166,9 @@ $.widget("vis.timeline", $.vis.viscontainer, {
             .datum(group.all());
 
           g.selectAll(".foreground.bar")
-            .attr("clip-path", "url(#clip-0)");
+            .attr("clip-path", "url(#clip-0-"+self.SID+")");
           g.selectAll(".highlight.bar")
-            .attr("clip-path", "url(#clip-1)");
+            .attr("clip-path", "url(#clip-1-"+self.SID+")");
 
           g.append("g")
             .attr("class", "axis")
@@ -222,11 +223,11 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 
     self.brush.on("brushstart.chart", function() {
       var g = d3.select(this.parentNode);
-      g.selectAll("#clip-1 rect")
+      g.selectAll("#clip-1-"+self.SID+" rect")
         .attr("width", 0);
-      d3.select("#clip-1").selectAll("rect").remove();
-      var div = d3.select(this.parentNode.parentNode.parentNode);
-      div.select(".title a").style("display", null);
+      g.select("#clip-1-"+self.SID+"").selectAll("rect").remove();
+      // var div = d3.select(this.parentNode.parentNode.parentNode);
+      // div.select(".title a").style("display", null);
     });
 
     self.brush.on("brush.chart", function() {
@@ -236,7 +237,7 @@ $.widget("vis.timeline", $.vis.viscontainer, {
         .call(self.brush.extent(self.extent = self.extent.map(round)))
         .selectAll(".resize")
         .style("display", null);
-      g.select("#clip-0 rect")
+      g.select("#clip-0-"+self.SID+" rect")
         .attr("x", x(self.extent[0]))
         .attr("width", x(self.extent[1]) - x(self.extent[0]));
       //dimension.filterRange(extent);
@@ -248,7 +249,7 @@ $.widget("vis.timeline", $.vis.viscontainer, {
       if (self.brush.empty()) {
         var div = d3.select(this.parentNode.parentNode.parentNode);
         div.select(".title a").style("display", "none");
-        div.select("#clip-0 rect").attr("x", null).attr("width", "100%");
+        div.select("#clip-0-"+self.SID+" rect").attr("x", null).attr("width", "100%");
         timeextent[self.SID] = [];
         //dimension.filterAll();
         //brush.extent([dataset[self.SID]['dDate'].top(1)[0], dataset[self.SID]['dDate'].bottom(1)[0]]);

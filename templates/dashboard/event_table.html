@@ -15,15 +15,18 @@
         <select class="selectpicker form-control">
             <option value="">---</option>
             <optgroup label = "other visualizations...">
-                <option value="timeline">Timeline</option>
-                <option value="map">Map</option>
-                <option value="network">Network</option>
+                <option value="timeline_self">Timeline</option>
+                <option value="map_self">Map</option>
+                <option value="network_self">Network</option>
                 <option value="message_self">Messages</option>
-                <option value="event">Events(shadow)</option>
-                <option value="person">People</option>
+                <option value="event_self">Events</option>
+                <option value="person_self">People</option>
+                <option value="organization_self">Organizations</option>
+                <option value="resource_self">Resources</option>
+                <option value="location_self">Locations (shadow)</option>
             </optgroup>
             <optgroup label = "Filter to a subset in ...">
-                <option value="message_subset">Messages</option>
+                <option value="location_subset">Locations</option>
             </optgroup>
         </select>
     </div>
@@ -54,9 +57,12 @@
                 <option value="timeline_self">Timeline</option>
                 <option value="map_self">Map</option>
                 <option value="network_self">Network</option>
-                <option value="message_self">Messages</option>
-                <option value="event_self">Events(shadow)</option>
+                <option value="message_self">Messages (shadow)</option>
+                <option value="event_self">Events</option>
                 <option value="person_self">People</option>
+                <option value="organization_self">Organizations</option>
+                <option value="resource_self">Resources</option>
+                <option value="location_self">Locations</option>
             </optgroup>
             <optgroup label = "Filter to a subset in ...">
                 <option value="message_subset">Messages</option>
@@ -94,6 +100,9 @@
                 <option value="message_self">Messages</option>
                 <option value="event_self">Events(shadow)</option>
                 <option value="person_self">People</option>
+                <option value="organization_self">Organizations</option>
+                <option value="resource_self">Resources</option>
+                <option value="location_self">Locations</option>
             </optgroup>
             <optgroup label = "Filter to a subset in ...">
                 <option value="event_subset">Event</option>
@@ -130,8 +139,11 @@
                 <option value="map_self">Map</option>
                 <option value="network_self">Network</option>
                 <option value="message_self">Messages</option>
-                <option value="event_self">Events(shadow)</option>
-                <option value="person_self">People</option>
+                <option value="event_self">Events</option>
+                <option value="person_self">People (shadow)</option>
+                <option value="organization_self">Organizations</option>
+                <option value="resource_self">Resources</option>
+                <option value="location_self">Locations</option>
             </optgroup>
             <optgroup label = "Filter to a subset in ...">
                 <option value="person_subset">People</option>
@@ -161,14 +173,22 @@
 </div>
 <div id="organization_dlg" class="hidden">
     <div id="selectbar" class="selectbar dropdown">Generate the next linked window...
-        <select class="form-control">
+        <select class="selectpicker form-control">
             <option value="">---</option>
-            <option value="timeline">Timeline</option>
-            <option value="network">Network</option>
-            <option value="map">Map</option>
-            <option value="message">Messages</option>
-            <option value="event">Events</option>
-            <option value="person">People</option>
+            <optgroup label = "other visualizations...">
+                <option value="timeline_self">Timeline</option>
+                <option value="map_self">Map</option>
+                <option value="network_self">Network</option>
+                <option value="message_self">Messages</option>
+                <option value="event_self">Events</option>
+                <option value="person_self">People</option>
+                <option value="organization_self">Organizations (shadow)</option>
+                <option value="resource_self">Resources</option>
+                <option value="location_self">Locations</option>
+            </optgroup>
+            <optgroup label = "Filter to a subset in ...">
+                <option value="organization_subset">Organizations</option>
+            </optgroup>
         </select>
     </div>
     <div class = "interaction">
@@ -195,14 +215,22 @@
 </div>
 <div id="resource_dlg" class="hidden">
     <div id="selectbar" class="selectbar dropdown">Generate the next linked window...
-        <select class="form-control">
+        <select class="selectpicker form-control">
             <option value="">---</option>
-            <option value="timeline">Timeline</option>
-            <option value="network">Network</option>
-            <option value="map">Map</option>
-            <option value="message">Messages</option>
-            <option value="event">Events</option>
-            <option value="person">People</option>
+            <optgroup label = "other visualizations...">
+                <option value="timeline_self">Timeline</option>
+                <option value="map_self">Map</option>
+                <option value="network_self">Network</option>
+                <option value="message_self">Messages</option>
+                <option value="event_self">Events</option>
+                <option value="person_self">People</option>
+                <option value="organization_self">Organizations</option>
+                <option value="resource_self">Resources (shadow)</option>
+                <option value="location_self">Locations</option>
+            </optgroup>
+            <optgroup label = "Filter to a subset in ...">
+                <option value="resource_subset">Locations</option>
+            </optgroup>
         </select>
     </div>
     <div class = "interaction">

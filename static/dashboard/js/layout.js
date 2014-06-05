@@ -43,12 +43,6 @@ $(document).ready(function() {
     });
     // map dialogue
     $("#map_btn").click(function() {
-        // $("<div>").dialog($.extend({
-        //     "title": "Map",
-        // }, container_options))
-        //     .vismap({
-        //         dimension: dFootprint,
-        //     });
         d3.json("dataSetNum", function(error, result) {
             var vardlg = "map_dlg_" + result.NewLinkNum,
                 varbar = "map_selectbar_" + result.NewLinkNum,
@@ -64,15 +58,20 @@ $(document).ready(function() {
             dataset[result.NewLinkNum] = CopySource();
             map[result.NewLinkNum] = $("#" + cvs).vismap({
                 "dimension": dataset[result.NewLinkNum]['dFootprint'],
-            });
+            }).data("vis-vismap");
 
             DlgTcolor[result.NewLinkNum] = randomcolor();
-                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-                        DlgTcolor[result.NewLinkNum].red + "," +
-                        DlgTcolor[result.NewLinkNum].green + "," +
-                        DlgTcolor[result.NewLinkNum].blue + ")"
-                    );
-            //map[result.NewLinkNum].update();
+            $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                DlgTcolor[result.NewLinkNum].red + "," +
+                DlgTcolor[result.NewLinkNum].green + "," +
+                DlgTcolor[result.NewLinkNum].blue + ")"
+            );
+            timeextent[result.NewLinkNum] = [];
+            htimeline[result.NewLinkNum] = [];
+            dindex[result.NewLinkNum] = [];
+            msgID[result.NewLinkNum] = [];
+            hshape[result.NewLinkNum] = [];
+            map[result.NewLinkNum].update("init");
         });
 
     });
@@ -96,6 +95,9 @@ $(document).ready(function() {
             dataset[result.NewLinkNum] = CopySource();
             timeextent[result.NewLinkNum] = [];
             htimeline[result.NewLinkNum] = [];
+            dindex[result.NewLinkNum] = [];
+            msgID[result.NewLinkNum] = [];
+            hshape[result.NewLinkNum] = [];
             timelineset[result.NewLinkNum] = $("#" + cvs).timeline({
                 "dimension": dataset[result.NewLinkNum]['dDate'],
             }).data("vis-timeline");
@@ -204,8 +206,11 @@ function showDialogs(dialogs) {
                         DlgTcolor[result.NewLinkNum].green + "," +
                         DlgTcolor[result.NewLinkNum].blue + ")"
                     );
-                    dindex[result.NewLinkNum] = [];
+                    timeextent[result.NewLinkNum] = [];
                     htimeline[result.NewLinkNum] = [];
+                    dindex[result.NewLinkNum] = [];
+                    msgID[result.NewLinkNum] = [];
+                    hshape[result.NewLinkNum] = [];
                     eventTable[result.NewLinkNum].update();
                 });
 
@@ -239,9 +244,11 @@ function showDialogs(dialogs) {
                         DlgTcolor[result.NewLinkNum].green + "," +
                         DlgTcolor[result.NewLinkNum].blue + ")"
                     );
-                    msgID[result.NewLinkNum] = [];
-                    dindex[result.NewLinkNum] = [];
+                    timeextent[result.NewLinkNum] = [];
                     htimeline[result.NewLinkNum] = [];
+                    dindex[result.NewLinkNum] = [];
+                    msgID[result.NewLinkNum] = [];
+                    hshape[result.NewLinkNum] = [];
                     messageTable[result.NewLinkNum].update();
                 });
 
@@ -251,6 +258,7 @@ function showDialogs(dialogs) {
                     var vardlg = "location_dlg_" + result.NewLinkNum,
                         vartb = "location_tb_" + result.NewLinkNum,
                         varbar = "location_selectbar_" + result.NewLinkNum;
+                    if (hshape[self.SID] == undefined) hshape[self.SID] = [];
                     $("#location_dlg").clone().attr("id", vardlg).dialog($.extend({
                         title: "Locations of Link " + result.NewLinkNum,
                         position: ['left', 36],
@@ -275,8 +283,11 @@ function showDialogs(dialogs) {
                         DlgTcolor[result.NewLinkNum].green + "," +
                         DlgTcolor[result.NewLinkNum].blue + ")"
                     );
-                    dindex[result.NewLinkNum] = [];
+                    timeextent[result.NewLinkNum] = [];
                     htimeline[result.NewLinkNum] = [];
+                    dindex[result.NewLinkNum] = [];
+                    msgID[result.NewLinkNum] = [];
+                    hshape[result.NewLinkNum] = [];
                     locationTable[result.NewLinkNum].update();
                 });
                 break;
@@ -320,8 +331,11 @@ function showDialogs(dialogs) {
                         DlgTcolor[result.NewLinkNum].green + "," +
                         DlgTcolor[result.NewLinkNum].blue + ")"
                     );
-                    dindex[result.NewLinkNum] = [];
+                    timeextent[result.NewLinkNum] = [];
                     htimeline[result.NewLinkNum] = [];
+                    dindex[result.NewLinkNum] = [];
+                    msgID[result.NewLinkNum] = [];
+                    hshape[result.NewLinkNum] = [];
                     personTable[result.NewLinkNum].update();
                 });
                 break;
@@ -350,8 +364,11 @@ function showDialogs(dialogs) {
                         DlgTcolor[result.NewLinkNum].green + "," +
                         DlgTcolor[result.NewLinkNum].blue + ")"
                     );
-                    dindex[result.NewLinkNum] = [];
+                    timeextent[result.NewLinkNum] = [];
                     htimeline[result.NewLinkNum] = [];
+                    dindex[result.NewLinkNum] = [];
+                    msgID[result.NewLinkNum] = [];
+                    hshape[result.NewLinkNum] = [];
                     organizationTable[result.NewLinkNum].update();
                 });
                 break;
@@ -360,7 +377,6 @@ function showDialogs(dialogs) {
                     var vardlg = "resource_dlg_" + result.NewLinkNum,
                         vartb = "resource_tb_" + result.NewLinkNum,
                         varbar = "resource_selectbar_" + result.NewLinkNum;
-                    varbar = "resource_selectbar_" + self.SID
                     $("#resource_dlg").clone().attr("id", vardlg).dialog($.extend({
                         title: "Resources of Link " + result.NewLinkNum,
                         position: ['left', 36],
@@ -381,8 +397,11 @@ function showDialogs(dialogs) {
                         DlgTcolor[result.NewLinkNum].green + "," +
                         DlgTcolor[result.NewLinkNum].blue + ")"
                     );
-                    dindex[result.NewLinkNum] = [];
+                    timeextent[result.NewLinkNum] = [];
                     htimeline[result.NewLinkNum] = [];
+                    dindex[result.NewLinkNum] = [];
+                    msgID[result.NewLinkNum] = [];
+                    hshape[result.NewLinkNum] = [];
                     resourceTable[result.NewLinkNum].update();
                 });
                 break;
@@ -391,9 +410,9 @@ function showDialogs(dialogs) {
                     var vardlg = "network_dlg_" + result.NewLinkNum,
                         varbar = "network_selectbar_" + result.NewLinkNum,
                         cvs = "network_cvs_" + result.NewLinkNum,
-                        rs_bar = "network_reset_"+result.NewLinkNum,
-                        ctxt_bar = "network_ctxt_"+result.NewLinkNum,
-                        grav_bar = "network_gravity_"+result.NewLinkNum,
+                        rs_bar = "network_reset_" + result.NewLinkNum,
+                        ctxt_bar = "network_ctxt_" + result.NewLinkNum,
+                        grav_bar = "network_gravity_" + result.NewLinkNum,
                         bbar = "network_brush_" + result.NewLinkNum,
                         pbar = "network_pan_" + result.NewLinkNum;
                     var opt = $.extend({
@@ -409,8 +428,8 @@ function showDialogs(dialogs) {
                         .dialogExtend(dialogExtendOptions);
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
                     $('#' + vardlg + ' > div:eq(1) > div:eq(1)').attr("id", ctxt_bar);
-                    $('#' + vardlg + ' > div:eq(1) > div:eq(0)').attr("id", rs_bar); 
-                    $('#' + vardlg + ' > div:eq(1) > div:eq(2) > div:eq(0)').attr("id", grav_bar); 
+                    $('#' + vardlg + ' > div:eq(1) > div:eq(0)').attr("id", rs_bar);
+                    $('#' + vardlg + ' > div:eq(1) > div:eq(2) > div:eq(0)').attr("id", grav_bar);
                     $('#' + vardlg + ' > div:eq(2) > div:eq(0) > label:eq(0) > input:eq(0)').attr("id", pbar);
                     $('#' + vardlg + ' > div:eq(2) > div:eq(1) > label:eq(0) > input:eq(0)').attr("id", bbar);
                     $('#' + vardlg + ' > div:eq(3)').attr("id", cvs);
@@ -428,53 +447,14 @@ function showDialogs(dialogs) {
                         DlgTcolor[result.NewLinkNum].green + "," +
                         DlgTcolor[result.NewLinkNum].blue + ")"
                     );
-                    dindex[result.NewLinkNum] = [];
+                    timeextent[result.NewLinkNum] = [];
                     htimeline[result.NewLinkNum] = [];
+                    dindex[result.NewLinkNum] = [];
+                    msgID[result.NewLinkNum] = [];
+                    hshape[result.NewLinkNum] = [];
                     network[result.NewLinkNum].update(data);
                 });
                 break;
-                //             case "workbench":
-                //                 var dialogLayout;
-                //                 $("#workbench").dialog($.extend({
-                //                     title: "Workbench",
-                //                     open:        function() {
-                //                                                     var layout_settings = {
-                //                                                         zIndex:          0       // HANDLE BUG IN CHROME - required if using 'modal' (background mask)
-                //                                                 ,    resizeWithWindow:   false   // resizes with the dialog, not the window
-                //                                                 ,    spacing_open:       6
-                //                                                 ,    spacing_closed:     6
-                //                                                 ,    west__size:         '30%' 
-                //                                                 ,    west__minSize:      100 
-                //                                                 ,    west__maxSize:      300 
-                //                                                 ,       center__childOptions: {
-                //                                                     center__paneSelector:    ".inner-center"
-                //                                                         ,       north__size: 150 
-                //                                                         ,       spacing_open: 6
-                //                                                     ,        north__minSize:     100 
-                //                                                         ,    north__maxSize:     300 
-
-                //                                                 }
-                // //                                                ,  south__closable:    false 
-                // //                                                ,  south__resizable:   false 
-                // //                                                ,  south__slidable:    false 
-                //                                                 //,  applyDefaultStyles:     true // DEBUGGING
-                //                                         };
-                //                          if (!dialogLayout) {
-                //                              // init layout *the first time* dialog opens
-                //                              dialogLayout = $("#workbench").layout( layout_settings );
-                //                                                         } else
-                //                              // just in case - probably not required
-                //                              dialogLayout.resizeAll();
-                //                      }
-                //      ,   resize:     function() { if (dialogLayout) dialogLayout.resizeAll(); },
-                //                         close: function() {
-                //                             workbench.destroy();
-                //                         },
-
-                //                 }, dialogOptions))
-                //                     .dialogExtend(dialogExtendOptions);
-                //                 workbench = new SIIL.Workbench("#workbench");
-                //                 break;
         }
     }
 }

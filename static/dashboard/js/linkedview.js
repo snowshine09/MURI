@@ -26,7 +26,8 @@ var DlgTcolor = {};
 var dindex = {}; //for brushing, record selected entities' indexes
 var msgID = {};
 var timeextent = {}; //two elements array to control and reflect change of timeline
-var htimeline = {};//boolean time
+var htimeline = {}; //discontinuous time
+var hshape = {};
 
 function CreateSource() {
     $.post("data", null, function(result) {
@@ -153,29 +154,28 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
     target.Type = vis.split("_")[0]; // e.g. message_self , message_subset
     target.Src = vis.split("_")[1];
 
-    //alert(self.SID + " " + self.Type);
+
     switch (target.Src) { //data source /result sets are equivalent or not
         case 'self': //data equivalent
             switch (target.Type) {
                 case "timeline":
-
                     var vardlg = "timeline_dlg_" + self.SID,
                         varbar = "timeline_selectbar_" + self.SID,
                         cvs = "timeline_cvs_" + self.SID;
+                    if (document.getElementById(vardlg)) {
+                        break;
+                    }
                     var opt = $.extend({
                         title: "Timeline of Link " + self.SID
                     }, dialogOptions);
-                    opt.height = 200;
+                    opt.height = 400;
                     opt.width = 1000;
                     // htimeline[self.SID] = [];
                     timeextent[self.SID] = [];
                     $("#timeline").clone().attr("id", vardlg).dialog(opt)
                         .dialogExtend(dialogExtendOptions);
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
-                    $('#' + vardlg + ' > div:eq(2)').attr("id", cvs); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
-
-                    //dataset[self.SID] = CopySource();
-
+                    $('#' + vardlg + ' > div:eq(2)').attr("id", cvs);
                     timelineset[self.SID] = $("#" + cvs).timeline({
                         "dimension": dataset[self.SID]['dDate'],
                     }).data("vis-timeline");
@@ -187,7 +187,29 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                     timelineset[self.SID].update();
                     break;
                 case "map":
-                    // alert("Yet to come");
+                    var vardlg = "map_dlg_" + self.SID,
+                        varbar = "map_selectbar_" + self.SID,
+                        cvs = "map_cvs_" + self.SID;
+                    if (document.getElementById(vardlg)) {
+                        break;
+                    }
+                    var opt = $.extend({
+                        title: "Map of Link " + self.SID
+                    }, dialogOptions);
+                    $("#map").clone().attr("id", vardlg).dialog(opt)
+                        .dialogExtend(dialogExtendOptions);
+                    $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                    $('#' + vardlg + ' > div:eq(2)').attr("id", cvs);
+                    map[self.SID] = $("#" + cvs).vismap({
+                        "dimension": dataset[self.SID]['dFootprint'],
+                    }).data("vis-vismap");
+                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[self.SID].red + "," +
+                        DlgTcolor[self.SID].green + "," +
+                        DlgTcolor[self.SID].blue + ")"
+                    );
+                    if(hshape[self.SID] == undefined)hshape[self.SID] = [];
+                    map[self.SID].update("init");
                     break;
                 case "network":
                     // var vardlg = "network_dlg_" + self.SID,
@@ -215,6 +237,9 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                         grav_bar = "network_gravity_" + self.SID,
                         bbar = "network_brush_" + self.SID,
                         pbar = "network_pan_" + self.SID;
+                    if (document.getElementById(vardlg)) {
+                        break;
+                    }
                     var opt = $.extend({
                         title: "Network of Link " + self.SID,
                         position: ['left', 36],
@@ -279,6 +304,9 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                     var vardlg = "event_dlg_" + self.SID,
                         vartb = "event_tb_" + self.SID,
                         varbar = "event_selectbar_" + self.SID;
+                    if (document.getElementById(vardlg)) {
+                        break;
+                    }
                     $("#event_dlg").clone().attr("id", vardlg).dialog($.extend({
                         title: "Events of Link " + self.SID,
                         position: ['left', 36 + 800],
@@ -339,6 +367,92 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                     personTable[self.SID].update();
 
                     break;
+                case "organization":
+                    var vardlg = "organization_dlg_" + self.SID,
+                        vartb = "organization_tb_" + self.SID,
+                        varbar = "organization_selectbar_" + self.SID;
+                    if (document.getElementById(vardlg)) {
+                        break;
+                    }
+                    $("#organization_dlg").clone().attr("id", vardlg).dialog($.extend({
+                        title: "Organizations of Link " + self.SID,
+                        position: ['left', 36],
+                        resize: function() {
+                            //eval(vartb+'\.resize();');
+                            organizationTable[self.SID].resize();
+                        },
+                        height: 800
+                    }, dialogOptions))
+                        .dialogExtend(dialogExtendOptions);
+                    $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                    $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
+                    organizationTable[self.SID] = new SIIL.DataTable("#" + vartb);
+                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[self.SID].red + "," +
+                        DlgTcolor[self.SID].green + "," +
+                        DlgTcolor[self.SID].blue + ")"
+                    );
+                    organizationTable[self.SID].update();
+                    break;
+                case "resource":
+                    var vardlg = "resource_dlg_" + self.SID,
+                        vartb = "resource_tb_" + self.SID,
+                        varbar = "resource_selectbar_" + self.SID;
+                    if (document.getElementById(vardlg)) {
+                        break;
+                    }
+                    $("#resource_dlg").clone().attr("id", vardlg).dialog($.extend({
+                        title: "Resources of Link " + self.SID,
+                        position: ['left', 36],
+                        resize: function() {
+                            //eval(vartb+'\.resize();');
+                            resourceTable[self.SID].resize();
+                        },
+                        height: 800
+                    }, dialogOptions))
+                        .dialogExtend(dialogExtendOptions);
+                    $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                    $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
+                    resourceTable[self.SID] = new SIIL.DataTable("#" + vartb);
+                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[self.SID].red + "," +
+                        DlgTcolor[self.SID].green + "," +
+                        DlgTcolor[self.SID].blue + ")"
+                    );
+                    resourceTable[self.SID].update();
+                    break;
+                case "location":
+                    var vardlg = "location_dlg_" + self.SID,
+                        vartb = "location_tb_" + self.SID,
+                        varbar = "location_selectbar_" + self.SID;
+                    if (document.getElementById(vardlg)) {
+                        break;
+                    }
+                    if(hshape[self.SID] == undefined)hshape[self.SID] = [];
+                    $("#location_dlg").clone().attr("id", vardlg).dialog($.extend({
+                        title: "Locations of Link " + self.SID,
+                        position: ['left', 36],
+                        close: function(event, ui) {
+                            var tmp = $(this).attr("id");
+                            // alert(tmp);
+                            delete locationTable[tmp.split("_")[2]];
+                            $(this).dialog('destroy').remove();
+                        },
+                        resize: function() {
+                            locationTable[self.SID].resize();
+                        },
+                    }, dialogOptions))
+                        .dialogExtend(dialogExtendOptions);
+                    $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                    $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
+                    locationTable[self.SID] = new SIIL.DataTable("#" + vartb);
+                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                        DlgTcolor[self.SID].red + "," +
+                        DlgTcolor[self.SID].green + "," +
+                        DlgTcolor[self.SID].blue + ")"
+                    );
+                    locationTable[self.SID].update();
+                    break;
 
             }
             break;
@@ -386,7 +500,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                         });
                         dataset[result.NewLinkNum]['FilterdDate'].filter(function(d) {
                             if (+d.date >= +timeextent[self.SID][0] && +d.date <= +timeextent[self.SID][1]) {
-                            //if($.inArray(d.date, htimeline[self.SID]) != -1) {
+                                //if($.inArray(d.date, htimeline[self.SID]) != -1) {
                                 return true;
                             }
                         });
@@ -394,6 +508,8 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                     case "network":
                     case "person":
                     case "organization":
+                    case "location":
+                    case "resource":
                     case "event":
                         // alert("before filtering:length of dataset " + result.NewLinkNum + " " + dataset[result.NewLinkNum]['set'].groupAll().value());
                         // alert("len of dindex " + dindex[self.SID].length);
@@ -417,15 +533,45 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
 
                 dindex[result.NewLinkNum] = [];
                 msgID[result.NewLinkNum] = [];
+                htimeline[result.NewLinkNum] = [];
                 switch (target.Type) {
                     case "timeline":
-                        // alert("Yet to come");
+                        timeextent[result.NewLinkNum] = [];
+                        var vardlg = "timeline_dlg_" + result.NewLinkNum,
+                            varbar = "timeline_selectbar_" + result.NewLinkNum,
+                            cvs = "timeline_cvs_" + result.NewLinkNum;
+                        var opt = $.extend({
+                            title: "Timeline of Link " + result.NewLinkNum,
+                            close: function(event, ui) {
+                                var tmp = $(this).attr("id");
+                                delete timelineset[tmp.split("_")[2]];
+                                $(this).dialog('destroy').remove();
+                            },
+                            resize: function() {
+                                timelineset[result.NewLinkNum].resize();
+                            }
+                        }, dialogOptions);
+                        opt.height = 400;
+                        opt.width = 1000;
+                        timeextent[result.NewLinkNum] = [];
+                        $("#timeline").clone().attr("id", vardlg).dialog(opt)
+                            .dialogExtend(dialogExtendOptions);
+                        $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                        $('#' + vardlg + ' > div:eq(2)').attr("id", cvs);
+                        timelineset[result.NewLinkNum] = $("#" + cvs).timeline({
+                            "dimension": dataset[result.NewLinkNum]['dDate'],
+                        }).data("vis-timeline");
+                        $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                            DlgTcolor[result.NewLinkNum].red + "," +
+                            DlgTcolor[result.NewLinkNum].green + "," +
+                            DlgTcolor[result.NewLinkNum].blue + ")"
+                        );
+                        timelineset[result.NewLinkNum].update();
                         break;
                     case "map":
-                        // alert("Yet to come");
                         break;
                     case "network":
-                        
+
                         var vardlg = "network_dlg_" + result.NewLinkNum,
                             varbar = "network_selectbar_" + result.NewLinkNum,
                             cvs = "network_cvs_" + result.NewLinkNum,
@@ -437,6 +583,11 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                         var opt = $.extend({
                             title: "Network of Link " + result.NewLinkNum,
                             position: ['left', 36],
+                            close: function(event, ui) {
+                                var tmp = $(this).attr("id");
+                                delete network[tmp.split("_")[2]];
+                                $(this).dialog('destroy').remove();
+                            },
                             resize: function() {
                                 network[result.NewLinkNum].resize();
                             }
@@ -454,11 +605,6 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                         $('#' + vardlg + ' > div:eq(3)').attr("id", cvs);
                         network[result.NewLinkNum] = new SIIL.Network("#" + cvs);
                         events_id = [];
-
-                        // alert("another network using a filtered dataset; and the Condition is " + gCondition["events_id"]);
-
-
-
                         dataset[result.NewLinkNum]['dDate'].top(Infinity).forEach(function(p, i) {
                             events_id.push(p.uid);
                         });
@@ -471,9 +617,6 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                             DlgTcolor[result.NewLinkNum].blue + ")"
                         );
                         network[result.NewLinkNum].update();
-
-
-
                         break;
                     case "message":
                         var vardlg = "message_dlg_" + result.NewLinkNum,
@@ -506,7 +649,6 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                             DlgTcolor[result.NewLinkNum].green + "," +
                             DlgTcolor[result.NewLinkNum].blue + ")"
                         );
-                        alert("generating a new messageTable");
                         messageTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb); //messageTable's key should include both Id and subID related to the vis type
                         messageTable[result.NewLinkNum].update();
                         break;
@@ -554,15 +696,13 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                         }
                         $("#person_dlg").clone().attr("id", vardlg).dialog($.extend({
                             title: "People of Link " + result.NewLinkNum,
-                            position: ['left', 36 + 800 * 2],
+                            position: ['left', 36 + 800],
                             close: function(event, ui) {
                                 var tmp = $(this).attr("id");
-                                // alert(tmp);
                                 delete personTable[tmp.split("_")[1]];
                                 $(this).dialog('destroy').remove();
                             },
                             resize: function() {
-                                //eval(vartb+'\.resize();');
                                 personTable[result.NewLinkNum].resize();
                             },
                             height: 800
@@ -587,8 +727,12 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                         $("#organization_dlg").clone().attr("id", vardlg).dialog($.extend({
                             title: "Organizations of Link " + result.NewLinkNum,
                             position: ['left', 36],
+                            close: function(event, ui) {
+                                var tmp = $(this).attr("id");
+                                delete organizationTable[tmp.split("_")[2]];
+                                $(this).dialog('destroy').remove();
+                            },
                             resize: function() {
-                                //eval(vartb+'\.resize();');
                                 organizationTable[result.NewLinkNum].resize();
                             },
                             height: 800
@@ -604,6 +748,64 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                             DlgTcolor[result.NewLinkNum].blue + ")"
                         );
                         organizationTable[result.NewLinkNum].update();
+                        break;
+                    case "resource":
+                        var vardlg = "resource_dlg_" + result.NewLinkNum,
+                            vartb = "resource_tb_" + result.NewLinkNum,
+                            varbar = "resource_selectbar_" + result.NewLinkNum;
+                        $("#resource_dlg").clone().attr("id", vardlg).dialog($.extend({
+                            title: "Resources of Link " + result.NewLinkNum,
+                            position: ['left', 36],
+                            close: function(event, ui) {
+                                var tmp = $(this).attr("id");
+                                delete resourceTable[tmp.split("_")[2]];
+                                $(this).dialog('destroy').remove();
+                            },
+                            resize: function() {
+                                resourceTable[result.NewLinkNum].resize();
+                            },
+                            height: 800
+                        }, dialogOptions))
+                            .dialogExtend(dialogExtendOptions);
+                        $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                        $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
+                        resourceTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
+                        DlgTcolor[result.NewLinkNum] = randomcolor();
+                        $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                            DlgTcolor[result.NewLinkNum].red + "," +
+                            DlgTcolor[result.NewLinkNum].green + "," +
+                            DlgTcolor[result.NewLinkNum].blue + ")"
+                        );
+                        resourceTable[result.NewLinkNum].update();
+                        break;
+                    case "location":
+                        var vardlg = "location_dlg_" + result.NewLinkNum,
+                            vartb = "location_tb_" + result.NewLinkNum,
+                            varbar = "location_selectbar_" + result.NewLinkNum;
+                        hshape[result.NewLinkNum] = [];
+                        $("#location_dlg").clone().attr("id", vardlg).dialog($.extend({
+                            title: "Locations of Link " + result.NewLinkNum,
+                            position: ['left', 36],
+                            close: function(event, ui) {
+                                var tmp = $(this).attr("id");
+                                delete locationTable[tmp.split("_")[2]];
+                                $(this).dialog('destroy').remove();
+                            },
+                            resize: function() {
+                                locationTable[result.NewLinkNum].resize();
+                            },
+                        }, dialogOptions))
+                            .dialogExtend(dialogExtendOptions);
+                        $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                        $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
+                        locationTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
+                        DlgTcolor[result.NewLinkNum] = randomcolor();
+                        $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                            DlgTcolor[result.NewLinkNum].red + "," +
+                            DlgTcolor[result.NewLinkNum].green + "," +
+                            DlgTcolor[result.NewLinkNum].blue + ")"
+                        );
+                        locationTable[result.NewLinkNum].update();
                         break;
                     default:
                         alert("not captured target type -- subset goal unclear");
