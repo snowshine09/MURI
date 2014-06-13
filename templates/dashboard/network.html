@@ -11,53 +11,53 @@
 	<div id="selectbar" class = "selectbar dropdown">Generate the next linked window...
 		<select class="selectpicker form-control">
 			<option value="">---</option>
-            <optgroup label = "other visualizations...">
-                <option value="timeline_self">Timeline</option>
-                <option value="map_self">Map</option>
-                <option value="network_self">Network (shadow)</option>
-                <option value="message_self">Messages</option>
-                <option value="event_self">Events</option>
-                <option value="person_self">People</option>
-                <option value="organization_self">Organizations</option>
-                <option value="resource_self">Resources</option>
-                <option value="location_self">Locations</option>
-            </optgroup>
-            <optgroup label = "Filter to a subset in ...">
-                <option value="network_subset">Network</option>
-            </optgroup>
-        </select>   
+			<optgroup label = "other visualizations...">
+				<option value="timeline_self">Timeline</option>
+				<option value="map_self">Map</option>
+				<option value="network_self">Network (shadow)</option>
+				<option value="message_self">Messages</option>
+				<option value="event_self">Events</option>
+				<option value="person_self">People</option>
+				<option value="organization_self">Organizations</option>
+				<option value="resource_self">Resources</option>
+				<option value="location_self">Locations</option>
+			</optgroup>
+			<optgroup label = "Filter to a subset in ...">
+				<option value="network_subset">Network</option>
+			</optgroup>
+		</select>   
 	</div>
 	<div class = "interaction">
 		<div class="reset">
-	  		<a href="javascript:void(0)" onclick="reset();return false;">Reset</a>
+			<a href="javascript:void(0)" onclick="reset();return false;">Reset</a>
 		</div>
 		<div class="showcontext">
-	  		<a href="javascript:void(0)" onclick="showcontext();return false;">Show Context (parent view)</a>
+			<a href="javascript:void(0)" onclick="showcontext();return false;">Show Context (parent view)</a>
 		</div>
 		
 
 		<div class = "gravity">
 			<label>Gravity</label>
 			<input type="text" class="gravity_text" 
-            style="border:0; color:#b9cd6d; font-weight:bold;">
-            <div></div>
+			style="border:0; color:#b9cd6d; font-weight:bold;">
+			<div></div>
 		</div>
 		<div class = "charge">
 		</div>
 		<div class = "linkdistance">
 		</div>
 	</div>
-    
+
 	<div class = "slider-group">
 		<div class = "radio">
 			<label>
-				<input type = "radio" value="pan" checked>
+				<input type = "radio" name="optionsRadios" value="pan" checked>
 				Pan mode
 			</label>
 		</div>
 		<div class = "radio">
 			<label>
-				<input type = "radio" value="brush">
+				<input type = "radio" name="optionsRadios" value="brush">
 				Brush mode
 			</label>
 		</div>
@@ -65,5 +65,6 @@
 	</div>
 	
 	<div id = "nw_cvs" class="cvs">
-	
+
+	</div>
 </div>

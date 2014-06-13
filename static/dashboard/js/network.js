@@ -259,18 +259,18 @@ SIIL.Network = function(div) {
   }
 
   function mousedown() {
-    // self.brushmode = document.getElementById("network_brush_" + self.SID).checked;
-    // self.panmode = document.getElementById("network_pan_" + self.SID).checked;
-    // if (self.brushmode) {
-    //   d.fixed = true;
-    //   d3.select(this).classed("sticky", true);
-    //   if (self.shiftKey) d3.select(this).classed("selected", d.selected = !d.selected);
-    //   else node.classed("selected", function(p) {
-    //     return p.selected = d === p;
-    //   });
-    // } else if (self.panmode) {
+    self.brushmode = document.getElementById("network_brush_" + self.SID).checked;
+    self.panmode = document.getElementById("network_pan_" + self.SID).checked;
+    if (self.brushmode) {
+      d.fixed = true;
+      d3.select(this).classed("sticky", true);
+      if (self.shiftKey) d3.select(this).classed("selected", d.selected = !d.selected);
+      else node.classed("selected", function(p) {
+        return p.selected = d === p;
+      });
+    } else if (self.panmode) {
     redraw();
-    // }
+    }
   }
   var brush = svg.append("g")
     .datum(function() {

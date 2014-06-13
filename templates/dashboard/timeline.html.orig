@@ -1,0 +1,51 @@
+{% load static %}
+{% load compress %}
+{% block extralib %}
+{% compress js %}
+<script type="text/javascript" language="javascript" src="{% static 'dashboard/js/timeline.js' %}"></script>
+{% endcompress %}
+<link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/timeline.css' %}">
+{% endblock %}
+
+<<<<<<< HEAD
+<div id="timeline" class='timeline' style='display: none'>
+	<div id="selectbar" class = "selectbar dropdown">Generate the next linked window...
+		<select class="form-control">
+			<option value="Timeline">Timeline</option>
+			<option value="Network">Network</option>
+			<option value="Map">Map</option>
+			<option value="Messages">Messages</option>
+			<option value="Events">Events</option>
+			<option value="People">People</option>
+		</select>
+	</div>
+=======
+<div id="timeline"  style='display: none'>
+	<div id="selectbar" class="selectbar dropdown">Generate the next linked window...
+        <select class="selectpicker form-control" label="Other views...">
+            <option value="">---</option>
+            <optgroup label = "other visualizations...">
+                <option value="timeline_self">Timeline</option>
+                <option value="map_self">Map</option>
+                <option value="network_self">Network</option>
+                <option value="message_self">Messages</option>
+                <option value="event_self">Events(shadow)</option>
+                <option value="person_self">People</option>
+            </optgroup>
+            <optgroup label = "Filter to a subset in ...">
+                <option value="event_subset">Event</option>
+            </optgroup>
+        </select>   
+    </div>
+    <div class = "interaction">
+        <div class="reset">
+            <a href="javascript:void(0)" onclick="reset();return false;">Reset</a>
+        </div>
+        <div class="showcontext">
+            <a href="javascript:void(0)" onclick="showcontext();return false;">Show Context (parent view)</a>
+        </div>
+    </div>
+>>>>>>> 011e3f4bbd78c33e8a4f0bf604782876a82dc3ac
+	<div id = "timeline_cvs">
+	</div>
+</div>

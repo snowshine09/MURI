@@ -16,6 +16,8 @@
   
 }
 
+.highlight { background-color: yellow }
+
 div.ui-dialog {
   padding: 0!important;
 }

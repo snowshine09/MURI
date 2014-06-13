@@ -32,6 +32,12 @@ SIIL.DataTable = function(div) {
             $("#" + cmb).attr("selectedIndex", 0);
         });
 
+    $("#" + self.tbName + "_filter" + ' > label:eq(0)' + ' > input:eq(0)').attr("id", self.tbName + "_input").bind("paste cut keyup", function() { //change(function(){
+        //alert("change");//unbind("click").bind("click", function(e) {
+        $("#" + self.tbName).removeHighlight();
+        $("#" + self.tbName).highlight($("#" + self.tbName + "_input").val()); //$('table#id tr').each(function () {// + " tr"
+    }); //message_tb_15_filter
+
 };
 
 SIIL.DataTable.prototype.resize = function() {
@@ -274,8 +280,7 @@ SIIL.DataTable.prototype.update = function(uType) {
                 // alert("renderAllExcept finished! for "+self.tbName);
             });
 
-        }
-        else renderAllExcept(self.tbName, "brush");
+        } else renderAllExcept(self.tbName, "brush");
 
     });
 
