@@ -11,7 +11,32 @@ SIIL.Network = function(div) {
   this.width = $("#network_dlg_" + this.SID).innerWidth(); //outerWidth();
   this.height = $("#network_dlg_" + this.SID).innerHeight() - 121;
   this.brushmode = false;
-  this.panmode = false;
+  this.panmode = true;
+
+  var cmb = "network_selectbar_" + self.SID;
+    $("#" + cmb).attr("selectedIndex", 0)//self.table.$('tr').unbind("click").bind("click", function(e) { 
+      .unbind("change").bind("change",function() {
+        var x = $("#" + cmb + " option:selected").val();
+        var selectedNodes = svg.selectAll(".selected");
+        // alert(selectedNodes.size());
+        // alert(selectedNodes[0].length);
+        if (selectedNodes) {
+          dindex[self.SID] = [];
+          selectedNodes.each(function(d) {
+            dindex[self.SID].push(d.uid);
+
+          });
+
+        }
+        generateOthers(self.Name, x);
+
+        $("#" + cmb + " option:selected").removeAttr('selected');
+        $("#" + cmb).attr("selectedIndex", 0);
+      });
+
+  $("#network_mode_bar_"+this.SID).click(function(){
+    var test = $(event.target).find('input');
+  });
 
   var force = null;
   this.shiftKey = null;
@@ -131,27 +156,6 @@ SIIL.Network = function(div) {
 
 
 
-    var cmb = "network_selectbar_" + self.SID;
-    $("#" + cmb).attr("selectedIndex", 0)//self.table.$('tr').unbind("click").bind("click", function(e) { 
-      .unbind("change").bind("change",function() {
-        var x = $("#" + cmb + " option:selected").val();
-        var selectedNodes = svg.selectAll(".selected");
-        // alert(selectedNodes.size());
-        // alert(selectedNodes[0].length);
-        if (selectedNodes) {
-          dindex[self.SID] = [];
-          selectedNodes.each(function(d) {
-            dindex[self.SID].push(d.uid);
-
-          });
-
-        }
-        generateOthers(self.Name, x);
-
-        $("#" + cmb + " option:selected").removeAttr('selected');
-        $("#" + cmb).attr("selectedIndex", 0);
-      });
-
     events_id = []
     dataset[self.SID]['dDate'].top(Infinity).forEach(function(p, i) {
       events_id.push(p.uid);
@@ -182,15 +186,16 @@ SIIL.Network = function(div) {
         .call(force.drag)
         .on("mouseover", mouseover)
         .on("mouseout", mouseout)
-        .on("mousedown",
-          function(d) {
-            d.fixed = true;
-            d3.select(this).classed("sticky", true);
-            if (self.shiftKey) d3.select(this).classed("selected", d.selected = !d.selected);
-            else node.classed("selected", function(p) {
-              return p.selected = d === p;
-            });
-          });
+        .on("mousedown", mousedown
+          // function(d) {
+          //   d.fixed = true;
+          //   d3.select(this).classed("sticky", true);
+          //   if (self.shiftKey) d3.select(this).classed("selected", d.selected = !d.selected);
+          //   else node.classed("selected", function(p) {
+          //     return p.selected = d === p;
+          //   });
+          // }
+      );
 
       node.append("image")
         .attr("xlink:href", function(d) {
@@ -262,65 +267,67 @@ SIIL.Network = function(div) {
     self.brushmode = document.getElementById("network_brush_" + self.SID).checked;
     self.panmode = document.getElementById("network_pan_" + self.SID).checked;
     if (self.brushmode) {
-      d.fixed = true;
+      d3.select(this).fixed = true;
       d3.select(this).classed("sticky", true);
-      if (self.shiftKey) d3.select(this).classed("selected", d.selected = !d.selected);
+      if (self.shiftKey) d3.select(this).classed("selected", d3.select(this).selected = !d3.select(this).selected);
       else node.classed("selected", function(p) {
-        return p.selected = d === p;
+        return p.selected = d3.select(this) === p;
       });
     } else if (self.panmode) {
-    redraw();
+      redraw();
     }
   }
-  var brush = svg.append("g")
-    .datum(function() {
-      return {
-        selected: false,
-        previouslySelected: false
-      };
-    })
-    .attr("class", "brush")
-    .call(d3.svg.brush()
-      .x(d3.scale.identity().domain([0, this.width]))
-      .y(d3.scale.identity().domain([0, this.height]))
-      .on("brushstart", function(d) {
-        node.each(function(d) {
-          // console.log(d);
-          d.previouslySelected = self.shiftKey && d.selected;
-        });
+  if (self.brushmode == true) {
+    var brush = svg.append("g")
+      .datum(function() {
+        return {
+          selected: false,
+          previouslySelected: false
+        };
       })
-      .on("brush", function() {
-        var extent = d3.event.target.extent();
-        node.classed("selected", function(d) {
-          // if(d.previouslySelected ^
-          //   (extent[0][0] <= d.x && d.x < extent[1][0] && extent[0][1] <= d.y && d.y < extent[1][1]))
-          //   alert(d.node+" is selected");
-          // (Xcordscale(parseFloat(extent[0][0])) <= Xcordscale(parseFloat(d.x)) && Xcordscale(parseFloat(d.x)) < Xcordscale(parseFloat(extent[1][0])) && extent[0][1] <= Xcordscale(parseFloat(d.y))  && Ycordscale(parseFloat(d.y))  < Ycordscale(parseFloat(extent[1][1])) );
-          return d.selected = d.previouslySelected ^
-            (extent[0][0] <= d.x && d.x < extent[1][0] && extent[0][1] <= d.y && d.y < extent[1][1]);
-        });
-      })
-      .on("brushend", function() {
-        d3.event.target.clear();
-        d3.select(this).call(d3.event.target);
-        htimeline[self.SID] = [];
-        dindex[self.SID] = [];
-        var selectedNodes = svg.selectAll(".selected");
-
-        if (selectedNodes) {
-          
-          selectedNodes.each(function(d) {
-            if($.inArray(d.uid,dindex[self.SID])==-1)dindex[self.SID].push(d.uid);
-            var dDate = new Date(d.date);
-            if ($.inArray(dDate, htimeline[self.SID]) == -1) htimeline[self.SID].push(dDate);
-
+      .attr("class", "brush")
+      .call(d3.svg.brush()
+        .x(d3.scale.identity().domain([0, this.width]))
+        .y(d3.scale.identity().domain([0, this.height]))
+        .on("brushstart", function(d) {
+          node.each(function(d) {
+            // console.log(d);
+            d.previouslySelected = self.shiftKey && d.selected;
           });
+        })
+        .on("brush", function() {
+          var extent = d3.event.target.extent();
+          node.classed("selected", function(d) {
+            // if(d.previouslySelected ^
+            //   (extent[0][0] <= d.x && d.x < extent[1][0] && extent[0][1] <= d.y && d.y < extent[1][1]))
+            //   alert(d.node+" is selected");
+            // (Xcordscale(parseFloat(extent[0][0])) <= Xcordscale(parseFloat(d.x)) && Xcordscale(parseFloat(d.x)) < Xcordscale(parseFloat(extent[1][0])) && extent[0][1] <= Xcordscale(parseFloat(d.y))  && Ycordscale(parseFloat(d.y))  < Ycordscale(parseFloat(extent[1][1])) );
+            return d.selected = d.previouslySelected ^
+              (extent[0][0] <= d.x && d.x < extent[1][0] && extent[0][1] <= d.y && d.y < extent[1][1]);
+          });
+        })
+        .on("brushend", function() {
+          d3.event.target.clear();
+          d3.select(this).call(d3.event.target);
+          htimeline[self.SID] = [];
+          dindex[self.SID] = [];
+          var selectedNodes = svg.selectAll(".selected");
 
-        }
-        renderAllExcept(self.Name, "brush");
-      })
-    );
+          if (selectedNodes) {
 
+            selectedNodes.each(function(d) {
+              if ($.inArray(d.uid, dindex[self.SID]) == -1) dindex[self.SID].push(d.uid);
+              var dDate = new Date(d.date);
+              if ($.inArray(dDate, htimeline[self.SID]) == -1) htimeline[self.SID].push(dDate);
+
+            });
+
+          }
+          renderAllExcept(self.Name, "brush");
+        })
+      );
+
+  }
 
 
 };
