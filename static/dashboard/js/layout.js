@@ -432,8 +432,8 @@ function showDialogs(dialogs) {
                     $('#' + vardlg + ' > div:eq(1) > div:eq(0)').attr("id", rs_bar);
                     $('#' + vardlg + ' > div:eq(1) > div:eq(2) > div:eq(0)').attr("id", grav_bar);
                     $('#' + vardlg + ' > div:eq(2)').attr("id", mode_bar);
-                    $('#' + vardlg + ' > div:eq(2) > div:eq(0) > label:eq(0) > input:eq(0)').attr("id", pbar);
-                    $('#' + vardlg + ' > div:eq(2) > div:eq(1) > label:eq(0) > input:eq(0)').attr("id", bbar);
+                    $('#' + vardlg + ' > div:eq(2) > div:eq(0) > label:eq(0) > input:eq(0)').attr("id", pbar).attr("name","mode_"+result.NewLinkNum);
+                    $('#' + vardlg + ' > div:eq(2) > div:eq(1) > label:eq(0) > input:eq(0)').attr("id", bbar).attr("name","mode_"+result.NewLinkNum);
                     $('#' + vardlg + ' > div:eq(3)').attr("id", cvs);
                     network[result.NewLinkNum] = new SIIL.Network("#" + cvs);
                     dataset[result.NewLinkNum] = CopySource();
