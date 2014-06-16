@@ -19,8 +19,6 @@ SIIL.Network = function(div) {
   .unbind("change").bind("change", function() {
     var x = $("#" + cmb + " option:selected").val();
     var selectedNodes = svg.selectAll(".selected");
-    // alert(selectedNodes.size());
-    // alert(selectedNodes[0].length);
     if (selectedNodes) {
       dindex[self.SID] = [];
       selectedNodes.each(function(d) {
@@ -45,10 +43,10 @@ SIIL.Network = function(div) {
     update_mode();
   });
   //if no radio button is selected, choose pan mode as default
-  var $radios = $('input:radio[name=mode]');
-  if ($radios.is(':checked') === false) {
-    $radios.filter('[value=pan]').prop('checked', true);
-  }
+  // var $radios = $('input:radio[name=mode]');
+  // if ($radios.is(':checked') === false) {
+  //   $radios.filter('[value=pan]').prop('checked', true);
+  // }
 
   var force = d3.layout.force()
     .nodes([])
@@ -59,12 +57,15 @@ SIIL.Network = function(div) {
     .size([self.width, self.height])
     .on("tick", tick);
 
-  this.shiftKey = null;
-  // color = d3.scale.linear()
-  //     .domain([-1, 0, 1])
-  //     .range(["red", "white", "green"]);
-  // var Xcordscale = d3.scale.linear().domain([-300.0, 1000.0]).range([0, parseFloat(this.width)]),
-  //   Ycordscale = d3.scale.linear().domain([-300.0, 1000.0]).range([0, parseFloat(this.height)]);
+  this.shiftKey = null;//set shiftkey available all over the body
+  d3.select("body")
+    .attr("tabindex", 1)
+    .on("keyup", keyflip)
+    .on("keydown", keyflip)
+    .each(function() {
+      this.focus();
+    });
+
   var x_scale = d3.scale.identity().domain([0, this.width]),
     y_scale = d3.scale.identity().domain([0, this.height]);
 
@@ -171,8 +172,8 @@ SIIL.Network = function(div) {
   var links = force.links();
 
   function keyflip() {
-    alert("shiftKey");
     self.shiftKey = d3.event.shiftKey || d3.event.metaKey;
+    //console.log(self.shiftKey);
   }
 
   function redraw() {
@@ -181,8 +182,6 @@ SIIL.Network = function(div) {
       "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
     //force.stop();
   }
-  // var leftedge = 1000, rightedge = 0, topedge = 100, bottomedge = 0;
-  // var leftedge, rightedge, topedge, bottomedge;
 
   function tick() {
     link.attr("x1", function(d) {
@@ -224,11 +223,7 @@ SIIL.Network = function(div) {
 
   function dragended(d) {
     d3.select(this).classed("dragging", false);
-    force.stop();
-  }
-
-  function zoomended(d) {
-    force.stop();
+    //force.stop();
   }
 
   function update_mode() {
@@ -241,23 +236,23 @@ SIIL.Network = function(div) {
       // .on("mousedown", mousedown);
       svg.selectAll(".brush").remove();
 
+
+
     } else if (self.brushmode == true) {
-      var brush = svg.append("g")
+      self.brush_g = svg.append("g")
         .datum(function() {
           return {
             selected: false,
             previouslySelected: false
           };
         })
-        .attr("tabindex",2)
+        .attr("tabindex", 2)
         .attr("class", "brush")
         .call(self.brush);
       //svg.selectAll(".zoom").remove();
       self.node_g.on("mousedown",
         // mousedown
         function(d) {
-        alert("node_g_mousedown");
-          
           d.fixed = true;
           d3.select(this).classed("sticky", true);
           if (self.shiftKey) d3.select(this).classed("selected", d.selected = !d.selected);
@@ -317,7 +312,7 @@ SIIL.Network = function(div) {
         .call(self.drag);
       // .on("mouseover", mouseover)
       // .on("mouseout", mouseout)
-      
+
 
       // self.node_g.on("click", function(d) {
       //   if (d3.event.defaultPrevented && self.panmode) return; // ignore drag
@@ -364,14 +359,8 @@ SIIL.Network = function(div) {
       });
 
       force.start();
-      // force.on("end", function() {
-      //   // alert(self.height + "  " + self.width);
-      //   // alert("top: " + topedge + " bottom: " + bottomedge + "left: " + leftedge + "right: " + rightedge);
-      // })
+
     });
-    // end new code request data on the fly
-
-
   }
 
   // function mouseover() {
