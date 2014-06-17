@@ -6,7 +6,7 @@ $.widget("vis.visworkbench", $.vis.viscontainer, {
     $("#workbench_container").removeClass("hidden");
 
 	var editor = CKEDITOR.replace("workbench");
-    CKEDITOR.config.extraPlugins = 'contextmenu,abbr,markmenu';
+    CKEDITOR.config.extraPlugins = 'contextmenu,abbr,markmenu,templates';
     // editor.contextMenu = CKEDITOR.plugins.contextmenu;
     // if ( editor.contextMenu ) {
     //         editor.addMenuGroup( 'AnnoGroup' );

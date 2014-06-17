@@ -13,6 +13,7 @@ CKEDITOR.plugins.add( 'abbr', {
 
 	// The plugin initialization logic goes inside this method.
 	init: function( editor ) {
+		//alert("initalize abbr");
 
 		// Define an editor command that opens our dialog.
 		editor.addCommand( 'abbr', new CKEDITOR.dialogCommand( 'abbrDialog' ) );

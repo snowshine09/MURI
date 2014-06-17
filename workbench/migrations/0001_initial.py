@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import datetime
+from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
@@ -44,6 +44,7 @@ class Migration(SchemaMigration):
             ('content', self.gf('django.db.models.fields.CharField')(max_length=5000, null=True, blank=True)),
             ('date_created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, null=True, blank=True)),
             ('pir', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['workbench.PIR'], null=True, blank=True)),
+            ('vis', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
         ))
         db.send_create_signal(u'workbench', ['Note'])
 
@@ -114,7 +115,8 @@ class Migration(SchemaMigration):
             'date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'pir': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['workbench.PIR']", 'null': 'True', 'blank': 'True'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'})
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'}),
+            'vis': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'})
         },
         u'workbench.pir': {
             'Meta': {'object_name': 'PIR'},

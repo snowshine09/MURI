@@ -5,8 +5,7 @@
 <script src="{% static 'dashboard/lib/jquery-ui-contextmenu/jquery.ui-contextmenu.js' %}" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/layout.css' %}">
 <script type="text/javascript" src="{% static 'dashboard/lib/ckeditor-4.4.1/ckeditor.js' %}"></script>
-<!-- <script type="text/javascript" src="{% static 'dashboard/lib/ckeditor-4.4.1/plugins/contextmenu/plugin.js' %}"></script>
-<script type="text/javascript" src="{% static 'dashboard/lib/ckeditor-4.4.1/config.js' %}"></script> -->
+
 {% compress css %}
 <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/workbench.css' %}">
 {% endcompress %}
@@ -17,14 +16,18 @@
 
 
 <style>
-    .ui-layout-pane {
-        border:0px;
-    }
+.ui-layout-pane {
+    border:0px;
+}
 </style>
 <div id="workbench_container"  class="hidden">
     <textarea id="workbench">
     </textarea>
-
+    <div display="inline-block";>
+        <button id="save-new-note" class="btn btn-sm btn-primary">Save</button>
+        <button id="publish-new-claim" class="btn btn-sm btn-default">Publish</button>
+        <button id="discard-new-claim" class="btn btn-sm btn-default">Discard</button>
+    </div>
 </div>
 <!--
 <div id="workbench" class="hidden">
@@ -108,4 +111,4 @@
     <li><a href="#claim">Mark as Claim</a>
     <li><a href="#evidence">Mark as Evidence</a>
     <li><a href="#conclusion">Mark as Conclusion</a>
-</ul> -->
+    </ul> -->

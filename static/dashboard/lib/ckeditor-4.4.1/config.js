@@ -23,7 +23,9 @@ CKEDITOR.editorConfig = function( config ) {
     { name: 'colors' },
     { name: 'about' }
 ];
-
+//templates_files : ['xml:fcktemplates.xml']
 // config.removePlugins= 'pastetext,clipboard,pastefromword';
  config.allowedContent = true;
+ //config.extraPlugins='xmltemplates, templates';
+ //config.templates_files = [ 'plugins/templates/templates/default.js' ];
 };
