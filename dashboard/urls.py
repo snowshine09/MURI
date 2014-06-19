@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     url(r'^events/all$', queryEvent),
     url(r'^network$', prepareNetwork),
     url(r'^propagate$', related_entities),
+    # url(r'^note$', storeNote),
     # url(r'^$', 'eventviewer.views.home', name='home'),
     # url(r'^eventviewer/', include('eventviewer.foo.urls')),
 

@@ -172,7 +172,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                     opt.width = 1000;
                     // htimeline[self.SID] = [];
                     timeextent[self.SID] = [];
-                    $("#timeline").clone().attr("id", vardlg).dialog(opt)
+                    $("#timeline").clone().attr("id", vardlg).addClass("visdlg").dialog(opt)
                         .dialogExtend(dialogExtendOptions);
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
                     $('#' + vardlg + ' > div:eq(2)').attr("id", cvs);
@@ -196,7 +196,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                     var opt = $.extend({
                         title: "Map of Link " + self.SID
                     }, dialogOptions);
-                    $("#map").clone().attr("id", vardlg).dialog(opt)
+                    $("#map").clone().attr("id", vardlg).addClass("visdlg").dialog(opt)
                         .dialogExtend(dialogExtendOptions);
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
                     $('#' + vardlg + ' > div:eq(2)').attr("id", cvs);
@@ -250,7 +250,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                     }, dialogOptions);
                     opt.height = 660;
                     opt.width = 996;
-                    $("#network").clone().attr("id", vardlg).dialog(opt)
+                    $("#network").clone().attr("id", vardlg).addClass("visdlg").dialog(opt)
                         .dialogExtend(dialogExtendOptions);
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
                     $('#' + vardlg + ' > div:eq(1) > div:eq(1)').attr("id", ctxt_bar);
@@ -275,7 +275,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                     if (document.getElementById(vardlg)) {
                         break;
                     }
-                    $("#message_dlg").clone().attr("id", vardlg).dialog($.extend({
+                    $("#message_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
                         title: "Messages of Link " + self.SID,
                         position: ['left', 36],
                         close: function(event, ui) {
@@ -309,7 +309,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                     if (document.getElementById(vardlg)) {
                         break;
                     }
-                    $("#event_dlg").clone().attr("id", vardlg).dialog($.extend({
+                    $("#event_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
                         title: "Events of Link " + self.SID,
                         position: ['left', 36 + 800],
                         close: function(event, ui) {
@@ -342,7 +342,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                     if (document.getElementById(vardlg)) {
                         break;
                     }
-                    $("#person_dlg").clone().attr("id", vardlg).dialog($.extend({
+                    $("#person_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
                         title: "People of Link " + self.SID,
                         position: ['left', 36 + 800 * 2],
                         close: function(event, ui) {
@@ -376,7 +376,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                     if (document.getElementById(vardlg)) {
                         break;
                     }
-                    $("#organization_dlg").clone().attr("id", vardlg).dialog($.extend({
+                    $("#organization_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
                         title: "Organizations of Link " + self.SID,
                         position: ['left', 36],
                         resize: function() {
@@ -403,7 +403,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                     if (document.getElementById(vardlg)) {
                         break;
                     }
-                    $("#resource_dlg").clone().attr("id", vardlg).dialog($.extend({
+                    $("#resource_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
                         title: "Resources of Link " + self.SID,
                         position: ['left', 36],
                         resize: function() {
@@ -431,7 +431,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                         break;
                     }
                     if(hshape[self.SID] == undefined)hshape[self.SID] = [];
-                    $("#location_dlg").clone().attr("id", vardlg).dialog($.extend({
+                    $("#location_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
                         title: "Locations of Link " + self.SID,
                         position: ['left', 36],
                         close: function(event, ui) {
@@ -556,7 +556,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                         opt.height = 400;
                         opt.width = 1000;
                         timeextent[result.NewLinkNum] = [];
-                        $("#timeline").clone().attr("id", vardlg).dialog(opt)
+                        $("#timeline").clone().attr("id", vardlg).addClass("visdlg").dialog(opt)
                             .dialogExtend(dialogExtendOptions);
                         $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
                         $('#' + vardlg + ' > div:eq(2)').attr("id", cvs);
@@ -597,7 +597,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                         }, dialogOptions);
                         opt.height = 660;
                         opt.width = 996;
-                        $("#network").clone().attr("id", vardlg).dialog(opt)
+                        $("#network").clone().attr("id", vardlg).addClass("visdlg").dialog(opt)
                             .dialogExtend(dialogExtendOptions);
                         $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
                         $('#' + vardlg + ' > div:eq(1) > div:eq(1)').attr("id", ctxt_bar);
@@ -629,7 +629,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                         if (document.getElementById(vardlg)) {
                             break;
                         }
-                        $("#message_dlg").clone().attr("id", vardlg).dialog($.extend({
+                        $("#message_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
                             title: "Messages of Link " + result.NewLinkNum,
                             position: ['left', 36],
                             close: function(event, ui) {
@@ -664,7 +664,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                             alert("already exist!");
                             break;
                         }
-                        $("#event_dlg").clone().attr("id", vardlg).dialog($.extend({
+                        $("#event_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
                             title: "Events of Link " + result.NewLinkNum,
                             position: ['left', 36 + 800],
                             close: function(event, ui) {
@@ -698,7 +698,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                         if (document.getElementById(vardlg)) {
                             break;
                         }
-                        $("#person_dlg").clone().attr("id", vardlg).dialog($.extend({
+                        $("#person_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
                             title: "People of Link " + result.NewLinkNum,
                             position: ['left', 36 + 800],
                             close: function(event, ui) {
@@ -728,7 +728,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                         var vardlg = "organization_dlg_" + result.NewLinkNum,
                             vartb = "organization_tb_" + result.NewLinkNum,
                             varbar = "organization_selectbar_" + result.NewLinkNum;
-                        $("#organization_dlg").clone().attr("id", vardlg).dialog($.extend({
+                        $("#organization_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
                             title: "Organizations of Link " + result.NewLinkNum,
                             position: ['left', 36],
                             close: function(event, ui) {
@@ -757,7 +757,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                         var vardlg = "resource_dlg_" + result.NewLinkNum,
                             vartb = "resource_tb_" + result.NewLinkNum,
                             varbar = "resource_selectbar_" + result.NewLinkNum;
-                        $("#resource_dlg").clone().attr("id", vardlg).dialog($.extend({
+                        $("#resource_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
                             title: "Resources of Link " + result.NewLinkNum,
                             position: ['left', 36],
                             close: function(event, ui) {
@@ -787,7 +787,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                             vartb = "location_tb_" + result.NewLinkNum,
                             varbar = "location_selectbar_" + result.NewLinkNum;
                         hshape[result.NewLinkNum] = [];
-                        $("#location_dlg").clone().attr("id", vardlg).dialog($.extend({
+                        $("#location_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
                             title: "Locations of Link " + result.NewLinkNum,
                             position: ['left', 36],
                             close: function(event, ui) {

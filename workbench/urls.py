@@ -7,6 +7,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^pirs$', getPIRs),
-    url(r'^pir/(\d+)/note$', getNote),
+    # url(r'^pirs$', getPIRs),
+    # url(r'^pir/(\d+)/note$', getNote),
+    url(r'^note$', storeNote),
 )

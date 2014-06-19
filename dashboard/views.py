@@ -222,3 +222,5 @@ def connected_entities(ett_id,length):
     else:
         print "recursing", len(ett_id)
         return connected_entities(ett_id,len(ett_id))
+
+

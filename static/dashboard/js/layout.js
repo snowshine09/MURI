@@ -27,19 +27,35 @@ function randomcolor() {
 };
 
 $(document).ready(function() {
-    var container_options = {
-        "width": 800,
-        "height": 500,
-        "modal": false,
-        "resizable": true,
-        "draggable": true,
-    };
-    // workbench dialogue
+    var wb_count = 0;
+
     $("#workbench_btn").click(function() {
-        $("#workbench_container").dialog($.extend({
-            "title": "Workbench",
-        }, container_options))
-            .visworkbench();
+        wb_count++;
+        var wb_dlg = "wb_dlg_" + wb_count,
+            wb_bt1 = $("#" + wb_dlg + " > div:eq(0)" + " > button:eq(0)").attr("id", "wb_btn1_" + wb_count),
+            wb_bt2 = $("#" + wb_dlg + " > div:eq(0)" + " > button:eq(1)").attr("id", "wb_btn2_" + wb_count),
+            wb_bt3 = $("#" + wb_dlg + " > div:eq(0)" + " > button:eq(2)").attr("id", "wb_btn3_" + wb_count),
+            wb_edt = $("#" + wb_dlg + " > textarea:eq(0)").attr("id", "wb_editor_" + wb_count);
+
+        $("#wb_dlg").clone().attr("id", wb_dlg).dialog(opt).dialogExtend(dialogExtendOptions);
+        var wb_widget = $("#" + wb_dlg).visworkbench({
+                "wb_count": wb_count,
+            }).data("vis-visworkbench"),
+            opt = $.extend({
+                title: "Workbench",
+                position: ['left', 72],
+                close: function(event, ui) {
+                    var tmp = $(this).attr("id");
+                    alert("deleting" + tmp);
+                    // delete eventTable[tmp.split("_")[2]];
+                    wb_widget.destroy();
+                    //$("#workbench_container").addClass("hidden");
+                    $(this).dialog('destroy').remove();
+                },
+            }, dialogOptions);
+
+
+
     });
     // map dialogue
     $("#map_btn").click(function() {
@@ -50,7 +66,7 @@ $(document).ready(function() {
             var opt = $.extend({
                 title: "Map of Link " + result.NewLinkNum
             }, dialogOptions);
-            $("#map").clone().attr("id", vardlg).dialog(opt)
+            $("#map").clone().attr("id", vardlg).addClass("visdlg").dialog(opt)
                 .dialogExtend(dialogExtendOptions);
             $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
             $('#' + vardlg + ' > div:eq(2)').attr("id", cvs); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
@@ -87,7 +103,7 @@ $(document).ready(function() {
             }, dialogOptions);
             opt.height = 200;
             opt.width = 1000;
-            $("#timeline").clone().attr("id", vardlg).dialog(opt)
+            $("#timeline").clone().attr("id", vardlg).addClass("visdlg").dialog(opt)
                 .dialogExtend(dialogExtendOptions);
             $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
             $('#' + vardlg + ' > div:eq(2)').attr("id", cvs); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
@@ -181,7 +197,7 @@ function showDialogs(dialogs) {
                     var vardlg = "event_dlg_" + result.NewLinkNum,
                         vartb = "event_tb_" + result.NewLinkNum,
                         varbar = "event_selectbar_" + result.NewLinkNum;
-                    $("#event_dlg").clone().attr("id", vardlg).dialog($.extend({
+                    $("#event_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
                         title: "Events of Link " + result.NewLinkNum,
                         position: ['left', 36],
                         close: function(event, ui) {
@@ -220,7 +236,7 @@ function showDialogs(dialogs) {
                     var vardlg = "message_dlg_" + result.NewLinkNum,
                         vartb = "message_tb_" + result.NewLinkNum,
                         varbar = "message_selectbar_" + result.NewLinkNum;
-                    $("#message_dlg").clone().attr("id", vardlg).dialog($.extend({
+                    $("#message_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
                         title: "Messages of Link " + result.NewLinkNum,
                         position: ['left', 36],
                         close: function(event, ui) {
@@ -259,7 +275,7 @@ function showDialogs(dialogs) {
                         vartb = "location_tb_" + result.NewLinkNum,
                         varbar = "location_selectbar_" + result.NewLinkNum;
                     if (hshape[self.SID] == undefined) hshape[self.SID] = [];
-                    $("#location_dlg").clone().attr("id", vardlg).dialog($.extend({
+                    $("#location_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
                         title: "Locations of Link " + result.NewLinkNum,
                         position: ['left', 36],
                         close: function(event, ui) {
@@ -296,7 +312,7 @@ function showDialogs(dialogs) {
                     var vardlg = "person_dlg_" + result.NewLinkNum,
                         vartb = "person_tb_" + result.NewLinkNum,
                         varbar = "person_selectbar_" + result.NewLinkNum;
-                    $("#person_dlg").clone().attr("id", vardlg).dialog($.extend({
+                    $("#person_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
                         title: "Persons of Link " + result.NewLinkNum,
                         position: ['left', 36],
                         close: function(event, ui) {
@@ -344,7 +360,7 @@ function showDialogs(dialogs) {
                     var vardlg = "organization_dlg_" + result.NewLinkNum,
                         vartb = "organization_tb_" + result.NewLinkNum,
                         varbar = "organization_selectbar_" + result.NewLinkNum;
-                    $("#organization_dlg").clone().attr("id", vardlg).dialog($.extend({
+                    $("#organization_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
                         title: "Organizations of Link " + result.NewLinkNum,
                         position: ['left', 36],
                         resize: function() {
@@ -377,7 +393,7 @@ function showDialogs(dialogs) {
                     var vardlg = "resource_dlg_" + result.NewLinkNum,
                         vartb = "resource_tb_" + result.NewLinkNum,
                         varbar = "resource_selectbar_" + result.NewLinkNum;
-                    $("#resource_dlg").clone().attr("id", vardlg).dialog($.extend({
+                    $("#resource_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
                         title: "Resources of Link " + result.NewLinkNum,
                         position: ['left', 36],
                         resize: function() {
@@ -425,15 +441,15 @@ function showDialogs(dialogs) {
                     }, dialogOptions);
                     opt.height = 660;
                     opt.width = 996;
-                    $("#network").clone().attr("id", vardlg).dialog(opt)
+                    $("#network").clone().attr("id", vardlg).addClass("visdlg").dialog(opt)
                         .dialogExtend(dialogExtendOptions);
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
                     $('#' + vardlg + ' > div:eq(1) > div:eq(1)').attr("id", ctxt_bar);
                     $('#' + vardlg + ' > div:eq(1) > div:eq(0)').attr("id", rs_bar);
                     $('#' + vardlg + ' > div:eq(1) > div:eq(2) > div:eq(0)').attr("id", grav_bar);
                     $('#' + vardlg + ' > div:eq(2)').attr("id", mode_bar);
-                    $('#' + vardlg + ' > div:eq(2) > div:eq(0) > label:eq(0) > input:eq(0)').attr("id", pbar).attr("name","mode_"+result.NewLinkNum);
-                    $('#' + vardlg + ' > div:eq(2) > div:eq(1) > label:eq(0) > input:eq(0)').attr("id", bbar).attr("name","mode_"+result.NewLinkNum);
+                    $('#' + vardlg + ' > div:eq(2) > div:eq(0) > label:eq(0) > input:eq(0)').attr("id", pbar).attr("name", "mode_" + result.NewLinkNum);
+                    $('#' + vardlg + ' > div:eq(2) > div:eq(1) > label:eq(0) > input:eq(0)').attr("id", bbar).attr("name", "mode_" + result.NewLinkNum);
                     $('#' + vardlg + ' > div:eq(3)').attr("id", cvs);
                     network[result.NewLinkNum] = new SIIL.Network("#" + cvs);
                     dataset[result.NewLinkNum] = CopySource();

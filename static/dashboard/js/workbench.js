@@ -1,162 +1,168 @@
-$.widget("vis.visworkbench", $.vis.viscontainer, {
+$.widget("vis.visworkbench", $.Widget, {
     options: {
+        wb_count: null
     },
     _create: function() {
-    //$("#workbench").removeClass("hidden");
-    $("#workbench_container").removeClass("hidden");
+        $("#wb_dlg").removeClass("hidden");
+        alert(this.option("wb_count"));
+        // console.log(this.option);
+        // console.log(this.options);
+        var edID = "wb_editor_" + this.options("wb_count");
+        var self = this, editor = CKEDITOR.replace(edID);
 
-	var editor = CKEDITOR.replace("workbench");
-    CKEDITOR.config.extraPlugins = 'contextmenu,abbr,markmenu,templates';
-    // editor.contextMenu = CKEDITOR.plugins.contextmenu;
-    // if ( editor.contextMenu ) {
-    //         editor.addMenuGroup( 'AnnoGroup' );
-            
-    //         editor.contextMenu.addListener( function( element,selection ) {
-    //             alert(selection);
-    //             if ( selection != "" ) {
-    //                     editor.addMenuItem( 'QuestionMarker', {
-    //                     label: 'Mark as Question',
-    //                     // icon: this.path + 'icons/question.png',
-    //                     command: 'markQuestion',
-    //                     group: 'AnnoGroup'
-    //                 });
-    //                 editor.addMenuItem( 'ClaimMarker', {
-    //                     label: 'Mark as Claim',
-    //                     // icon: this.path + 'icons/claims.png',
-    //                     command: 'markClaim',
-    //                     group: 'AnnoGroup'
-    //                 });
-    //                 editor.addMenuItem( 'ProofMarker', {
-    //                     label: 'Mark as Proof',
-    //                     // icon: this.path + 'icons/proof.png',
-    //                     command: 'markProof',
-    //                     group: 'AnnoGroup'
-    //                 });
-    //             }
-    //             else {
-    //                 editor.removeMenuItem('QuestionMarker');
-    //                 editor.removeMenuItem('ClaimMarker');
-    //                 editor.removeMenuItem('ProofMarker');
-    //             }
-    //         });
-    //     }
-	// var editor = CKEDITOR.appendTo( 'editor', {}, "" );
-    //CKEDITOR.config.extraPlugins = 'markmenu';
-    //CKEDITOR.config.extraPlugins = 'contextmenu';
-    //var contextmenu = new CKEDITOR.plugins.contextMenu(editor); 
-//     function changeMenu()
-//     {
-//     editor.on("selectionChange",
-//         function(){
-            
-//             editor.removeMenuItem('questionMarker');
-//             editor.removeMenuItem('claimMarker');
-//             editor.removeMenuItem('proofMarker');
-//             var sel = editor.getSelection()
-            
-//             if(!(sel.getSelectedText()=="")){
-//                 if (editor.addMenuItem) {
-//                     editor.addMenuGroup('Marker');
-//                     editor.addMenuItem('questionMarker', {
-//                         label: 'Mark as question',
-//                         command: 'markQuestion',
-//                         group: 'Marker'         
-//                     });
-//                     editor.addMenuItem('claimMarker', {
-//                         label: 'Mark as claim',
-//                         command: 'markClaim',
-//                         group: 'Marker'         
-//                     });
-//                     editor.addMenuItem('proofMarker', {
-//                         label: 'Mark as proof',
-//                         command: 'markProof',
-//                         group: 'Marker'         
-//                     });
-//                 }
-//             }
-            
-            
-//         }
-//     );
-// }
-	//$("<textarea class='ckeditor' id='testtest'></textarea>").appendTo(this.element);
-	// var $ele = this.element;
-	// $.get("/workbench/pirs", function(data) {
- //            var layout = "";
-	//     layout += '<form role="form"><input class="form-control" id="pir-search" placeholder="Search"></form>';
-	//     layout += '<div id="pir-list" class="panel-group"></div>';
- //            $(layout).appendTo($ele);
-	//     for (var i = 0, len = data.length; i < len; i ++) {
-	// 	var pirlist = "";
-	// 	var pir = data[i];
-	// 	var pir_content = pir.pir;
-	// 	var pir_iw	= pir.iw;
-	// 	var pir_note	= pir.note;
-	// 	pirlist += '<div class="panel panel-default">';
-	// 	pirlist += '<div class="panel-heading">';
-	// 	pirlist += '<h4 class="panel-title">';
-	// 	pirlist += '<a data-toggle="collapse" data-parent="#pir-list" href="#pir-'+pir_content.id+'">';
-	// 	pirlist += pir_content.name;
-	// 	pirlist += '</a></h4></div>';
-	// 	pirlist += '<div id="pir-' + pir_content.id + '" ' + ' class="panel-collapse collapse">';
-	// 	pirlist += '<div class="panel-body">';
-	// 	pirlist += '<div class="iw-section">';
-	// 	pirlist += "<ul>";
-	// 	for (var j = 0, ll = pir_iw.length; j < ll; j++) {
-	// 	    var iw = pir_iw[j];
-	// 	    pirlist += "<li style='display:inline-block'>";
-	// 	    pirlist += "<code class='pir-iw'>" + iw + "</code>"; 
-	// 	}
-	// 	pirlist += "</ul>";
-	// 	pirlist += "</div>";
-	// 	pir_note.content = pir_note.content ? pir_note.content:"";
-	// 	pirlist += "<div id='pir-" + pir_content.id + "-note'>" + "</div>";
-	// 	pirlist += '</div></div></div>';
+        CKEDITOR.config.extraPlugins = 'contextmenu,abbr,markmenu,templates';
 
-	// 	$(pirlist).appendTo("#pir-list");
-	//     }
-	//     $("#pir-list").on('show.bs.collapse', function(eve) {
-	// 	var pir_id = $(eve.target).attr("id").split("-")[1];
-	// 	var request_url = '/workbench/pir/'+pir_id+'/note';
-	// 	$.get(request_url, function(data) {
-	// 	    var editor = CKEDITOR.appendTo('pir-'+pir_id+'-note', {}, data.content);
-	// 	});
-	//     });
-	//     $("#pir-list").on('show.bs.collapse', function(eve) {
-	// 	var pir_id = $(eve.target).attr("id").split("-")[1];
-	// 	// destroy CKEDITOR
-
-	//     });
-	// });
-
-
+        $("#save_new_note, #publish_new_note").click(function(event) {
+            self.createNote(event);
+        });
+        // $("#save_edit_note, #publish_edit_note").click(function(event) {
+        //     self.editNote(event);
+        // });
+        alert("create widget visworkbench");
 
         this.element.addClass("visworkbench");
         this._super("_create");
     },
 
-    _saveNote: function() {
+    createNote: function(event) {
+        var self = this;
+        event.preventDefault();
+        var newNote;
+        if (event.target.id == "save_new_note") {
+            newNote = self.getNoteContent(true, false);
+        } else if (event.target.id == "publish_new_note") {
+            newNote = self.getNoteContent(true, true);
+        }
+        console.log(newNote);
+        if (newNote != false) {
+            $.ajax({
+                url: 'workbench/note',
+                type: "POST",
+                data: newNote,
+                success: function() {
+                    // self.update();
+                    $("#workbench").val('');
+                    $("#workbench_container").addClass("hidden").dialog("close");
+                },
+                error: function(xhr) {
+                    if (xhr.status == 403) {
+                        console.log(xhr);
+                        var res = JSON.parse(xhr.responseText);
+                        alert(res.errors);
+                    } else {
+                        alert("Unknown error.");
+                    }
+                },
+            });
+
+        }
     },
+    editNote: function(event) {
+        var self = this;
+        event.preventDefault();
+        var newNote;
+        if (event.target.id == "save-edit-claim") {
+            newNote = self.getNoteContent(false, false);
+        } else if (event.target.id == "publish-edit-claim") {
+            newNote = self.getNoteContent(false, true);
+        }
+        if (newNote != false) {
+            newNote.id = self.id_selected;
+            $.ajax({
+                url: 'geodeliberator/claim/',
+                type: "POST",
+                data: newNote,
+                success: function() {
+                    self.update();
+                    tinyMCE.get('claim-edit').setContent('');
+                    $("#edit-claim-form").addClass("hidden").dialog("close");
+                },
+                error: function(xhr) {
+                    if (xhr.status == 403) {
+                        var res = JSON.parse(xhr.responseText);
+                        alert(res.errors);
+                    } else {
+                        alert("Unknown error.");
+                    }
+                },
+            });
+        }
+    },
+    deleteNote: function(id) {
+        var self = this;
+        $.ajax({
+            url: 'geodeliberator/claim/',
+            type: "POST",
+            success: function() {
+                self.update();
+            },
+            failure: function(xhr) {
+                alert("failed to delete claim!")
+            },
+            data: {
+                id: id,
+                content: ''
+            }
+        });
+    },
+    _saveNote: function() {},
 
     destroy: function() {
-        this.element.remove();
+        //this.element.remove();
+        this.element.removeClass("visworkbench");
+        $("#workbench_container").removeClass("hidden");
+        $("wb_dlg").removeClass("hidden");
         this._super("_destroy");
+    },
+    getNoteContent: function(create, publish) {
+        var self = this;
+        var n = {};
+        if (create) {
+            n.id = -1;
+            n.content = CKEDITOR.instances.workbench.getData();
+            // n.content = $('#claim-new-iframe').contents().find('body').html()
+        } else {
+            n.content = CKEDITOR.instances.workbench.getData(); //tinyMCE.get('claim-edit').getContent();
+            // n.content = $('#claim-edit-iframe').contents().find('body').html()
+        }
+        n.content = n.content.replace(/(&nbsp;)+/g, ' ');
+        if (n.content.length == 0) {
+            alert('The content of the claim cannot be empty.');
+            return false;
+        }
+        if (create) {
+            n.timeCreated = new Date().toGMTString();
+        }
+        n.timeUpdated = new Date().toGMTString();
+        n.published = publish;
+
+        var allvisdlg = d3.selectAll(".visdlg");
+        var serializer = new XMLSerializer(),
+            xmlString = "";
+        allvisdlg[0].forEach(function(visElement) {
+            var visd = d3.select(visElement).node();
+            xmlString = xmlString + serializer.serializeToString(visd);
+
+        });
+        n.visxml = xmlString;
+        console.log(xmlString);
+        return n;
     },
 });
 
 SIIL.Workbench = function(div) {
-    $( ".accordion" ).accordion({
-            collapsible: true,
-            header: "> div > div.accordion-header"
-        }).sortable({
-            axis: "y",
-            handle: "h3",
-            stop: function( event, ui ) {
-              // IE doesn't register the blur when sorting
-              // so trigger focusout handlers to remove .ui-state-focus
-              ui.item.children( "h3" ).triggerHandler( "focusout" );
-            }
-        });
+    $(".accordion").accordion({
+        collapsible: true,
+        header: "> div > div.accordion-header"
+    }).sortable({
+        axis: "y",
+        handle: "h3",
+        stop: function(event, ui) {
+            // IE doesn't register the blur when sorting
+            // so trigger focusout handlers to remove .ui-state-focus
+            ui.item.children("h3").triggerHandler("focusout");
+        }
+    });
     $(".rich_editor").jqte();
 
     $(document).contextmenu({
@@ -168,59 +174,56 @@ SIIL.Workbench = function(div) {
     });
 
     // get the selected text as plain format
-    function selectionGet()
-    {
-            // for webkit, mozilla, opera
-            if (window.getSelection)
-                    return window.getSelection();
-            // for ie
-            else if (document.selection && document.selection.createRange && document.selection.type != "None")
-                    return document.selection.createRange();
+    function selectionGet() {
+        // for webkit, mozilla, opera
+        if (window.getSelection)
+            return window.getSelection();
+        // for ie
+        else if (document.selection && document.selection.createRange && document.selection.type != "None")
+            return document.selection.createRange();
     }
 
     function markText(tag, classvalue) {
-        if (window.getSelection)
-        {
-                var selObj = selectionGet(), selRange, newElement, documentFragment;
-                
-                if (selObj.anchorNode && selObj.getRangeAt)
-                {
-                        selRange = selObj.getRangeAt(0);
-                        
-                        // create to new element
-                        newElement = document.createElement(tag);
-                        
-                        // add the attribute to the new element
-                        $(newElement).removeClass();
-                        $(newElement).addClass(classvalue);
-                        
-                        // extract to the selected text
-                        documentFragment = selRange.extractContents();
+        if (window.getSelection) {
+            var selObj = selectionGet(),
+                selRange, newElement, documentFragment;
 
-                        
-                        // add the contents to the new element
-                        newElement.appendChild(documentFragment);
-                        
-                        selRange.insertNode(newElement);
-                        selObj.removeAllRanges();
-                        
-                        // if the attribute is "style", change styles to around tags
-//				if(tAttr=="style")
-//					affectStyleAround($(newElement),tVal);
-//				// for other attributes
-//				else
-//					affectStyleAround($(newElement),false);
-                }
+            if (selObj.anchorNode && selObj.getRangeAt) {
+                selRange = selObj.getRangeAt(0);
+
+                // create to new element
+                newElement = document.createElement(tag);
+
+                // add the attribute to the new element
+                $(newElement).removeClass();
+                $(newElement).addClass(classvalue);
+
+                // extract to the selected text
+                documentFragment = selRange.extractContents();
+
+
+                // add the contents to the new element
+                newElement.appendChild(documentFragment);
+
+                selRange.insertNode(newElement);
+                selObj.removeAllRanges();
+
+                // if the attribute is "style", change styles to around tags
+                //				if(tAttr=="style")
+                //					affectStyleAround($(newElement),tVal);
+                //				// for other attributes
+                //				else
+                //					affectStyleAround($(newElement),false);
+            }
         }
         // for ie
-        else if (document.selection && document.selection.createRange && document.selection.type != "None")
-        {
-                var range = document.selection.createRange();
-                var selectedText = range.htmlText;
-                
-                var newText = '<'+tTag+' '+tAttr+'="'+tVal+'">'+selectedText+'</'+tTag+'>';
-                
-                document.selection.createRange().pasteHTML(newText);
+        else if (document.selection && document.selection.createRange && document.selection.type != "None") {
+            var range = document.selection.createRange();
+            var selectedText = range.htmlText;
+
+            var newText = '<' + tTag + ' ' + tAttr + '="' + tVal + '">' + selectedText + '</' + tTag + '>';
+
+            document.selection.createRange().pasteHTML(newText);
         }
     }
 };
