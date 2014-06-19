@@ -3,11 +3,10 @@ $.widget("vis.visworkbench", $.Widget, {
         wb_count: null
     },
     _create: function() {
-        $("#wb_dlg").removeClass("hidden");
         alert(this.option("wb_count"));
         // console.log(this.option);
         // console.log(this.options);
-        var edID = "wb_editor_" + this.options("wb_count");
+        var edID = "wb_editor_" + this.options.wb_count;
         var self = this, editor = CKEDITOR.replace(edID);
 
         CKEDITOR.config.extraPlugins = 'contextmenu,abbr,markmenu,templates';
@@ -19,7 +18,7 @@ $.widget("vis.visworkbench", $.Widget, {
         //     self.editNote(event);
         // });
         alert("create widget visworkbench");
-
+        this.element.removeClass("hidden");
         this.element.addClass("visworkbench");
         this._super("_create");
     },

@@ -32,12 +32,15 @@ $(document).ready(function() {
     $("#workbench_btn").click(function() {
         wb_count++;
         var wb_dlg = "wb_dlg_" + wb_count,
-            wb_bt1 = $("#" + wb_dlg + " > div:eq(0)" + " > button:eq(0)").attr("id", "wb_btn1_" + wb_count),
-            wb_bt2 = $("#" + wb_dlg + " > div:eq(0)" + " > button:eq(1)").attr("id", "wb_btn2_" + wb_count),
-            wb_bt3 = $("#" + wb_dlg + " > div:eq(0)" + " > button:eq(2)").attr("id", "wb_btn3_" + wb_count),
-            wb_edt = $("#" + wb_dlg + " > textarea:eq(0)").attr("id", "wb_editor_" + wb_count);
+            wb_btn1 = "wb_btn1_" + wb_count,
+            wb_btn2 = "wb_btn2_" + wb_count,
+            wb_btn3 = "wb_btn3_" + wb_count;
 
         $("#wb_dlg").clone().attr("id", wb_dlg).dialog(opt).dialogExtend(dialogExtendOptions);
+        wb_bt1 = $("#" + wb_dlg + ' > div:eq(0) > button:eq(0)').attr("id", wb_btn1);
+        wb_bt2 = $("#" + wb_dlg + ' > div:eq(0) > button:eq(1)').attr("id", wb_btn2);
+        wb_bt3 = $("#" + wb_dlg + ' > div:eq(0) > button:eq(2)').attr("id", wb_btn3);
+        wb_edt = $("#" + wb_dlg + " > textarea:eq(0)").attr("id", "wb_editor_" + wb_count);
         var wb_widget = $("#" + wb_dlg).visworkbench({
                 "wb_count": wb_count,
             }).data("vis-visworkbench"),
