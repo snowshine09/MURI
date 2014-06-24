@@ -43,8 +43,9 @@ class Migration(SchemaMigration):
             ('title', self.gf('django.db.models.fields.CharField')(max_length=500, null=True, blank=True)),
             ('content', self.gf('django.db.models.fields.CharField')(max_length=5000, null=True, blank=True)),
             ('date_created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, null=True, blank=True)),
+            ('date_updated', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, null=True, blank=True)),
             ('pir', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['workbench.PIR'], null=True, blank=True)),
-            ('vis', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
+            ('published', self.gf('django.db.models.fields.BooleanField')(default=False)),
         ))
         db.send_create_signal(u'workbench', ['Note'])
 
@@ -113,10 +114,11 @@ class Migration(SchemaMigration):
             'author': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'null': 'True', 'blank': 'True'}),
             'content': ('django.db.models.fields.CharField', [], {'max_length': '5000', 'null': 'True', 'blank': 'True'}),
             'date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'null': 'True', 'blank': 'True'}),
+            'date_updated': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'pir': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['workbench.PIR']", 'null': 'True', 'blank': 'True'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'}),
-            'vis': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'})
+            'published': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'})
         },
         u'workbench.pir': {
             'Meta': {'object_name': 'PIR'},

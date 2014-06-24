@@ -18,7 +18,9 @@ SIIL.DataTable = function(div) {
         "sRowSelect": "multi",
         "sDom": "RlfrtipS",
     });
+    console.log("Eventtable vistable " + this.table);
     this.Tinstance = this.table.api();
+    console.log("Eventtable Tinstance " + this.Tinstance);
 
     $("#" + this.tbType + "_dlg_" + this.SID).removeClass("hidden");
     var self = this,
@@ -127,7 +129,9 @@ SIIL.DataTable.prototype.update = function(uType) {
                     break;
             }
             self.Tinstance.clear();
+            console.log(self.data);
             self.Tinstance.rows.add(self.data).draw();
+            console.log(self.Tinstance.rows());
             self.table.fnAdjustColumnSizing();
             break;
 

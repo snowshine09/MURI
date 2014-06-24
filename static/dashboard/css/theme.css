@@ -24,8 +24,9 @@ div.ui-dialog {
 
 div.ui-dialog-content {
   padding: 0!important;
-  /*overflow:inherit!important;*/
+  overflow:hidden!important;
 }
+
 
 div.dlg {
   overflow:hidden!important;

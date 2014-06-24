@@ -26,30 +26,24 @@ function randomcolor() {
     };
 };
 
+var wb_count = 0;
 $(document).ready(function() {
-    var wb_count = 0;
+    
 
     $("#workbench_btn").click(function() {
         wb_count++;
         var wb_dlg = "wb_dlg_" + wb_count,
-            wb_btn1 = "wb_btn1_" + wb_count,
-            wb_btn2 = "wb_btn2_" + wb_count,
-            wb_btn3 = "wb_btn3_" + wb_count;
+            wb_ct = "wb_ctner_" + wb_count,
+            wb_btn1 = "wb_save_new_note_" + wb_count,
+            wb_btn2 = "wb_publish_new_note_" + wb_count,
+            wb_btn3 = "wb_discard_note_" + wb_count,
 
-        $("#wb_dlg").clone().attr("id", wb_dlg).dialog(opt).dialogExtend(dialogExtendOptions);
-        wb_bt1 = $("#" + wb_dlg + ' > div:eq(0) > button:eq(0)').attr("id", wb_btn1);
-        wb_bt2 = $("#" + wb_dlg + ' > div:eq(0) > button:eq(1)').attr("id", wb_btn2);
-        wb_bt3 = $("#" + wb_dlg + ' > div:eq(0) > button:eq(2)').attr("id", wb_btn3);
-        wb_edt = $("#" + wb_dlg + " > textarea:eq(0)").attr("id", "wb_editor_" + wb_count);
-        var wb_widget = $("#" + wb_dlg).visworkbench({
-                "wb_count": wb_count,
-            }).data("vis-visworkbench"),
             opt = $.extend({
                 title: "Workbench",
                 position: ['left', 72],
                 close: function(event, ui) {
                     var tmp = $(this).attr("id");
-                    alert("deleting" + tmp);
+                    //alert("deleting" + tmp);
                     // delete eventTable[tmp.split("_")[2]];
                     wb_widget.destroy();
                     //$("#workbench_container").addClass("hidden");
@@ -57,7 +51,45 @@ $(document).ready(function() {
                 },
             }, dialogOptions);
 
+        $("#wb_dlg").clone().attr("id", wb_dlg).dialog(opt).dialogExtend(dialogExtendOptions);
+        wb_bt1 = $("#" + wb_dlg + ' > div:eq(0) > button:eq(0)').attr("id", wb_btn1);
+        wb_bt2 = $("#" + wb_dlg + ' > div:eq(0) > button:eq(1)').attr("id", wb_btn2);
+        wb_bt3 = $("#" + wb_dlg + ' > div:eq(0) > button:eq(2)').attr("id", wb_btn3);
+        wb_edt = $("#" + wb_dlg + " > textarea:eq(0)").attr("id", "wb_editor_" + wb_count);
 
+        var wb_widget = $("#" + wb_dlg).visworkbench({
+            "wb_count": wb_count,
+            "mode": "create",
+        }).data("vis-visworkbench");
+
+
+
+    });
+    var noteList_count = 0;
+    $("#mynotes_btn").click(function() {
+        noteList_count++;
+        var dlg = "mynotes_dlg_" + noteList_count,
+            table = "mynotes_tb_" + noteList_count,
+            new_note = "mynotes_new_" + noteList_count;
+            // edit_note = "mynotes_edit_" + noteList_count;
+
+            opt = $.extend({
+                title: "My Notes",
+                position: ['left', 72],
+                close: function(event, ui) {
+                    var tmp = $(this).attr("id");
+                    $(this).dialog('destroy').remove();
+                },
+            }, dialogOptions);
+
+        $("#mynotes_dlg").clone().attr("id", dlg).dialog(opt).dialogExtend(dialogExtendOptions);
+        $("#" + dlg + ' > table:eq(0)').attr("id", table);
+        $("#" + dlg + ' > div:eq(0) > button:eq(0)').attr("id",new_note);
+        // $("#" + dlg + ' > input:eq(1)').attr("id",edit_note);
+    
+
+        var note_widget = $("#" + table).addClass("mynotes").visnotetable({}).data("vis-visnotetable");
+        note_widget.update();
 
     });
     // map dialogue
@@ -438,6 +470,13 @@ function showDialogs(dialogs) {
                     var opt = $.extend({
                         title: "Network of Link " + result.NewLinkNum,
                         position: ['left', 36],
+                        close: function(event, ui) {
+                            var tmp = $(this).attr("id"),
+                                sid = tmp.split("_")[2],
+                                tb = "event_tb_" + sid;
+                            delete network[sid];
+                            $(this).dialog('destroy').remove();
+                        },
                         resize: function() {
                             network[result.NewLinkNum].resize();
                         }
@@ -456,7 +495,7 @@ function showDialogs(dialogs) {
                     $('#' + vardlg + ' > div:eq(3)').attr("id", cvs);
                     network[result.NewLinkNum] = new SIIL.Network("#" + cvs);
                     dataset[result.NewLinkNum] = CopySource();
-                    events_id = []
+                    events_id = [];
                     dataset[result.NewLinkNum]['dDate'].top(Infinity).forEach(function(p, i) {
                         events_id.push(p.uid);
                     });

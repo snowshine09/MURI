@@ -81,18 +81,15 @@ CKEDITOR.addTemplates('default', {
 		title: 'Claim and evidences',
 		image: 'template3.gif',
 		description: 'Claims with reasons and warrants associated with visual evidences in the schematized structures.',
-		html: '<table cellspacing="0" cellpadding="0" style="width:100%" border="0">' +
+		html: '<table cellspacing="0" cellpadding="0" style="width:100%" border="1">' +
 			'<tr>' +
-			'<td style="width:50%">' +
-			'<h3 class = "claim">Claim goes here</h3>' +
+			'<td class = "claim-editor" style="width:50%">' +
+			'<h3>Claim goes here</h3>' +
 			'</td>' +
 			'<td style="width:50%">' +
-			'<h3>Elaboration goes here</h3>' +
+			'<p class = "evidence">Elaborations supported with evidences</p>' +
 			'</td>' +
 			'</tr>' +
-			'</table>' +
-			'<button style="width:50%" onclick = alert("more text");>' +
-			'More claims goes here.' +
-			'</button>' 
+			'</table>'
 	}]
 });

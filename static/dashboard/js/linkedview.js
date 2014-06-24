@@ -28,6 +28,8 @@ var msgID = {};
 var timeextent = {}; //two elements array to control and reflect change of timeline
 var htimeline = {}; //discontinuous time
 var hshape = {};
+var visxml = {};
+
 
 function CreateSource() {
     $.post("data", null, function(result) {
@@ -208,7 +210,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                         DlgTcolor[self.SID].green + "," +
                         DlgTcolor[self.SID].blue + ")"
                     );
-                    if(hshape[self.SID] == undefined)hshape[self.SID] = [];
+                    if (hshape[self.SID] == undefined) hshape[self.SID] = [];
                     map[self.SID].update("init");
                     break;
                 case "network":
@@ -244,6 +246,13 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                     var opt = $.extend({
                         title: "Network of Link " + self.SID,
                         position: ['left', 36],
+                        close: function(event, ui) {
+                            var tmp = $(this).attr("id"),
+                                sid = tmp.split("_")[2],
+                                tb = "event_tb_" + sid;
+                            delete network[sid];
+                            $(this).dialog('destroy').remove();
+                        },
                         resizeStop: function(event, ui) {
                             network[self.SID].resize();
                         }
@@ -257,8 +266,8 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                     $('#' + vardlg + ' > div:eq(1) > div:eq(0)').attr("id", rs_bar);
                     $('#' + vardlg + ' > div:eq(1) > div:eq(2) > div:eq(0)').attr("id", grav_bar);
                     $('#' + vardlg + ' > div:eq(2)').attr("id", mode_bar);
-                    $('#' + vardlg + ' > div:eq(2) > div:eq(0) > label:eq(0) > input:eq(0)').attr("id", pbar).attr("name","mode_"+self.SID);
-                    $('#' + vardlg + ' > div:eq(2) > div:eq(1) > label:eq(0) > input:eq(0)').attr("id", bbar).attr("name","mode_"+self.SID);
+                    $('#' + vardlg + ' > div:eq(2) > div:eq(0) > label:eq(0) > input:eq(0)').attr("id", pbar).attr("name", "mode_" + self.SID);
+                    $('#' + vardlg + ' > div:eq(2) > div:eq(1) > label:eq(0) > input:eq(0)').attr("id", bbar).attr("name", "mode_" + self.SID);
                     $('#' + vardlg + ' > div:eq(3)').attr("id", cvs);
                     network[self.SID] = new SIIL.Network("#" + cvs);
                     $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
@@ -430,7 +439,7 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                     if (document.getElementById(vardlg)) {
                         break;
                     }
-                    if(hshape[self.SID] == undefined)hshape[self.SID] = [];
+                    if (hshape[self.SID] == undefined) hshape[self.SID] = [];
                     $("#location_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
                         title: "Locations of Link " + self.SID,
                         position: ['left', 36],
@@ -604,8 +613,8 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                         $('#' + vardlg + ' > div:eq(1) > div:eq(0)').attr("id", rs_bar);
                         $('#' + vardlg + ' > div:eq(1) > div:eq(2) > div:eq(0)').attr("id", grav_bar);
                         $('#' + vardlg + ' > div:eq(2)').attr("id", mode_bar);
-                        $('#' + vardlg + ' > div:eq(2) > div:eq(0) > label:eq(0) > input:eq(0)').attr("id", pbar).attr("name","mode_"+result.NewLinkNum);
-                        $('#' + vardlg + ' > div:eq(2) > div:eq(1) > label:eq(0) > input:eq(0)').attr("id", bbar).attr("name","mode_"+result.NewLinkNum);
+                        $('#' + vardlg + ' > div:eq(2) > div:eq(0) > label:eq(0) > input:eq(0)').attr("id", pbar).attr("name", "mode_" + result.NewLinkNum);
+                        $('#' + vardlg + ' > div:eq(2) > div:eq(1) > label:eq(0) > input:eq(0)').attr("id", bbar).attr("name", "mode_" + result.NewLinkNum);
                         $('#' + vardlg + ' > div:eq(3)').attr("id", cvs);
                         network[result.NewLinkNum] = new SIIL.Network("#" + cvs);
                         events_id = [];

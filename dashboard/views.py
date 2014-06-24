@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from models import *
+from workbench.models import *
 from django.http import HttpResponse
 import json
 import networkx as nx
@@ -10,6 +11,10 @@ from django.db.models import Q
 from itertools import chain
 import copy
 import sys
+from time import strftime, gmtime
+import sys  
+reload(sys)  
+sys.setdefaultencoding('utf8')  
 
 linkCount = 0
 def LinkNum(request):
@@ -222,5 +227,60 @@ def connected_entities(ett_id,length):
     else:
         print "recursing", len(ett_id)
         return connected_entities(ett_id,len(ett_id))
+
+def notes(request):
+    print "enter get Notes"
+    response={}
+    response["notes"] =[]
+    author = 1
+    nt_type = request.REQUEST.get('type')
+    if nt_type == "user_all":
+        for note in Note.objects.filter(author_id = author):
+            print "enter Filter Note Object"
+            note_info = {}
+            note_info["id"] = str(note.id)
+            note_info["author"] = str(note.author_id)
+            pir_brief = PIR.objects.filter(id=note.pir_id)
+            note_info["pir"] = str(pir_brief)
+            note_info["title"] = note.title
+            note_info["content"] = str(note.content)
+            note_info["published"] = note.published
+            note_info["created_at"] = strftime("%m/%d/%y %H:%M:%S", note.date_created.timetuple())
+            note_info['updated_at'] = strftime("%m/%d/%y %H:%M:%S", note.date_updated.timetuple())
+            response["notes"].append(note_info)    
+    elif nt_type == "id":
+        notes_id = request.POST.getlist('events_id[]', None)
+        for note in Note.objects.filter(id__in = notes_id):
+            note_info = {}
+            note_info["id"] = str(note.id)
+            note_info["author"] = str(note.author_id)
+            pir_brief = PIR.objects.filter(id=note.pir_id)
+            note_info["pir"] = str(pir_brief)
+            note_info["title"] = note.title
+            note_info["content"] = str(note.content)
+            note_info["published"] = note.published
+            note_info["created_at"] = strftime("%m/%d/%y %H:%M:%S", note.date_created.timetuple())
+            note_info['updated_at'] = strftime("%m/%d/%y %H:%M:%S", note.date_updated.timetuple())
+            response["notes"].append(note_info) 
+
+    return HttpResponse(json.dumps(response), mimetype='application/json')
+
+# def switchNote(mode):
+#     return {
+#         'edit': 1,
+#         'b': 2,
+#         }.get(x, 9) 
+
+def visRetrieve(request):
+    print "enter vis Retrieve"
+    response={}
+    vid = request.REQUEST.get('visID')
+    print vid
+    visrec = Vis.objects.get(id = vid)
+    response["html"] = visrec.vis 
+    response["author"] = visrec.author_id
+    response["note"]=visrec.note_id
+    response["type"] = visrec.type 
+    return HttpResponse(json.dumps(response), mimetype='application/json')
 
 

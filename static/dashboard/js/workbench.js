@@ -1,47 +1,108 @@
 $.widget("vis.visworkbench", $.Widget, {
     options: {
-        wb_count: null
+        wb_count: null,
+        noteid: null
     },
     _create: function() {
-        alert(this.option("wb_count"));
-        // console.log(this.option);
-        // console.log(this.options);
-        var edID = "wb_editor_" + this.options.wb_count;
-        var self = this, editor = CKEDITOR.replace(edID);
+        var wbID = this.options.wb_count;
+        var self = this,
+            editor = CKEDITOR.replace("wb_editor_" + wbID);
+        self.editor = CKEDITOR.instances["wb_editor_" + wbID];
 
-        CKEDITOR.config.extraPlugins = 'contextmenu,abbr,markmenu,templates';
+        //self.editor.focusManager.add( CKEDITOR.dom.element( document.getElementsByClassName( "visdlg") ), 1 );
 
-        $("#save_new_note, #publish_new_note").click(function(event) {
+
+        CKEDITOR.config.extraPlugins = 'contextmenu,abbr,markmenu,templates,embedvis'; //,dragndrop';
+        if (this.options.noteid != null) {
+            $.ajax({
+                url: "notes",
+                type: "POST",
+                data: {
+                    id: [this.options.noteid],
+                    type: "id"
+                },
+                error: function(xhr) {
+                    if (xhr.status == 403) {
+                        alert('Failed to load notes: ' + xhr.responseText);
+                    } else {
+                        alert('Failed to load notes: please contact administrator.');
+                    }
+
+                },
+                success: function(result) {
+                    self.editor.insertHtml(result.notes[0].content);
+                }
+            });
+        }
+
+
+        self.editor.on('focus', function() {
+
+            var index_highest = 0;
+            // var prev_zi = $("#wb_dlg_" + wbID).parent(".ui-dialog").attr("z-index");
+            // find the highest index among opened dialogs
+            $(".ui-dialog").each(function() {
+                // always use a radix when using parseInt
+                var index_current = parseInt($(this).css("zIndex"), 10); //10 refers to the numerical system under use
+                if (index_current > index_highest) {
+                    index_highest = index_current;
+                }
+            });
+            //set the clicked one upfront in terms of the layered position
+            $("#wb_dlg_" + wbID).parent(".ui-dialog").css("zIndex", index_highest + 1);
+            //console.log(document.getElementById("wb_editor_" + wbID).getElementsByTagName("iframe"));
+
+        });
+        // $("#wb_dlg_" + wbID).on('click', function() {
+        //     var cke_content = document.getElementById("cke_wb_editor_"+wbID);//"cke_" + wbID + "_contents");
+        //     var frmbody = cke_content.getElementsByTagName("iframe")[0].contentDocument.getElementsByTagName('body')[0];
+        //     $(frmbody).attr('contenteditable',"true");
+        //     $(frmbody).attr('spellcheck',"true");
+        //     $(frmbody).addClass("cke_editable cke_editable_themed cke_contents_ltr cke_show_borders");
+
+        //     console.log(frmbody);
+        //     //alert("click on dialog");
+        // });
+
+        $("#wb_save_new_note_" + wbID + ", #wb_publish_new_note_" + wbID).click(function(event) {
             self.createNote(event);
         });
-        // $("#save_edit_note, #publish_edit_note").click(function(event) {
-        //     self.editNote(event);
-        // });
-        alert("create widget visworkbench");
+        $("#save_edit_note_" + wbID + ", #wb_publish_edit_note" + wbID).click(function(event) {
+            self.editNote(event);
+        });
+        $("#wb_discard_note_" + wbID).click(function(event) {
+            //event.preventDefault();
+            $("#wb_editor_" + wbID).val('');
+            $("#wb_dlg_" + wbID).addClass("hidden").dialog("destroy");
+            // $("#new-claim-form").addClass("hidden").dialog("close");
+        });
+
         this.element.removeClass("hidden");
         this.element.addClass("visworkbench");
         this._super("_create");
     },
 
     createNote: function(event) {
-        var self = this;
+        var self = this,
+            wbID = this.options.wb_count;
         event.preventDefault();
         var newNote;
-        if (event.target.id == "save_new_note") {
+        if (event.target.id == "wb_save_new_note_" + wbID) {
             newNote = self.getNoteContent(true, false);
-        } else if (event.target.id == "publish_new_note") {
+        } else if (event.target.id == "wb_publish_new_note_" + wbID) {
             newNote = self.getNoteContent(true, true);
         }
-        console.log(newNote);
         if (newNote != false) {
             $.ajax({
                 url: 'workbench/note',
                 type: "POST",
                 data: newNote,
                 success: function() {
-                    // self.update();
-                    $("#workbench").val('');
-                    $("#workbench_container").addClass("hidden").dialog("close");
+                    $("#wb_editor_" + wbID).val('');
+                    $("#wb_dlg_" + wbID).addClass("hidden").dialog("destroy");
+                    $(".mynotes").each(function() {
+                        $(this).update();
+                    });
                 },
                 error: function(xhr) {
                     if (xhr.status == 403) {
@@ -60,21 +121,23 @@ $.widget("vis.visworkbench", $.Widget, {
         var self = this;
         event.preventDefault();
         var newNote;
-        if (event.target.id == "save-edit-claim") {
+        if (event.target.id == "wb_save_edit_note_" + wbID) {
             newNote = self.getNoteContent(false, false);
-        } else if (event.target.id == "publish-edit-claim") {
+        } else if (event.target.id == "wb_publish_edit_note_" + wbID) {
             newNote = self.getNoteContent(false, true);
         }
         if (newNote != false) {
-            newNote.id = self.id_selected;
+            newNote.id = this.options.noteid;
             $.ajax({
-                url: 'geodeliberator/claim/',
+                url: 'workbench/note',
                 type: "POST",
                 data: newNote,
                 success: function() {
-                    self.update();
-                    tinyMCE.get('claim-edit').setContent('');
-                    $("#edit-claim-form").addClass("hidden").dialog("close");
+                    $("#wb_editor_" + wbID).val('');
+                    $("#wb_dlg_" + wbID).addClass("hidden").dialog("destroy");
+                    $(".mynotes").forEach(function(ele) {
+                        $(ele).update();
+                    });
                 },
                 error: function(xhr) {
                     if (xhr.status == 403) {
@@ -87,41 +150,21 @@ $.widget("vis.visworkbench", $.Widget, {
             });
         }
     },
-    deleteNote: function(id) {
-        var self = this;
-        $.ajax({
-            url: 'geodeliberator/claim/',
-            type: "POST",
-            success: function() {
-                self.update();
-            },
-            failure: function(xhr) {
-                alert("failed to delete claim!")
-            },
-            data: {
-                id: id,
-                content: ''
-            }
-        });
-    },
-    _saveNote: function() {},
-
     destroy: function() {
         //this.element.remove();
         this.element.removeClass("visworkbench");
-        $("#workbench_container").removeClass("hidden");
-        $("wb_dlg").removeClass("hidden");
         this._super("_destroy");
     },
     getNoteContent: function(create, publish) {
-        var self = this;
+        var self = this,
+            wbID = this.options.wb_count;
         var n = {};
         if (create) {
             n.id = -1;
-            n.content = CKEDITOR.instances.workbench.getData();
+            n.content = self.editor.getData();
             // n.content = $('#claim-new-iframe').contents().find('body').html()
         } else {
-            n.content = CKEDITOR.instances.workbench.getData(); //tinyMCE.get('claim-edit').getContent();
+            n.content = self.editor.getData(); //tinyMCE.get('claim-edit').getContent();
             // n.content = $('#claim-edit-iframe').contents().find('body').html()
         }
         n.content = n.content.replace(/(&nbsp;)+/g, ' ');
@@ -134,100 +177,29 @@ $.widget("vis.visworkbench", $.Widget, {
         }
         n.timeUpdated = new Date().toGMTString();
         n.published = publish;
+        n.visIDs = visxml[self.editor.name];
+        visxml[self.editor.name] = [];
 
-        var allvisdlg = d3.selectAll(".visdlg");
-        var serializer = new XMLSerializer(),
-            xmlString = "";
-        allvisdlg[0].forEach(function(visElement) {
-            var visd = d3.select(visElement).node();
-            xmlString = xmlString + serializer.serializeToString(visd);
 
-        });
-        n.visxml = xmlString;
-        console.log(xmlString);
+        // for (var i = 0; i < visxml[self.editor.name].length; i++) {
+        //     console.log(visxml[self.editor.name][i]);
+        //     switch (Object.keys(visxml[self.editor.name][i])) {
+        //         case 'network':
+
+        //             n.content = n.content.replace("<" + self.editor.name + "_network>", '<a href=#>');
+        //             '<a href=\x22my_link\x22>'
+
+        //     }
+        // }
+
+        // var allvisdlg = d3.selectAll(".visdlg");
+        // var serializer = new XMLSerializer(),
+        //     xmlString = "";
+        // allvisdlg[0].forEach(function(visElement) {
+        //     var visd = d3.select(visElement).node();
+        //     xmlString = xmlString + serializer.serializeToString(visd);
+        // });
+        //console.log(xmlString);
         return n;
     },
 });
-
-SIIL.Workbench = function(div) {
-    $(".accordion").accordion({
-        collapsible: true,
-        header: "> div > div.accordion-header"
-    }).sortable({
-        axis: "y",
-        handle: "h3",
-        stop: function(event, ui) {
-            // IE doesn't register the blur when sorting
-            // so trigger focusout handlers to remove .ui-state-focus
-            ui.item.children("h3").triggerHandler("focusout");
-        }
-    });
-    $(".rich_editor").jqte();
-
-    $(document).contextmenu({
-        delegate: ".jqte_editor",
-        menu: "#contextmenu",
-        select: function(event, ui) {
-            markText('blockquote', ui.cmd);
-        }
-    });
-
-    // get the selected text as plain format
-    function selectionGet() {
-        // for webkit, mozilla, opera
-        if (window.getSelection)
-            return window.getSelection();
-        // for ie
-        else if (document.selection && document.selection.createRange && document.selection.type != "None")
-            return document.selection.createRange();
-    }
-
-    function markText(tag, classvalue) {
-        if (window.getSelection) {
-            var selObj = selectionGet(),
-                selRange, newElement, documentFragment;
-
-            if (selObj.anchorNode && selObj.getRangeAt) {
-                selRange = selObj.getRangeAt(0);
-
-                // create to new element
-                newElement = document.createElement(tag);
-
-                // add the attribute to the new element
-                $(newElement).removeClass();
-                $(newElement).addClass(classvalue);
-
-                // extract to the selected text
-                documentFragment = selRange.extractContents();
-
-
-                // add the contents to the new element
-                newElement.appendChild(documentFragment);
-
-                selRange.insertNode(newElement);
-                selObj.removeAllRanges();
-
-                // if the attribute is "style", change styles to around tags
-                //				if(tAttr=="style")
-                //					affectStyleAround($(newElement),tVal);
-                //				// for other attributes
-                //				else
-                //					affectStyleAround($(newElement),false);
-            }
-        }
-        // for ie
-        else if (document.selection && document.selection.createRange && document.selection.type != "None") {
-            var range = document.selection.createRange();
-            var selectedText = range.htmlText;
-
-            var newText = '<' + tTag + ' ' + tAttr + '="' + tVal + '">' + selectedText + '</' + tTag + '>';
-
-            document.selection.createRange().pasteHTML(newText);
-        }
-    }
-};
-
-SIIL.Workbench.prototype.destroy = function() {
-    $(".jqte").remove();
-    $(".inner-center").append("<textarea class='rich_editor'></textarea>");
-};

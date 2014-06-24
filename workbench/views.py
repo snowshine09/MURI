@@ -1,5 +1,5 @@
 # Create your views here.
-from models import PIR, IW, Note
+from models import PIR, IW, Note, Vis
 import json
 from django.views.decorators.http import require_GET
 from django.http import HttpResponse
@@ -97,7 +97,7 @@ def addNote(new, request):
 	timeCreated = request.REQUEST.get('timeCreated')
 	timeUpdated = request.REQUEST.get('timeUpdated')
 	publish = request.REQUEST.get('published')
-	xml = request.REQUEST.get('visxml')
+	visIDs = request.POST.getlist('visIDs[]', None)
 	if (publish == "true"):
 		publish_value = True
 	else:
@@ -108,16 +108,54 @@ def addNote(new, request):
 
 	try:
 		if new:
-			newnote = Note(content=content, author_id=author, date_created = parser.parse(timeCreated), date_updated=parser.parse(timeUpdated), published=publish_value,vis = xml)
+			newnote = Note(content=content, author_id=author, date_created = parser.parse(timeCreated), date_updated=parser.parse(timeUpdated), published=publish_value)
 		else:
 			note = Note.objects.get(id=NoteId)
 			timeCreated = note.created_at # get the original create time
 			note.delete(); # also deletes all citations items with "note"
-			newnote = Note(id=NoteId, content=content, author=author, forum=forum, created_at=timeCreated, updated_at=parser.parse(timeUpdated), published=publish_value,vis = xml)
+			newnote = Note(id=NoteId, content=content, author_id=author, forum=forum, created_at=timeCreated, updated_at=parser.parse(timeUpdated), published=publish_value)
 		newnote.save();
-	 
+
+		print visIDs, '  ', len(visIDs)
+		for vis in visIDs:
+			visrec = Vis.objects.get(id = vis)
+			print "visrec",visrec
+			print "noteid",newnote.id
+			# visrec.vis_note = newnote.id
+			# visrec.save()#add() argument after * must be a sequence, not int
+			visrec.note_id = newnote
+			visrec.saved = True
+			visrec.save()
 	except Note.DoesNotExist:
 		print "Note does not exist"
 		raise
 	except Exception as e:
 		raise
+
+def visEmbed(request):
+ 	response = {};
+	vistype = request.REQUEST.get('type')
+	timeUpdated = request.REQUEST.get('date_updated')
+
+	visxml = request.REQUEST.get('vis')
+	save = request.REQUEST.get('saved')
+	if (save == "true"):
+		saved_value = True
+	else:
+		saved_value = False
+
+
+	author = 1 #User.objects.get(id=int(userId))
+
+	try:
+		newvis = Vis(type=vistype, author_id=author, date_updated=parser.parse(timeUpdated), saved=saved_value,vis = visxml)
+		
+		newvis.save()
+		
+		response["id"]=newvis.id
+	except Vis.DoesNotExist:
+		print "Vis does not exist"
+		raise
+	except Exception as e:
+		raise
+	return HttpResponse(json.dumps(response), mimetype='application/json')

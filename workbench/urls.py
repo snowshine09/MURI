@@ -10,4 +10,8 @@ urlpatterns = patterns('',
     # url(r'^pirs$', getPIRs),
     # url(r'^pir/(\d+)/note$', getNote),
     url(r'^note$', storeNote),
+    # url(r'^newnote$', insertNote),
+    # url(r'^updatenote$', updateNote),
+    # url(r'^deletenote$', deleteNote),
+    url(r'^visEmbed$', visEmbed),
 )

@@ -11,7 +11,7 @@ CKEDITOR.editorConfig = function( config ) {
     { name: 'clipboard',   groups: [ 'clipboard', 'undo' ] },
     { name: 'editing',     groups: [ 'find', 'selection', 'spellchecker' ] },
     { name: 'links' },
-    { name: 'insert' },
+    // { name: 'insert' },
     // { name: 'forms' },
     { name: 'tools' },
     { name: 'document',    groups: [ 'mode', 'document', 'doctools' ] },
@@ -19,13 +19,17 @@ CKEDITOR.editorConfig = function( config ) {
     '/',
     { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
     { name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align' ] },
-    { name: 'styles' },
-    { name: 'colors' },
-    { name: 'about' }
+    // { name: 'styles' },
+    // { name: 'colors' },
+    // { name: 'about' }
 ];
 //templates_files : ['xml:fcktemplates.xml']
 // config.removePlugins= 'pastetext,clipboard,pastefromword';
  config.allowedContent = true;
+ config.enterMode = CKEDITOR.ENTER_BR;
+ config.height = '330px';
+ config.width = '100%';
+ config.removePlugins = 'elementspath';
  //config.extraPlugins='xmltemplates, templates';
  //config.templates_files = [ 'plugins/templates/templates/default.js' ];
 };

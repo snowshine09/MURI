@@ -29,7 +29,7 @@ CKEDITOR.plugins.add( 'markmenu', {
             command: 'markQuestion',
             icon: this.path + 'icons/question.png',
             // The button placement in the toolbar (toolbar group name).
-            toolbar: 'insert'
+            toolbar: 'tools'
         });
 
         editor.ui.addButton( 'claim', {
@@ -41,7 +41,7 @@ CKEDITOR.plugins.add( 'markmenu', {
             command: 'markClaim',
             icon: this.path + 'icons/claim.png',
             // The button placement in the toolbar (toolbar group name).
-            toolbar: 'insert'
+            toolbar: 'tools'
         });
 
         editor.ui.addButton( 'proof', {
@@ -53,7 +53,7 @@ CKEDITOR.plugins.add( 'markmenu', {
             command: 'markProof',
             icon: this.path + 'icons/proof.png',
             // The button placement in the toolbar (toolbar group name).
-            toolbar: 'insert'
+            toolbar: 'tools'
         });
 		if (editor.contextMenu) {
             

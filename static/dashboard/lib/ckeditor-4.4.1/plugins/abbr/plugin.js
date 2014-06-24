@@ -31,32 +31,32 @@ CKEDITOR.plugins.add( 'abbr', {
 			toolbar: 'insert'
 		});
 
-		if ( editor.contextMenu ) {
-			editor.addMenuGroup( 'AnnoGroup' );
-			editor.addMenuItem( 'QuestionMarker', {
-                        label: 'Mark as Question',
-                        // icon: this.path + 'icons/question.png',
-                        command: 'markQuestion',
-                        group: 'AnnoGroup'
-                    });
-			editor.addMenuItem( 'ClaimMarker', {
-                        label: 'Mark as Claim',
-                        // icon: this.path + 'icons/claims.png',
-                        command: 'markClaim',
-                        group: 'AnnoGroup'
-                    });
-            editor.addMenuItem( 'ProofMarker', {
-                label: 'Mark as Proof',
-                // icon: this.path + 'icons/proof.png',
-                command: 'markProof',
-                group: 'AnnoGroup'
-            });
-			editor.contextMenu.addListener( function( element ) {
-				if ( element.getAscendant( 'abbr', true ) ) {
-					return { abbrItem: CKEDITOR.TRISTATE_OFF };
-				}
-			});
-		}
+		// if ( editor.contextMenu ) {
+		// 	editor.addMenuGroup( 'AnnoGroup' );
+		// 	editor.addMenuItem( 'QuestionMarker', {
+  //                       label: 'Mark as Question',
+  //                       // icon: this.path + 'icons/question.png',
+  //                       command: 'markQuestion',
+  //                       group: 'AnnoGroup'
+  //                   });
+		// 	editor.addMenuItem( 'ClaimMarker', {
+  //                       label: 'Mark as Claim',
+  //                       // icon: this.path + 'icons/claims.png',
+  //                       command: 'markClaim',
+  //                       group: 'AnnoGroup'
+  //                   });
+  //           editor.addMenuItem( 'ProofMarker', {
+  //               label: 'Mark as Proof',
+  //               // icon: this.path + 'icons/proof.png',
+  //               command: 'markProof',
+  //               group: 'AnnoGroup'
+  //           });
+		// 	editor.contextMenu.addListener( function( element ) {
+		// 		if ( element.getAscendant( 'abbr', true ) ) {
+		// 			return { abbrItem: CKEDITOR.TRISTATE_OFF };
+		// 		}
+		// 	});
+		// }
 
 		// Register our dialog file. this.path is the plugin folder path.
 		CKEDITOR.dialog.add( 'abbrDialog', this.path + 'dialogs/abbr.js' );

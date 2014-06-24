@@ -1,0 +1,77 @@
+{% load static %}
+{% load compress %}
+{% block extralib %}
+<!-- <script type="text/javascript" language="javascript" src="{% static 'dashboard/lib/DataTables-1.10.0/media/js/jquery.dataTables.js' %}"></script>
+<script type="text/javascript" language="javascript" src="{% static 'dashboard/lib/DataTables-1.9.4/plugin/ColReorderWithResize.js' %}"></script>
+
+<script type="text/javascript" language="javascript" src="{% static 'dashboard/lib/highlight/jquery_highlight_4.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'dashboard/lib/DataTables-1.9.4/media/css/demo_table_jui.css' %}">  -->
+
+<script type="text/javascript" language="javascript" src="{% static 'dashboard/js/note.js' %}"></script>
+{% compress css %}
+{% endcompress %}
+{% endblock %}
+<div id="mynotes_dlg" class="hidden"> 
+    <div display="inline-block";>
+        <button class="new_note">New Note</button>
+    </div>
+    <table id ="mynotes_table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Author</th>
+                <th>Title</th>
+                <th>Content</th>
+                <th>PIR</th>
+                <th>Published</th>
+                <th>Date Created</th>
+                <th>Date Updated</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<div id="following_dlg" class="hidden">
+    <table>
+        <thead>
+            <tr>
+               <th>ID</th>
+               <th>Name</th>
+               <th>Gender</th>
+               <th>Race</th>
+               <th>Nationality</th>
+               <th>Credit</th>
+           </tr>
+       </thead>
+
+   </table>
+</div>
+<div id="followed_dlg" class="hidden">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Gender</th>
+                <th>Race</th>
+                <th>Nationality</th>
+                <th>Credit</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<div id="published_dlg" class="hidden">
+    <table id="organization_table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Author</th>
+                <th>Title</th>
+                <th>PIR</th>
+                <th>Content</th>
+                <th>Date Created</th>
+                <th>Date Updated</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+

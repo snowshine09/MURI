@@ -14,6 +14,8 @@ urlpatterns = patterns('',
     url(r'^events/all$', queryEvent),
     url(r'^network$', prepareNetwork),
     url(r'^propagate$', related_entities),
+    url(r'^notes$', notes),
+    url(r'^visOnceMore$', visRetrieve),
     # url(r'^note$', storeNote),
     # url(r'^$', 'eventviewer.views.home', name='home'),
     # url(r'^eventviewer/', include('eventviewer.foo.urls')),
@@ -22,6 +24,6 @@ urlpatterns = patterns('',
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    url(r'^admin/', include(admin.site.urls)),
     url(r'^workbench/', include('workbench.urls')),
+    url(r'^admin/', include(admin.site.urls)),
 )
