@@ -188,7 +188,7 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
                                     position: ['left', 56],
                                     close: function(event, ui) {
                                         var tmp = $(this).attr("id");
-                                        alert("deleting" + tmp);
+                                        //alert("deleting" + tmp);
                                         $(this).dialog('destroy').remove();
                                     },
                                     height: 800
@@ -245,7 +245,7 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
                     callback: function(key, options) {
                         self.id_selected = parseInt(options.$trigger.children().eq(0).text());
                         console.log(options.$trigger);
-                        alert(self.id_selected);
+                        //alert(self.id_selected);
                         switch (key) {
                             case "cite_note":
                                 //citation.addSelection("Claim", self.id_selected);

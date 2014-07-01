@@ -7,14 +7,14 @@ $.widget("vis.visworkbench", $.Widget, {
         var wbID = this.options.wb_count;
         var self = this;
 
-        alert("wbID" + wbID);
+        //alert("wbID" + wbID);
 
         //self.editor.focusManager.add( CKEDITOR.dom.element( document.getElementsByClassName( "visdlg") ), 1 );
 
 
         CKEDITOR.config.extraPlugins = 'contextmenu,abbr,markmenu,templates,embedvis'; //,dragndrop';
         if (this.options.noteid != null) {
-            alert("enter editing noteid = " + this.options.noteid);
+            //alert("enter editing noteid = " + this.options.noteid);
             $.ajax({
                 url: "notes",
                 type: "POST",
@@ -136,7 +136,7 @@ $.widget("vis.visworkbench", $.Widget, {
 
                     $(".mynotes").each(function() {
                         console.log($(this));
-                        alert("mhynotes");
+                        //alert("mhynotes");
                         $(this).data("vis-visnotetable").update();
                     });
                     $("#wb_editor_" + wbID).val('');
