@@ -12,7 +12,7 @@
   background-color: rgba(102,196,226,0.5);
   margin:0px!important;
   padding: 0!important;
-  /*z-index: 9999;*/
+  
   
 }
 
@@ -28,10 +28,10 @@ div.ui-dialog-content {
 }
 
 
-div.dlg {
+/*div.dlg {
   overflow:hidden!important;
 }
-
+*/
 div.cvs {
   overflow:scroll!important;
 }
@@ -40,30 +40,6 @@ div.selectbar.ui-dialog-content {
   overflow:inherit!important;
 }
 
-/*div.dataTables_length{
-    width:inherit!important;
-    margin-top:25px!important;
-    position: fixed!important;
-    z-index: 10000!important;
-}
-
-div.dataTables_filter{
-    width:inherit!important;
-    margin-top:25px!important;
-    position: fixed!important;
-    z-index: 10000;
-    float:right!important;
-}
-*/
-
-div.dataTables_wrapper {
-    margin-top:5px!important;
-}
-
-
-div.dataTables_scrollBody{
-    max-height: 500px;
-}
 
 /*selectbar customization overriding*/
 select.form-control{

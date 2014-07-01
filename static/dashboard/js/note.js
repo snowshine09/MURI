@@ -25,7 +25,6 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
         wb_edt = $("#" + wb_dlg + " > textarea:eq(0)").attr("id", "wb_editor_" + wb_count);
         var wb_widget = $("#" + wb_dlg).visworkbench({
             "wb_count": wb_count,
-            "mode": "create",
         }).data("vis-visworkbench");
     },
     editNote: function(nid) {
@@ -54,7 +53,7 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
 
         var wb_widget = $("#" + wb_dlg).visworkbench({
             "wb_count": wb_count,
-            "noteid": self.id_selected,
+            "noteid": nid,
         }).data("vis-visworkbench");
         // $.ajax({
         //     url: "note",
@@ -103,7 +102,7 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
             "bJQueryUI": true,
             "bDestroy": true,
             "bScrollCollapse": true,
-            "bAutoWidth": true,
+            "bAutoWidth": false,
             'sScrollX': '100%',
             'sScrollY': '100%',
             "sRowSelect": "multi",
@@ -118,7 +117,13 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
         });
 
         this.Tinstance = this.table.api();
+
         var self = this;
+
+        $("#"+this.new_edit_button).click(function(){
+            self.createNote();
+        })
+        
         $("#" + self.tbName + "_filter" + ' > label:eq(0)' + ' > input:eq(0)').attr("id", self.tbName + "_input").bind("paste cut keyup", function() { //change(function(){
             //alert("change");//unbind("click").bind("click", function(e) {
             $("#" + self.tbName).removeHighlight();
@@ -239,6 +244,8 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
                     items: menuItems,
                     callback: function(key, options) {
                         self.id_selected = parseInt(options.$trigger.children().eq(0).text());
+                        console.log(options.$trigger);
+                        alert(self.id_selected);
                         switch (key) {
                             case "cite_note":
                                 //citation.addSelection("Claim", self.id_selected);
@@ -279,6 +286,5 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
         this.table.fnAdjustColumnSizing();
     },
     destroy: function() {
-        this.table.remove();
     },
 });

@@ -249,7 +249,7 @@ def notes(request):
             note_info['updated_at'] = strftime("%m/%d/%y %H:%M:%S", note.date_updated.timetuple())
             response["notes"].append(note_info)    
     elif nt_type == "id":
-        notes_id = request.POST.getlist('events_id[]', None)
+        notes_id = request.POST.getlist('id[]', None)
         for note in Note.objects.filter(id__in = notes_id):
             note_info = {}
             note_info["id"] = str(note.id)

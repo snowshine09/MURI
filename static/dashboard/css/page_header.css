@@ -20,6 +20,8 @@ nav {
     padding:0px;
     margin: 0px;
     float:left; 
+    z-index: 99999999;
+    position: absolute;
 }
 /***** BEGIN Blue Menu Styles *****/
 .clear:after { content: "."; display: block; height: 0; clear: both; visibility: hidden;}

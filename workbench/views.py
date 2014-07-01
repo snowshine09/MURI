@@ -108,22 +108,23 @@ def addNote(new, request):
 
 	try:
 		if new:
-			newnote = Note(content=content, author_id=author, date_created = parser.parse(timeCreated), date_updated=parser.parse(timeUpdated), published=publish_value)
+			note = Note(content=content, author_id=author, date_created = parser.parse(timeCreated), date_updated=parser.parse(timeUpdated), published=publish_value)
 		else:
 			note = Note.objects.get(id=NoteId)
-			timeCreated = note.created_at # get the original create time
-			note.delete(); # also deletes all citations items with "note"
-			newnote = Note(id=NoteId, content=content, author_id=author, forum=forum, created_at=timeCreated, updated_at=parser.parse(timeUpdated), published=publish_value)
-		newnote.save();
+			note.date_updated = parser.parse(timeUpdated)
+			note.content = content
+			note.published = publish_value
+			
+		note.save();
 
 		print visIDs, '  ', len(visIDs)
 		for vis in visIDs:
 			visrec = Vis.objects.get(id = vis)
 			print "visrec",visrec
-			print "noteid",newnote.id
+			print "noteid",note.id
 			# visrec.vis_note = newnote.id
 			# visrec.save()#add() argument after * must be a sequence, not int
-			visrec.note_id = newnote
+			visrec.note_id = note
 			visrec.saved = True
 			visrec.save()
 	except Note.DoesNotExist:

@@ -5,15 +5,16 @@ $.widget("vis.visworkbench", $.Widget, {
     },
     _create: function() {
         var wbID = this.options.wb_count;
-        var self = this,
-            editor = CKEDITOR.replace("wb_editor_" + wbID);
-        self.editor = CKEDITOR.instances["wb_editor_" + wbID];
+        var self = this;
+
+        alert("wbID" + wbID);
 
         //self.editor.focusManager.add( CKEDITOR.dom.element( document.getElementsByClassName( "visdlg") ), 1 );
 
 
         CKEDITOR.config.extraPlugins = 'contextmenu,abbr,markmenu,templates,embedvis'; //,dragndrop';
         if (this.options.noteid != null) {
+            alert("enter editing noteid = " + this.options.noteid);
             $.ajax({
                 url: "notes",
                 type: "POST",
@@ -30,56 +31,90 @@ $.widget("vis.visworkbench", $.Widget, {
 
                 },
                 success: function(result) {
-                    self.editor.insertHtml(result.notes[0].content);
+                    // console.log(result.notes[0].content);
+                    // alert("enter editing!");
+                    // self.editor.insertHtml(result.notes[0].content);
+                    $("#wb_editor_" + wbID).val(result.notes[0].content);
+                    // alert($("#wb_editor_" + wbID).val());
+                    self.editor = CKEDITOR.replace("wb_editor_" + wbID);
+                    self.editor.on('focus', function() {
+
+                        var index_highest = 0;
+                        // var prev_zi = $("#wb_dlg_" + wbID).parent(".ui-dialog").attr("z-index");
+                        // find the highest index among opened dialogs
+                        $(".ui-dialog").each(function() {
+                            // always use a radix when using parseInt
+                            var index_current = parseInt($(this).css("zIndex"), 10); //10 refers to the numerical system under use
+                            if (index_current > index_highest) {
+                                index_highest = index_current;
+                            }
+                        });
+                        //set the clicked one upfront in terms of the layered position
+                        $("#wb_dlg_" + wbID).parent(".ui-dialog").css("zIndex", index_highest + 1);
+
+                    });
+                    $("#wb_save_edit_note_" + wbID + ", #wb_publish_edit_note_" + wbID).click(function(event) {
+                        self.editNote(event);
+                    });
+
+                    $("#wb_discard_note_" + wbID).click(function(event) {
+                        $("#wb_editor_" + wbID).val('');
+                        $("#wb_dlg_" + wbID).addClass("hidden").dialog("destroy");
+                    });
+
+                    self.element.removeClass("hidden");
+                    self.element.addClass("visworkbench");
+                    // self._super("_create");
                 }
             });
+
+
+        } else {
+            self.editor = CKEDITOR.replace("wb_editor_" + wbID);
+            self.editor.on('focus', function() {
+
+                var index_highest = 0;
+                // var prev_zi = $("#wb_dlg_" + wbID).parent(".ui-dialog").attr("z-index");
+                // find the highest index among opened dialogs
+                $(".ui-dialog").each(function() {
+                    // always use a radix when using parseInt
+                    var index_current = parseInt($(this).css("zIndex"), 10); //10 refers to the numerical system under use
+                    if (index_current > index_highest) {
+                        index_highest = index_current;
+                    }
+                });
+                //set the clicked one upfront in terms of the layered position
+                $("#wb_dlg_" + wbID).parent(".ui-dialog").css("zIndex", index_highest + 1);
+                //console.log(document.getElementById("wb_editor_" + wbID).getElementsByTagName("iframe"));
+
+            });
+            // $("#wb_dlg_" + wbID).on('click', function() {
+            //     var cke_content = document.getElementById("cke_wb_editor_"+wbID);//"cke_" + wbID + "_contents");
+            //     var frmbody = cke_content.getElementsByTagName("iframe")[0].contentDocument.getElementsByTagName('body')[0];
+            //     $(frmbody).attr('contenteditable',"true");
+            //     $(frmbody).attr('spellcheck',"true");
+            //     $(frmbody).addClass("cke_editable cke_editable_themed cke_contents_ltr cke_show_borders");
+
+            //     console.log(frmbody);
+            //     //alert("click on dialog");
+            // });
+
+            $("#wb_save_new_note_" + wbID + ", #wb_publish_new_note_" + wbID).click(function(event) {
+                self.createNote(event);
+            });
+
+            $("#wb_discard_note_" + wbID).click(function(event) {
+                $("#wb_editor_" + wbID).val('');
+                $("#wb_dlg_" + wbID).addClass("hidden").dialog("destroy");
+            });
+
+            this.element.removeClass("hidden");
+            this.element.addClass("visworkbench");
+            this._super("_create");
         }
 
 
-        self.editor.on('focus', function() {
 
-            var index_highest = 0;
-            // var prev_zi = $("#wb_dlg_" + wbID).parent(".ui-dialog").attr("z-index");
-            // find the highest index among opened dialogs
-            $(".ui-dialog").each(function() {
-                // always use a radix when using parseInt
-                var index_current = parseInt($(this).css("zIndex"), 10); //10 refers to the numerical system under use
-                if (index_current > index_highest) {
-                    index_highest = index_current;
-                }
-            });
-            //set the clicked one upfront in terms of the layered position
-            $("#wb_dlg_" + wbID).parent(".ui-dialog").css("zIndex", index_highest + 1);
-            //console.log(document.getElementById("wb_editor_" + wbID).getElementsByTagName("iframe"));
-
-        });
-        // $("#wb_dlg_" + wbID).on('click', function() {
-        //     var cke_content = document.getElementById("cke_wb_editor_"+wbID);//"cke_" + wbID + "_contents");
-        //     var frmbody = cke_content.getElementsByTagName("iframe")[0].contentDocument.getElementsByTagName('body')[0];
-        //     $(frmbody).attr('contenteditable',"true");
-        //     $(frmbody).attr('spellcheck',"true");
-        //     $(frmbody).addClass("cke_editable cke_editable_themed cke_contents_ltr cke_show_borders");
-
-        //     console.log(frmbody);
-        //     //alert("click on dialog");
-        // });
-
-        $("#wb_save_new_note_" + wbID + ", #wb_publish_new_note_" + wbID).click(function(event) {
-            self.createNote(event);
-        });
-        $("#save_edit_note_" + wbID + ", #wb_publish_edit_note" + wbID).click(function(event) {
-            self.editNote(event);
-        });
-        $("#wb_discard_note_" + wbID).click(function(event) {
-            //event.preventDefault();
-            $("#wb_editor_" + wbID).val('');
-            $("#wb_dlg_" + wbID).addClass("hidden").dialog("destroy");
-            // $("#new-claim-form").addClass("hidden").dialog("close");
-        });
-
-        this.element.removeClass("hidden");
-        this.element.addClass("visworkbench");
-        this._super("_create");
     },
 
     createNote: function(event) {
@@ -98,11 +133,14 @@ $.widget("vis.visworkbench", $.Widget, {
                 type: "POST",
                 data: newNote,
                 success: function() {
+
+                    $(".mynotes").each(function() {
+                        console.log($(this));
+                        alert("mhynotes");
+                        $(this).data("vis-visnotetable").update();
+                    });
                     $("#wb_editor_" + wbID).val('');
                     $("#wb_dlg_" + wbID).addClass("hidden").dialog("destroy");
-                    $(".mynotes").each(function() {
-                        $(this).update();
-                    });
                 },
                 error: function(xhr) {
                     if (xhr.status == 403) {
@@ -121,9 +159,9 @@ $.widget("vis.visworkbench", $.Widget, {
         var self = this;
         event.preventDefault();
         var newNote;
-        if (event.target.id == "wb_save_edit_note_" + wbID) {
+        if (event.target.id == "wb_save_edit_note_" + self.options.wb_count) {
             newNote = self.getNoteContent(false, false);
-        } else if (event.target.id == "wb_publish_edit_note_" + wbID) {
+        } else if (event.target.id == "wb_publish_edit_note_" + self.options.wb_count) {
             newNote = self.getNoteContent(false, true);
         }
         if (newNote != false) {
@@ -133,10 +171,10 @@ $.widget("vis.visworkbench", $.Widget, {
                 type: "POST",
                 data: newNote,
                 success: function() {
-                    $("#wb_editor_" + wbID).val('');
-                    $("#wb_dlg_" + wbID).addClass("hidden").dialog("destroy");
-                    $(".mynotes").forEach(function(ele) {
-                        $(ele).update();
+                    $("#wb_editor_" + self.options.wb_count).val('');
+                    $("#wb_dlg_" + self.options.wb_count).addClass("hidden").dialog("destroy");
+                    $(".visnotetable").each(function() {
+                        $(this).data("vis-visnotetable").update();
                     });
                 },
                 error: function(xhr) {

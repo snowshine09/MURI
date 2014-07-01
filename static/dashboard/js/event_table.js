@@ -15,6 +15,7 @@ SIIL.DataTable = function(div) {
         "bScrollCollapse": true,
         "bAutoWidth": true,
         'sScrollX': '100%',
+        'sScrollY': '100%',
         "sRowSelect": "multi",
         "sDom": "RlfrtipS",
     });

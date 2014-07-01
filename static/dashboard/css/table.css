@@ -3,5 +3,41 @@
 }
 .dataTables tbody tr .brushed{
     fill: red;
-    /*steelblue; */ 
+}
+
+.dataTables {
+    width: 100% !important;
+}
+
+
+div.dataTables_wrapper { min-height: 600px; }
+
+/*div.dataTables_wrapper.visdlg { min-height: 590px !important; }*/
+/*div.dataTables_length{
+    width:inherit!important;
+    margin-top:25px!important;
+    position: fixed!important;
+    z-index: 10000!important;
+}
+
+div.dataTables_filter{
+    width:inherit!important;
+    margin-top:25px!important;
+    position: fixed!important;
+    z-index: 10000;
+    float:right!important;
+}
+*/
+
+div.dataTables_wrapper {
+    margin-top:5px!important;
+}
+
+
+div.dataTables_scrollBody{
+    max-height: 500px;
+}
+
+div.interaction {
+	display:inline-block;
 }

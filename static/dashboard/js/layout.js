@@ -1,8 +1,10 @@
 var dialogOptions = {
-    "width": 800,
-    "height": 500,
+    minHeight: 500,
+    minWidth: 805,
+    maxWidth: 805,
+    maxHeight: 500,
     "modal": false,
-    "resizable": true,
+    // "resizable": true,
     "draggable": true,
     //        "close" : function(){
     //            $(this).empty(); 
@@ -28,7 +30,7 @@ function randomcolor() {
 
 var wb_count = 0;
 $(document).ready(function() {
-    
+
 
     $("#workbench_btn").click(function() {
         wb_count++;
@@ -71,24 +73,32 @@ $(document).ready(function() {
         var dlg = "mynotes_dlg_" + noteList_count,
             table = "mynotes_tb_" + noteList_count,
             new_note = "mynotes_new_" + noteList_count;
-            // edit_note = "mynotes_edit_" + noteList_count;
+        // edit_note = "mynotes_edit_" + noteList_count;
 
-            opt = $.extend({
-                title: "My Notes",
-                position: ['left', 72],
-                close: function(event, ui) {
-                    var tmp = $(this).attr("id");
-                    $(this).dialog('destroy').remove();
-                },
-            }, dialogOptions);
+        opt = $.extend({
+            title: "My Notes",
+            position: ['left', 72],
+            close: function(event, ui) {
+                var tmp = $(this).attr("id");
+                $(this).dialog('destroy').remove();
+            },
+        }, {
+            minHeight: 330,
+            minWidth: 805,
+            maxWidth: 805,
+            maxHeight: 330,
+            "modal": false,
+            "resizable": false,
+            "draggable": true,
+        });
 
         $("#mynotes_dlg").clone().attr("id", dlg).dialog(opt).dialogExtend(dialogExtendOptions);
         $("#" + dlg + ' > table:eq(0)').attr("id", table);
-        $("#" + dlg + ' > div:eq(0) > button:eq(0)').attr("id",new_note);
+        $("#" + dlg + ' > div:eq(0) > button:eq(0)').attr("id", new_note);
         // $("#" + dlg + ' > input:eq(1)').attr("id",edit_note);
-    
 
-        var note_widget = $("#" + table).addClass("mynotes").visnotetable({}).data("vis-visnotetable");
+
+        var note_widget = $("#" + table).visnotetable({}).data("vis-visnotetable");
         note_widget.update();
 
     });
@@ -197,36 +207,6 @@ function showDialogs(dialogs) {
 
     for (var i = 0, len = dialogs.length; i < len; i++) {
         switch (dialogs[i]) {
-            // case "map":
-            //     $("#map").dialog($.extend({
-            //         title: "Map",
-            //         resizeStop: function() {
-            //             map.updateSize(); //to prevent resize-zoom error
-            //         },
-            //         dragStop: function() {
-            //             map.updateSize(); //to prevent drag-zoom error
-            //         },
-            //         close: function() {
-            //             map.destroy();
-            //         },
-            //         position: ['left+400', 36]
-            //     }, dialogOptions))
-            //         .dialogExtend($.extend({
-            //             maximize: function() {
-            //                 map.updateSize();
-            //             },
-            //         }, dialogExtendOptions));
-            //     map = new SIIL.Map("#map");
-            //     map.update();
-            //     break;
-            // case "timeline":
-            //     var opt = $.extend({title: "Timeline"}, dialogOptions);
-            //     opt.height = 200;
-            //     opt.width = 1000;
-            //     $("#timeline").dialog(opt).dialogExtend(dialogExtendOptions);
-            //     timeline = new SIIL.Timeline("#timeline");
-            //     timeline.each(render);
-            //     break;
             case "event_table":
                 d3.json("dataSetNum", function(error, result) {
                     var vardlg = "event_dlg_" + result.NewLinkNum,
@@ -285,7 +265,7 @@ function showDialogs(dialogs) {
                     }, dialogOptions))
                         .dialogExtend(dialogExtendOptions);
                     // alert($("#" + vardlg).html());
-                    $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                    $('#' + vardlg + ' > div:eq(0)' + ' > div:eq(0)').attr("id", varbar);
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     messageTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
                     dataset[result.NewLinkNum] = CopySource();
@@ -352,7 +332,6 @@ function showDialogs(dialogs) {
                         position: ['left', 36],
                         close: function(event, ui) {
                             var tmp = $(this).attr("id");
-                            //alert("deleting" + tmp);
                             delete personTable[tmp.split("_")[2]];
                             $(this).dialog('destroy').remove();
                         },
@@ -398,6 +377,11 @@ function showDialogs(dialogs) {
                     $("#organization_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
                         title: "Organizations of Link " + result.NewLinkNum,
                         position: ['left', 36],
+                        close: function(event, ui) {
+                            var tmp = $(this).attr("id");
+                            delete personTable[tmp.split("_")[2]];
+                            $(this).dialog('destroy').remove();
+                        },
                         resize: function() {
                             //eval(vartb+'\.resize();');
                             organizationTable[result.NewLinkNum].resize();
@@ -431,6 +415,11 @@ function showDialogs(dialogs) {
                     $("#resource_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
                         title: "Resources of Link " + result.NewLinkNum,
                         position: ['left', 36],
+                        close: function(event, ui) {
+                            var tmp = $(this).attr("id");
+                            delete personTable[tmp.split("_")[2]];
+                            $(this).dialog('destroy').remove();
+                        },
                         resize: function() {
                             //eval(vartb+'\.resize();');
                             resourceTable[result.NewLinkNum].resize();
@@ -472,8 +461,7 @@ function showDialogs(dialogs) {
                         position: ['left', 36],
                         close: function(event, ui) {
                             var tmp = $(this).attr("id"),
-                                sid = tmp.split("_")[2],
-                                tb = "event_tb_" + sid;
+                                sid = tmp.split("_")[2];
                             delete network[sid];
                             $(this).dialog('destroy').remove();
                         },
