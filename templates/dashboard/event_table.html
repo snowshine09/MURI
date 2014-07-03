@@ -72,11 +72,11 @@
             </select>   
         </div>
 
-        <div class="reset">
+       <!--  <div class="reset">
             <a href="javascript:void(0)" onclick="reset();return false;">Reset</a>
-        </div>
+        </div> -->
         <div class="showcontext">
-            <a href="javascript:void(0)" onclick="showcontext();return false;">Show Context (parent view)</a>
+            <a href="javascript:void(0)" onclick="showcontext(event);return false;">Show Context (parent view)</a>
         </div>
     </div>
     <table id="message_table">
@@ -92,9 +92,9 @@
 </div>
 <div id="event_dlg" class="hidden">
 
- <div id="selectbar" class="selectbar dropdown">Generate the next linked window...
+ <div id="selectbar" class="selectbar dropdown">
     <select class="selectpicker form-control">
-        <option value="">---</option>
+        <option value="">Generate the next linked window...</option>
         <optgroup label = "other visualizations...">
             <option value="timeline_self">Timeline</option>
             <option value="map_self">Map</option>

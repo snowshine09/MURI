@@ -120,10 +120,10 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
 
         var self = this;
 
-        $("#"+this.new_edit_button).click(function(){
+        $("#" + this.new_edit_button).click(function() {
             self.createNote();
         })
-        
+
         $("#" + self.tbName + "_filter" + ' > label:eq(0)' + ' > input:eq(0)').attr("id", self.tbName + "_input").bind("paste cut keyup", function() { //change(function(){
             //alert("change");//unbind("click").bind("click", function(e) {
             $("#" + self.tbName).removeHighlight();
@@ -167,13 +167,14 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
                 var $links = self.table.$('tr').find('a.ref-link');
                 $links.on('click', function() {
 
-                    alert("clicked ref-link");
+                    //alert("clicked ref-link");
                     var linkBtn = this;
                     var visID = $(linkBtn).attr("vid");
                     alert("visid = " + visID);
                     $.ajax({
                         url: "visOnceMore",
                         type: "GET",
+                        async: false,
                         data: {
                             'visID': visID
                         },
@@ -195,6 +196,22 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
                                 }, dialogOptions))
                                     .dialogExtend(dialogExtendOptions);
                                 // });
+                                var curID = $(this).attr("id").split("_")[2], cvs = "network_cvs_" + curID;
+                                network[curID] = new SIIL.Network("#" + cvs);
+                                $(this).find(".gravity").slider({
+                                    value: 0.2,
+                                    max: 1,
+                                    step: 0.01,
+                                    animate: true,
+                                    slide: function(event, ui) {
+                                        force.gravity(ui.value);
+                                        $(this).siblings('.gravity_text').val(ui.value);
+                                        if (force.alpha() == 0) force.start();
+                                        // force.alpha(0.1);
+                                    }
+                                });
+
+
                             })
                         },
                         error: function(xhr) {
@@ -285,6 +302,5 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
         this.table.fnSettings().oScroll.sY = $("#" + this.tbType + "_dlg_" + this.SID).height();
         this.table.fnAdjustColumnSizing();
     },
-    destroy: function() {
-    },
+    destroy: function() {},
 });

@@ -1,10 +1,10 @@
 var dialogOptions = {
-    minHeight: 500,
+    minHeight: 600,
     minWidth: 805,
-    maxWidth: 805,
-    maxHeight: 500,
+    // maxWidth: 805,
+    // maxHeight: 600,
     "modal": false,
-    // "resizable": true,
+    "resizable": false,
     "draggable": true,
     //        "close" : function(){
     //            $(this).empty(); 
@@ -109,30 +109,39 @@ $(document).ready(function() {
                 varbar = "map_selectbar_" + result.NewLinkNum,
                 cvs = "map_cvs_" + result.NewLinkNum;
             var opt = $.extend({
-                title: "Map of Link " + result.NewLinkNum
+                title: "Map of Link " + result.NewLinkNum,
+                position: ['left', 36],
+                close: function(event, ui) {
+                    var tmp = $(this).attr("id");
+                    //alert("deleting" + tmp);
+                    delete map[tmp.split("_")[2]];
+                    $(this).dialog('destroy').remove();
+                }
             }, dialogOptions);
             $("#map").clone().attr("id", vardlg).addClass("visdlg").dialog(opt)
                 .dialogExtend(dialogExtendOptions);
             $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
             $('#' + vardlg + ' > div:eq(2)').attr("id", cvs); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
 
-            dataset[result.NewLinkNum] = CopySource();
-            map[result.NewLinkNum] = $("#" + cvs).vismap({
-                "dimension": dataset[result.NewLinkNum]['dFootprint'],
-            }).data("vis-vismap");
+            CreateSource(null, function(response) {
+                dataset[result.NewLinkNum] = response;
+                map[result.NewLinkNum] = $("#" + cvs).vismap().data("vis-vismap");
+                DlgTcolor[result.NewLinkNum] = randomcolor();
+                $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                    DlgTcolor[result.NewLinkNum].red + "," +
+                    DlgTcolor[result.NewLinkNum].green + "," +
+                    DlgTcolor[result.NewLinkNum].blue + ")"
+                );
+                timeextent[result.NewLinkNum] = [];
+                htimeline[result.NewLinkNum] = [];
+                dindex[result.NewLinkNum] = [];
+                msgID[result.NewLinkNum] = [];
+                hshape[result.NewLinkNum] = [];
+                alert("enter!");
+                console.log(map[result.NewLinkNum]);
+                map[result.NewLinkNum].update("init");
+            });
 
-            DlgTcolor[result.NewLinkNum] = randomcolor();
-            $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-                DlgTcolor[result.NewLinkNum].red + "," +
-                DlgTcolor[result.NewLinkNum].green + "," +
-                DlgTcolor[result.NewLinkNum].blue + ")"
-            );
-            timeextent[result.NewLinkNum] = [];
-            htimeline[result.NewLinkNum] = [];
-            dindex[result.NewLinkNum] = [];
-            msgID[result.NewLinkNum] = [];
-            hshape[result.NewLinkNum] = [];
-            map[result.NewLinkNum].update("init");
         });
 
     });
@@ -153,23 +162,26 @@ $(document).ready(function() {
             $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
             $('#' + vardlg + ' > div:eq(2)').attr("id", cvs); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
 
-            dataset[result.NewLinkNum] = CopySource();
-            timeextent[result.NewLinkNum] = [];
-            htimeline[result.NewLinkNum] = [];
-            dindex[result.NewLinkNum] = [];
-            msgID[result.NewLinkNum] = [];
-            hshape[result.NewLinkNum] = [];
-            timelineset[result.NewLinkNum] = $("#" + cvs).timeline({
-                "dimension": dataset[result.NewLinkNum]['dDate'],
-            }).data("vis-timeline");
+            CreateSource(null, function(response) {
+                dataset[result.NewLinkNum] = response;
+                timeextent[result.NewLinkNum] = [];
+                htimeline[result.NewLinkNum] = [];
+                dindex[result.NewLinkNum] = [];
+                msgID[result.NewLinkNum] = [];
+                hshape[result.NewLinkNum] = [];
+                timelineset[result.NewLinkNum] = $("#" + cvs).timeline({
+                    "dimension": dataset[result.NewLinkNum]['dDate'],
+                }).data("vis-timeline");
 
-            DlgTcolor[result.NewLinkNum] = randomcolor();
-            $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-                DlgTcolor[result.NewLinkNum].red + "," +
-                DlgTcolor[result.NewLinkNum].green + "," +
-                DlgTcolor[result.NewLinkNum].blue + ")"
-            );
-            timelineset[result.NewLinkNum].update();
+                DlgTcolor[result.NewLinkNum] = randomcolor();
+                $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                    DlgTcolor[result.NewLinkNum].red + "," +
+                    DlgTcolor[result.NewLinkNum].green + "," +
+                    DlgTcolor[result.NewLinkNum].blue + ")"
+                );
+                timelineset[result.NewLinkNum].update();
+            });
+
         });
     });
 
@@ -230,19 +242,21 @@ function showDialogs(dialogs) {
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     eventTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
-                    dataset[result.NewLinkNum] = CopySource(null);
-                    DlgTcolor[result.NewLinkNum] = randomcolor();
-                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-                        DlgTcolor[result.NewLinkNum].red + "," +
-                        DlgTcolor[result.NewLinkNum].green + "," +
-                        DlgTcolor[result.NewLinkNum].blue + ")"
-                    );
-                    timeextent[result.NewLinkNum] = [];
-                    htimeline[result.NewLinkNum] = [];
-                    dindex[result.NewLinkNum] = [];
-                    msgID[result.NewLinkNum] = [];
-                    hshape[result.NewLinkNum] = [];
-                    eventTable[result.NewLinkNum].update();
+                    CreateSource(null, function(response) {
+                        dataset[result.NewLinkNum] = response;
+                        DlgTcolor[result.NewLinkNum] = randomcolor();
+                        $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                            DlgTcolor[result.NewLinkNum].red + "," +
+                            DlgTcolor[result.NewLinkNum].green + "," +
+                            DlgTcolor[result.NewLinkNum].blue + ")"
+                        );
+                        timeextent[result.NewLinkNum] = [];
+                        htimeline[result.NewLinkNum] = [];
+                        dindex[result.NewLinkNum] = [];
+                        msgID[result.NewLinkNum] = [];
+                        hshape[result.NewLinkNum] = [];
+                        eventTable[result.NewLinkNum].update();
+                    });
                 });
 
                 break;
@@ -268,19 +282,23 @@ function showDialogs(dialogs) {
                     $('#' + vardlg + ' > div:eq(0)' + ' > div:eq(0)').attr("id", varbar);
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     messageTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
-                    dataset[result.NewLinkNum] = CopySource();
-                    DlgTcolor[result.NewLinkNum] = randomcolor();
-                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-                        DlgTcolor[result.NewLinkNum].red + "," +
-                        DlgTcolor[result.NewLinkNum].green + "," +
-                        DlgTcolor[result.NewLinkNum].blue + ")"
-                    );
-                    timeextent[result.NewLinkNum] = [];
-                    htimeline[result.NewLinkNum] = [];
-                    dindex[result.NewLinkNum] = [];
-                    msgID[result.NewLinkNum] = [];
-                    hshape[result.NewLinkNum] = [];
-                    messageTable[result.NewLinkNum].update();
+                    CreateSource(null, function(response) {
+                        dataset[result.NewLinkNum] = response;
+                        DlgTcolor[result.NewLinkNum] = randomcolor();
+                        $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                            DlgTcolor[result.NewLinkNum].red + "," +
+                            DlgTcolor[result.NewLinkNum].green + "," +
+                            DlgTcolor[result.NewLinkNum].blue + ")"
+                        );
+                        timeextent[result.NewLinkNum] = [];
+                        htimeline[result.NewLinkNum] = [];
+                        dindex[result.NewLinkNum] = [];
+                        msgID[result.NewLinkNum] = [];
+                        hshape[result.NewLinkNum] = [];
+                        messageTable[result.NewLinkNum].update();
+                    });
+
+
                 });
 
                 break;
@@ -307,19 +325,21 @@ function showDialogs(dialogs) {
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     locationTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
-                    dataset[result.NewLinkNum] = CopySource();
-                    DlgTcolor[result.NewLinkNum] = randomcolor();
-                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-                        DlgTcolor[result.NewLinkNum].red + "," +
-                        DlgTcolor[result.NewLinkNum].green + "," +
-                        DlgTcolor[result.NewLinkNum].blue + ")"
-                    );
-                    timeextent[result.NewLinkNum] = [];
-                    htimeline[result.NewLinkNum] = [];
-                    dindex[result.NewLinkNum] = [];
-                    msgID[result.NewLinkNum] = [];
-                    hshape[result.NewLinkNum] = [];
-                    locationTable[result.NewLinkNum].update();
+                    CreateSource(null, function(response) {
+                        dataset[result.NewLinkNum] = response;
+                        DlgTcolor[result.NewLinkNum] = randomcolor();
+                        $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                            DlgTcolor[result.NewLinkNum].red + "," +
+                            DlgTcolor[result.NewLinkNum].green + "," +
+                            DlgTcolor[result.NewLinkNum].blue + ")"
+                        );
+                        timeextent[result.NewLinkNum] = [];
+                        htimeline[result.NewLinkNum] = [];
+                        dindex[result.NewLinkNum] = [];
+                        msgID[result.NewLinkNum] = [];
+                        hshape[result.NewLinkNum] = [];
+                        locationTable[result.NewLinkNum].update();
+                    });
                 });
                 break;
             case "person_table":
@@ -346,27 +366,22 @@ function showDialogs(dialogs) {
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
 
                     personTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
-                    dataset[result.NewLinkNum] = CopySource();
+                    CreateSource(null, function(response) {
+                        dataset[result.NewLinkNum] = response;
+                        DlgTcolor[result.NewLinkNum] = randomcolor();
+                        $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                            DlgTcolor[result.NewLinkNum].red + "," +
+                            DlgTcolor[result.NewLinkNum].green + "," +
+                            DlgTcolor[result.NewLinkNum].blue + ")"
+                        );
+                        timeextent[result.NewLinkNum] = [];
+                        htimeline[result.NewLinkNum] = [];
+                        dindex[result.NewLinkNum] = [];
+                        msgID[result.NewLinkNum] = [];
+                        hshape[result.NewLinkNum] = [];
+                        personTable[result.NewLinkNum].update();
+                    });
 
-
-                    //assign a random color to the dialog's titlebar
-                    // this.titlecolor = randomcolor();
-                    //DlgTcolor[result.NewLinkNum] = this.titlecolor;
-                    DlgTcolor[result.NewLinkNum] = randomcolor();
-                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-                        // this.titlecolor.red + "," +
-                        // this.titlecolor.green + "," +
-                        // this.titlecolor.blue + ")"
-                        DlgTcolor[result.NewLinkNum].red + "," +
-                        DlgTcolor[result.NewLinkNum].green + "," +
-                        DlgTcolor[result.NewLinkNum].blue + ")"
-                    );
-                    timeextent[result.NewLinkNum] = [];
-                    htimeline[result.NewLinkNum] = [];
-                    dindex[result.NewLinkNum] = [];
-                    msgID[result.NewLinkNum] = [];
-                    hshape[result.NewLinkNum] = [];
-                    personTable[result.NewLinkNum].update();
                 });
                 break;
             case "organization_table":
@@ -392,19 +407,21 @@ function showDialogs(dialogs) {
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     organizationTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
-                    dataset[result.NewLinkNum] = CopySource();
-                    DlgTcolor[result.NewLinkNum] = randomcolor();
-                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-                        DlgTcolor[result.NewLinkNum].red + "," +
-                        DlgTcolor[result.NewLinkNum].green + "," +
-                        DlgTcolor[result.NewLinkNum].blue + ")"
-                    );
-                    timeextent[result.NewLinkNum] = [];
-                    htimeline[result.NewLinkNum] = [];
-                    dindex[result.NewLinkNum] = [];
-                    msgID[result.NewLinkNum] = [];
-                    hshape[result.NewLinkNum] = [];
-                    organizationTable[result.NewLinkNum].update();
+                    CreateSource(null, function(response) {
+                        dataset[result.NewLinkNum] = response;
+                        DlgTcolor[result.NewLinkNum] = randomcolor();
+                        $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                            DlgTcolor[result.NewLinkNum].red + "," +
+                            DlgTcolor[result.NewLinkNum].green + "," +
+                            DlgTcolor[result.NewLinkNum].blue + ")"
+                        );
+                        timeextent[result.NewLinkNum] = [];
+                        htimeline[result.NewLinkNum] = [];
+                        dindex[result.NewLinkNum] = [];
+                        msgID[result.NewLinkNum] = [];
+                        hshape[result.NewLinkNum] = [];
+                        organizationTable[result.NewLinkNum].update();
+                    });
                 });
                 break;
             case "resource_table":
@@ -430,19 +447,21 @@ function showDialogs(dialogs) {
                     $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
                     $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                     resourceTable[result.NewLinkNum] = new SIIL.DataTable("#" + vartb);
-                    dataset[result.NewLinkNum] = CopySource();
-                    DlgTcolor[result.NewLinkNum] = randomcolor();
-                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-                        DlgTcolor[result.NewLinkNum].red + "," +
-                        DlgTcolor[result.NewLinkNum].green + "," +
-                        DlgTcolor[result.NewLinkNum].blue + ")"
-                    );
-                    timeextent[result.NewLinkNum] = [];
-                    htimeline[result.NewLinkNum] = [];
-                    dindex[result.NewLinkNum] = [];
-                    msgID[result.NewLinkNum] = [];
-                    hshape[result.NewLinkNum] = [];
-                    resourceTable[result.NewLinkNum].update();
+                    CreateSource(null, function(response) {
+                        dataset[result.NewLinkNum] = response;
+                        DlgTcolor[result.NewLinkNum] = randomcolor();
+                        $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                            DlgTcolor[result.NewLinkNum].red + "," +
+                            DlgTcolor[result.NewLinkNum].green + "," +
+                            DlgTcolor[result.NewLinkNum].blue + ")"
+                        );
+                        timeextent[result.NewLinkNum] = [];
+                        htimeline[result.NewLinkNum] = [];
+                        dindex[result.NewLinkNum] = [];
+                        msgID[result.NewLinkNum] = [];
+                        hshape[result.NewLinkNum] = [];
+                        resourceTable[result.NewLinkNum].update();
+                    });
                 });
                 break;
             case "network":
@@ -482,25 +501,27 @@ function showDialogs(dialogs) {
                     $('#' + vardlg + ' > div:eq(2) > div:eq(1) > label:eq(0) > input:eq(0)').attr("id", bbar).attr("name", "mode_" + result.NewLinkNum);
                     $('#' + vardlg + ' > div:eq(3)').attr("id", cvs);
                     network[result.NewLinkNum] = new SIIL.Network("#" + cvs);
-                    dataset[result.NewLinkNum] = CopySource();
-                    events_id = [];
-                    dataset[result.NewLinkNum]['dDate'].top(Infinity).forEach(function(p, i) {
-                        events_id.push(p.uid);
+                    CreateSource(null, function(response) {
+                        dataset[result.NewLinkNum] = response;
+                        events_id = [];
+                        dataset[result.NewLinkNum]['dDate'].top(Infinity).forEach(function(p, i) {
+                            events_id.push(p.uid);
+                        });
+                        data = {};
+                        data['events_id'] = events_id;
+                        DlgTcolor[result.NewLinkNum] = randomcolor();
+                        $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+                            DlgTcolor[result.NewLinkNum].red + "," +
+                            DlgTcolor[result.NewLinkNum].green + "," +
+                            DlgTcolor[result.NewLinkNum].blue + ")"
+                        );
+                        timeextent[result.NewLinkNum] = [];
+                        htimeline[result.NewLinkNum] = [];
+                        dindex[result.NewLinkNum] = [];
+                        msgID[result.NewLinkNum] = [];
+                        hshape[result.NewLinkNum] = [];
+                        network[result.NewLinkNum].update(data);
                     });
-                    data = {};
-                    data['events_id'] = events_id;
-                    DlgTcolor[result.NewLinkNum] = randomcolor();
-                    $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-                        DlgTcolor[result.NewLinkNum].red + "," +
-                        DlgTcolor[result.NewLinkNum].green + "," +
-                        DlgTcolor[result.NewLinkNum].blue + ")"
-                    );
-                    timeextent[result.NewLinkNum] = [];
-                    htimeline[result.NewLinkNum] = [];
-                    dindex[result.NewLinkNum] = [];
-                    msgID[result.NewLinkNum] = [];
-                    hshape[result.NewLinkNum] = [];
-                    network[result.NewLinkNum].update(data);
                 });
                 break;
         }

@@ -12,6 +12,10 @@ from itertools import chain
 import copy
 import sys
 from time import strftime, gmtime
+import datetime
+from dateutil import parser
+from datetime import timedelta
+import pytz
 import sys  
 reload(sys)  
 sys.setdefaultencoding('utf8')  
@@ -58,13 +62,42 @@ def queryEvent(request):
 def getData(request):
     response = {}
     response['events'] = []
-    events_id = request.POST.getlist('events_id[]', None)
-    if events_id != []:
-        print "condition is not empty", events_id
-        events = Event.objects.filter(id__in=events_id).order_by('date_begin')
-    else: 
+    ids = request.POST.getlist('id[]', None)
+    dtype = request.REQUEST.get('type', None)
+    if ids == []:
         events = Event.objects.all().order_by('date_begin')
-    ##events = Event.objects.all().order_by('date_begin')
+        
+    else:
+        if dtype == "event":
+            print "event set condition is not empty", ids
+            events = Event.objects.filter(id__in=ids).order_by('date_begin')
+        elif dtype == "message":
+            print "message set condition is not empty", ids
+            msgs = Message.objects.filter(uid__in=ids)
+            evt_id = []
+            for msg in msgs:
+                msg_events = msg.event.all()
+                for eve in msg_events:
+                    print eve.id
+                    evt_id.append(eve.id)
+            events = Event.objects.filter(id__in=evt_id)
+        elif dtype == "entity":
+            print "entity set condition is not empty", ids
+            src_entt = Entity.objects.filter(id__in=ids)
+            ett_id = []
+            linked_entities = list(src_entt.select_subclasses())
+            for ett in src_entt:
+                entities = list(chain(ett.findTargets(), ett.findSources()))
+                linked_entities+=entities
+            for single_ett in linked_entities:
+                if(single_ett.id not in ett_id):
+                    ett_id.append(single_ett.id)
+            events = Event.objects.filter(id__in=ett_id)
+        elif dtype == "time":
+            start = request.REQUEST.get('start', None)
+            end = request.REQUEST.get('end', None)
+            events = Event.objects.filter(date__range=[parser.parse(start), parser.parse(end)])
+
     for event in events:
         e_info = {}
         e_info = event.getKeyAttr()

@@ -29,16 +29,19 @@ var timeextent = {}; //two elements array to control and reflect change of timel
 var htimeline = {}; //discontinuous time
 var hshape = {};
 var visxml = {};
+var cindex = {};
 
 
-function CreateSource() {
-    $.post("data", null, function(result) {
+function CreateSource(param, callback) {
+    var response = {}
+    $.post("data", param, function(result) {
         // Various formatters.
-        var data = result.events;
+        var dsource = result.events;
+        console.log("within CREATE SOURCE: " + dsource);
         var wktParser = new OpenLayers.Format.WKT();
         var footprints = [];
 
-        data.forEach(function(d, i) {
+        dsource.forEach(function(d, i) {
             d.date = new Date(d.date);
             var fp = d.footprint;
             if (fp.shape) {
@@ -51,46 +54,42 @@ function CreateSource() {
                 fp.shape = feature;
             }
         });
-        srcData = data;
-        return data;
+        if (param == null) {
+            srcData = dsource;
+        }
+
+        response['set'] = crossfilter(dsource); //jQuery.extend(true, {}, sourceDataset);
+        response['dDate'] = response['set'].dimension(function(d) {
+            return d.date;
+        });
+        response['dFootprint'] = response['set'].dimension(function(d) {
+            return [d.footprint.uid, d.footprint.name, d.footprint.shape, d.footprint.srid];
+        });
+        response['gDate'] = response['dDate'].group(d3.time.day);
+        response['dResource'] = response['set'].dimension(function(d) {
+            var res = d.resource;
+            return [res.uid, res.name, res.condition, res.resource_type];
+        });
+        response['dEvent'] = response['set'].dimension(function(d) {
+            return [d.uid, d.name, d.types, d.excerpt, d.date];
+        });
+        response['dPerson'] = response['set'].dimension(function(d) {
+            return [d.person.uid, d.person.name, d.person.gender, d.person.race, d.person.nationality];
+        });
+        response['dOrganization'] = response['set'].dimension(function(d) {
+            var org = d.organization;
+            return [org.uid, org.name, org.types, org.nationality, org.ethnicity, org.religion];
+        });
+        response['dMessage'] = response['set'].dimension(function(d) {
+            var mes = d.message;
+            return [mes.uid, mes.content, mes.date]
+        });
+        if ("function" === typeof callback) {
+            callback(response);
+        }
     });
 }
 
-function CopySource(rawdata) {
-    //alert("enterCopy=>rawdata:" + rawdata);
-    var response = {},
-        dsource = rawdata || srcData;
-    if (rawdata) {
-        alert(rawdata.length + " is raw ; " + srcData.length + "is sourceCopy; !! USED is" + dsource.length);
-    }
-    response['set'] = crossfilter(dsource); //jQuery.extend(true, {}, sourceDataset);
-    response['dDate'] = response['set'].dimension(function(d) {
-        return d.date;
-    });
-    response['dFootprint'] = response['set'].dimension(function(d) {
-        return [d.footprint.uid, d.footprint.name, d.footprint.shape, d.footprint.srid];
-    });
-    response['gDate'] = response['dDate'].group(d3.time.day);
-    response['dResource'] = response['set'].dimension(function(d) {
-        var res = d.resource;
-        return [res.uid, res.name, res.condition, res.resource_type];
-    });
-    response['dEvent'] = response['set'].dimension(function(d) {
-        return [d.uid, d.name, d.types, d.excerpt, d.date];
-    });
-    response['dPerson'] = response['set'].dimension(function(d) {
-        return [d.person.uid, d.person.name, d.person.gender, d.person.race, d.person.nationality];
-    });
-    response['dOrganization'] = response['set'].dimension(function(d) {
-        var org = d.organization;
-        return [org.uid, org.name, org.types, org.nationality, org.ethnicity, org.religion];
-    });
-    response['dMessage'] = response['set'].dimension(function(d) {
-        var mes = d.message;
-        return [mes.uid, mes.content, mes.date]
-    });
-    return response;
-}
 $(document).ready(function() {
     // show progress bar before data is loaded
     $("#progressbar").progressbar({
@@ -102,50 +101,7 @@ $(document).ready(function() {
 
 });
 
-// function FilterSource(cond, newSID, vis) {
-//     var instances = null;
-//     // $.ajax({
-//     //     url: 'data',
-//     //     type: "POST",
-//     //     data: cond,
-//     alert("inside FIlter condition =" + cond);
-//     $.post("data", cond, function(dt, status) {
-//         // success: function(result) {
-//         console.log("cond:" + cond);
-//         console.log("dt:" + dt);
-//         alert("Filter from backend:" + dt.events);
 
-//         instances = dt.events;
-//         var wktParser = new OpenLayers.Format.WKT();
-//         var footprints = [];
-//         instances.forEach(function(d, i) {
-//             alert(d.date);
-//             d.date = new Date(d.date);
-//             var fp = d.footprint;
-//             if (fp.shape) {
-//                 var feature = wktParser.read(fp.shape);
-//                 var origin_prj = new OpenLayers.Projection("EPSG:" + fp.srid);
-//                 var dest_prj = new OpenLayers.Projection("EPSG:900913");
-//                 feature.geometry.transform(origin_prj, dest_prj); // projection of google map
-//                 feature.attributes.id = fp.uid;
-//                 feature.attributes.name = fp.name;
-//                 fp.shape = feature;
-//             }
-//         });
-
-
-//         // },
-//         // failure: function(xhr) {
-//         //     alert("failed to add claim!");
-//         // },
-//         alert("FilterSource returns " + instances.length + " first event is " + instances);
-//         dataset[newSID] = CopySource(instances);
-//         delete gCondition["events_id"];
-
-//         network[newSID].update();
-//     });
-
-// }
 //dynamic generation coordinated windows
 function generateOthers(div, vis, arg) { //div is source, vis is target
 
@@ -214,22 +170,6 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                     map[self.SID].update("init");
                     break;
                 case "network":
-                    // var vardlg = "network_dlg_" + self.SID,
-                    //     varbar = "network_selectbar_" + self.SID,
-                    //     cvs = "network_cvs_" + self.SID,
-                    //     bbar = "network_brush_" + self.SID,
-                    //     pbar = "network_pan_" + self.SID;
-                    // $("#network").clone().attr("id", vardlg).dialog($.extend({
-                    //     title: "Network of Link " + self.SID,
-                    //     resizeStop: function(event, ui) {
-                    //         network[self.SID].resize(); //$('#'+vis+"_cvs_"+).outerWidth() + ", height: " + $(this).outerHeight());
-                    //     }
-                    // }, dialogOptions))
-                    //     .dialogExtend(dialogExtendOptions);
-                    // $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
-                    // $('#' + vardlg + ' > div:eq(2)').attr("id", cvs);
-                    // $('#' + vardlg + ' > div:eq(1) > div:eq(1)').attr("id", bbar);
-                    // $('#' + vardlg + ' > div:eq(1) > div:eq(0)').attr("id", pbar); //getThis = $('#mainDiv > div:eq(0) > div:eq(1)');
 
                     var vardlg = "network_dlg_" + self.SID,
                         varbar = "network_selectbar_" + self.SID,
@@ -484,36 +424,26 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                 async: false
             });
             d3.json("dataSetNum", function(error, result) {
-                dataset[result.NewLinkNum] = CopySource();
+
                 //alert("length of dataset " + result.NewLinkNum + ' ' + dataset[result.NewLinkNum]['set'].groupAll().value());
-                pParam = {};
+                var pParam = {},
+                    param = {};
                 switch (self.Type) {
                     case "message":
-                        //("before filtering:length of dataset " + result.NewLinkNum + " " + dataset[result.NewLinkNum]['set'].groupAll().value());
-                        console.log(dataset[result.NewLinkNum]['dMessage'].top(Infinity));
-                        dataset[result.NewLinkNum]['FilterdMessage'] = dataset[result.NewLinkNum]['set'].dimension(function(d) {
-                            var mes = d.message;
-                            return [mes.uid, mes.content, mes.date]
-                        });
-                        dataset[result.NewLinkNum]['FilterdMessage'].filter(function(d) {
-                            // alert("dMessage dimension data " + d);
-                            for (var i = 0; i < msgID[self.SID].length; i++) {
-                                if (d[0] === msgID[self.SID][i]) {
-                                    return true;
-                                }
-                            }
+                        param["type"] = "message";
+                        param["id"] = msgID[self.SID];
+                        CreateSource(param, function(response) {
+                            dataset[result.NewLinkNum] = response;
+                            dataset[result.NewLinkNum]["parent"] = self.SID;
                         });
                         //alert("after: length of dataset " + result.NewLinkNum + ' ' + dataset[result.NewLinkNum]['set'].groupAll().value());
                         break;
                     case "timeline":
-                        dataset[result.NewLinkNum]['FilterdDate'] = dataset[result.NewLinkNum]['set'].dimension(function(d) {
-                            return d.date;
-                        });
-                        dataset[result.NewLinkNum]['FilterdDate'].filter(function(d) {
-                            if (+d.date >= +timeextent[self.SID][0] && +d.date <= +timeextent[self.SID][1]) {
-                                //if($.inArray(d.date, htimeline[self.SID]) != -1) {
-                                return true;
-                            }
+                        param["type"] = "time";
+                        param["start"] = timeextent[self.SID][0];
+                        param["end"] = timeextent[self.SID][1];
+                        CreateSource(param, function(response) {
+                            dataset[result.NewLinkNum] = response;
                         });
                         break;
                     case "network":
@@ -521,22 +451,18 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                     case "organization":
                     case "location":
                     case "resource":
+                        param["type"] = "entity";
+                        param["id"] = dindex[self.SID];
+                        CreateSource(param, function(response) {
+                            dataset[result.NewLinkNum] = response;
+                        });
+                        break;
                     case "event":
-                        // alert("before filtering:length of dataset " + result.NewLinkNum + " " + dataset[result.NewLinkNum]['set'].groupAll().value());
-                        // alert("len of dindex " + dindex[self.SID].length);
-                        // console.log(dindex[self.SID]);
-                        // console.log(dataset[result.NewLinkNum]['dDate'].top(Infinity));
-                        dataset[result.NewLinkNum]['FilterdEvent'] = dataset[result.NewLinkNum]['set'].dimension(function(d) {
-                            return [d.uid, d.name, d.types, d.excerpt, d.date];
+                        param["type"] = "event";
+                        param["id"] = dindex[self.SID];
+                        CreateSource(param, function(response) {
+                            dataset[result.NewLinkNum] = response;
                         });
-                        dataset[result.NewLinkNum]['FilterdEvent'].filter(function(d) {
-                            for (var i = 0; i < dindex[self.SID].length; i++) {
-                                if (d[0] == dindex[self.SID][i]) {
-                                    return true;
-                                }
-                            }
-                        });
-                        //alert("after: length of dataset " + result.NewLinkNum + ' ' + dataset[result.NewLinkNum]['set'].groupAll().value());
                         break;
                     default:
                         alert("not captured self type!");
@@ -650,11 +576,10 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
                             },
                             resize: function() {
                                 messageTable[result.NewLinkNum].resize();
-                            },
-                            height: 800
+                            }
                         }, dialogOptions))
                             .dialogExtend(dialogExtendOptions);
-                        $('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
+                        $('#' + vardlg + ' > div:eq(0)' + ' > div:eq(0)').attr("id", varbar);
                         $('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
                         DlgTcolor[result.NewLinkNum] = randomcolor();
                         $('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
@@ -980,4 +905,20 @@ function highlightFromNetwork(ids) {
 
 function unhighlightFromNetwork(ids) {
     for (var i = 0, len = ids.length; i < len; i++) {}
+}
+
+function showcontext(event) {
+    console.log(event.target);
+    alert("showcontext");
+    var parentID = event.target.parentElement.parentElement.parentElement.id.split("_")[2],
+        parentType = event.target.parentElement.parentElement.parentElement.id.split("_")[0];
+    cindex[parentID] = [];
+    switch(parentType){
+        case "message":
+        
+        break;
+        default:
+        break;
+    }
+
 }
