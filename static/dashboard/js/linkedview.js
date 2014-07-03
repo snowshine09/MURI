@@ -97,18 +97,8 @@ function CreateSource(param, callback) {
 	});
 }
 
-$(document).ready(function() {
-	// show progress bar before data is loaded
-	$("#progressbar").progressbar({
-		value: false
-	});
-	CreateSource();
-	$("#progressbar").remove();
-
-});
-
 //dynamic generation coordinated windows
-function generateOthers(div, vis, arg) { //div is source, vis is target
+function generateOthers(div, vis) { //div is source, vis is target
 
 	self = {};
 	self.SID = div.split("_")[2];
@@ -222,193 +212,25 @@ function generateOthers(div, vis, arg) { //div is source, vis is target
 					network[self.SID].update();
 					break;
 				case "message":
-					var vardlg = "message_dlg_" + self.SID,
-						vartb = "message_tb_" + self.SID,
-						varbar = "message_selectbar_" + self.SID;
-					if (document.getElementById(vardlg)) {
-						break;
-					}
-					$("#message_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
-						title: "Messages of Link " + self.SID,
-						position: ['left', 36],
-						close: function(event, ui) {
-							var tmp = $(this).attr("id"),
-								sid = tmp.split("_")[2],
-								tb = "message_tb_" + sid;
-							delete messageTable[sid];
-							$(this).dialog('destroy').remove();
-						},
-						resize: function() {
-							messageTable[self.SID].resize();
-						},
-						height: 800
-					}, dialogOptions))
-						.dialogExtend(dialogExtendOptions);
-					$('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
-					$('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
-					$('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-						DlgTcolor[self.SID].red + "," +
-						DlgTcolor[self.SID].green + "," +
-						DlgTcolor[self.SID].blue + ")"
-					);
+					createDialog('message', self.SID);
 					msgID[self.SID] = [];
-					messageTable[self.SID] = new SIIL.DataTable("#" + vartb); //messageTable's key should include both Id and subID related to the vis type
-					messageTable[self.SID].update();
 					break;
 				case "event":
-					var vardlg = "event_dlg_" + self.SID,
-						vartb = "event_tb_" + self.SID,
-						varbar = "event_selectbar_" + self.SID;
-					if (document.getElementById(vardlg)) {
-						break;
-					}
-					$("#event_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
-						title: "Events of Link " + self.SID,
-						position: ['left', 36 + 800],
-						close: function(event, ui) {
-							var tmp = $(this).attr("id"),
-								sid = tmp.split("_")[2],
-								tb = "event_tb_" + sid;
-							delete eventTable[sid];
-							$(this).dialog('destroy').remove();
-						},
-						resize: function() {
-							eventTable[self.SID].resize();
-						},
-						height: 800
-					}, dialogOptions))
-						.dialogExtend(dialogExtendOptions);
-					$('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
-					$('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
-					$('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-						DlgTcolor[self.SID].red + "," +
-						DlgTcolor[self.SID].green + "," +
-						DlgTcolor[self.SID].blue + ")"
-					);
-					eventTable[self.SID] = new SIIL.DataTable("#" + vartb); //messageTable's key should include both Id and subID related to the vis type
-					eventTable[self.SID].update();
+					createDialog('event', self.SID);
 					break;
 				case "person":
-					var vardlg = "person_dlg_" + self.SID,
-						vartb = "person_tb_" + self.SID,
-						varbar = "person_selectbar_" + self.SID;
-					if (document.getElementById(vardlg)) {
-						break;
-					}
-					$("#person_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
-						title: "People of Link " + self.SID,
-						position: ['left', 36 + 800 * 2],
-						close: function(event, ui) {
-							var tmp = $(this).attr("id");
-							// alert(tmp);
-							delete personTable[tmp.split("_")[1]];
-							$(this).dialog('destroy').remove();
-						},
-						resize: function() {
-							//eval(vartb+'\.resize();');
-							personTable[self.SID].resize();
-						},
-						height: 800
-					}, dialogOptions))
-						.dialogExtend(dialogExtendOptions);
-					$('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
-					$('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
-					$('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-						DlgTcolor[self.SID].red + "," +
-						DlgTcolor[self.SID].green + "," +
-						DlgTcolor[self.SID].blue + ")"
-					);
-					personTable[self.SID] = new SIIL.DataTable("#" + vartb); //messageTable's key should include both Id and subID related to the vis type
-					personTable[self.SID].update();
-
+                    createDialog('person', self.SID);
 					break;
 				case "organization":
-					var vardlg = "organization_dlg_" + self.SID,
-						vartb = "organization_tb_" + self.SID,
-						varbar = "organization_selectbar_" + self.SID;
-					if (document.getElementById(vardlg)) {
-						break;
-					}
-					$("#organization_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
-						title: "Organizations of Link " + self.SID,
-						position: ['left', 36],
-						resize: function() {
-							//eval(vartb+'\.resize();');
-							organizationTable[self.SID].resize();
-						},
-						height: 800
-					}, dialogOptions))
-						.dialogExtend(dialogExtendOptions);
-					$('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
-					$('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
-					organizationTable[self.SID] = new SIIL.DataTable("#" + vartb);
-					$('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-						DlgTcolor[self.SID].red + "," +
-						DlgTcolor[self.SID].green + "," +
-						DlgTcolor[self.SID].blue + ")"
-					);
-					organizationTable[self.SID].update();
+					createDialog('organization', self.SID);
 					break;
 				case "resource":
-					var vardlg = "resource_dlg_" + self.SID,
-						vartb = "resource_tb_" + self.SID,
-						varbar = "resource_selectbar_" + self.SID;
-					if (document.getElementById(vardlg)) {
-						break;
-					}
-					$("#resource_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
-						title: "Resources of Link " + self.SID,
-						position: ['left', 36],
-						resize: function() {
-							//eval(vartb+'\.resize();');
-							resourceTable[self.SID].resize();
-						},
-						height: 800
-					}, dialogOptions))
-						.dialogExtend(dialogExtendOptions);
-					$('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
-					$('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
-					resourceTable[self.SID] = new SIIL.DataTable("#" + vartb);
-					$('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-						DlgTcolor[self.SID].red + "," +
-						DlgTcolor[self.SID].green + "," +
-						DlgTcolor[self.SID].blue + ")"
-					);
-					resourceTable[self.SID].update();
+					createDialog('resource', self.SID);
 					break;
 				case "location":
-					var vardlg = "location_dlg_" + self.SID,
-						vartb = "location_tb_" + self.SID,
-						varbar = "location_selectbar_" + self.SID;
-					if (document.getElementById(vardlg)) {
-						break;
-					}
-					if (hshape[self.SID] == undefined) hshape[self.SID] = [];
-					$("#location_dlg").clone().attr("id", vardlg).addClass("visdlg").dialog($.extend({
-						title: "Locations of Link " + self.SID,
-						position: ['left', 36],
-						close: function(event, ui) {
-							var tmp = $(this).attr("id");
-							// alert(tmp);
-							delete locationTable[tmp.split("_")[2]];
-							$(this).dialog('destroy').remove();
-						},
-						resize: function() {
-							locationTable[self.SID].resize();
-						},
-					}, dialogOptions))
-						.dialogExtend(dialogExtendOptions);
-					$('#' + vardlg + ' > div:eq(0)').attr("id", varbar);
-					$('#' + vardlg + ' > table:eq(0)').attr("id", vartb);
-					locationTable[self.SID] = new SIIL.DataTable("#" + vartb);
-					$('#' + vardlg).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-						DlgTcolor[self.SID].red + "," +
-						DlgTcolor[self.SID].green + "," +
-						DlgTcolor[self.SID].blue + ")"
-					);
-					locationTable[self.SID].update();
+					createDialog('location', self.SID);
+                    if (hshape[self.SID] == undefined) hshape[self.SID] = [];
 					break;
-
 			}
 			break;
 		case 'subset': //self is like the source related info, whilst the result related is the target subset

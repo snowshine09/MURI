@@ -187,27 +187,27 @@ $(document).ready(function() {
 
 	// Location dialogue
 	$("#location_table_btn").click(function() {
-		createDialog('location', true);
+		createDialog('location', null);
 	});
 	// Resource dialogue
 	$("#resource_table_btn").click(function() {
-		createDialog('resource', true);
+		createDialog('resource', null);
 	});
 	// People dialogue
 	$("#person_table_btn").click(function() {
-		createDialog('person', true);
+		createDialog('person', null);
 	});
 	// Organization dialogue
 	$("#organization_table_btn").click(function() {
-		createDialog('organization', true);
+		createDialog('organization', null);
 	});
 	// Event dialogue
 	$("#event_table_btn").click(function() {
-		createDialog('event', true);
+		createDialog('event', null);
 	});
 	// Message dialogue
 	$("#message_table_btn").click(function() {
-		createDialog('message', true);
+		createDialog('message', null);
 	});
 	// Network dialogue
 	$("#network_btn").click(function() {
@@ -272,18 +272,25 @@ $(document).ready(function() {
 	});
 });
 
-function createDialog(table_type, new_dialog) {
+function createDialog(table_type, link_no) {
+	var new_link = (link_no == null);
 	$.ajax({
 		url: 'get_table/',
 		type: 'post',
 		data: {
 			'table_type': table_type,
 			'headers': tableHeaders[table_type],
+			'new_link': new_link,
 		},
 		success: function(xhr) {
-			var linkNo = xhr.linkNo;
+			if (new_link) {
+				link_no = xhr.linkNo;
+			}
+			if ($("#" + table_type + "_dlg_" + link_no).length) {
+                return;
+            }
 			$(xhr.html).dialog($.extend(dialogOptions, dialogExtendOptions, {
-				title: table_type + 's of link ' + linkNo,
+				title: table_type + 's of link ' + link_no,
 				position: ['left', 36],
 				height: 800,
 				close: function(event, ui) {
@@ -291,22 +298,26 @@ function createDialog(table_type, new_dialog) {
 					$(this).dialog('destroy').remove();
 				}
 			}));
-			tables[table_type][linkNo] = new SIIL.DataTable($(xhr.html).find('table'));
-			CreateSource(null, function(response) {
-				dataset[linkNo] = response;
-				DlgTcolor[linkNo] = randomcolor();
-				$($(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-					DlgTcolor[linkNo].red + "," +
-					DlgTcolor[linkNo].green + "," +
-					DlgTcolor[linkNo].blue + ")"
-				);
-				timeextent[linkNo] = [];
-				htimeline[linkNo] = [];
-				dindex[linkNo] = [];
-				msgID[linkNo] = [];
-				hshape[linkNo] = [];
-				tables[table_type][linkNo].update();
-			});
+			tables[table_type][link_no] = new SIIL.DataTable($(xhr.html), table_type, link_no);
+			if (new_link) {
+				CreateSource(null, function(response) {
+					dataset[link_no] = response;
+					DlgTcolor[link_no] = randomcolor();
+					$($(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+						DlgTcolor[link_no].red + "," +
+						DlgTcolor[link_no].green + "," +
+						DlgTcolor[link_no].blue + ")"
+					);
+					timeextent[link_no] = [];
+					htimeline[link_no] = [];
+					dindex[link_no] = [];
+					msgID[link_no] = [];
+					hshape[link_no] = [];
+					tables[table_type][link_no].update();
+				});
+			} else {
+				tables[table_type][link_no].update();
+			}
 		}
 	});
 };

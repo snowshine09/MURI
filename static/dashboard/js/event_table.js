@@ -1,11 +1,9 @@
-SIIL.DataTable = function(div) {
+SIIL.DataTable = function($div, table_type, link_no) {
 	var self = this;
-	div = '#' + div.attr('id');
-	this.columns = [];
-	this.SID = div.split("_")[2];
-	this.tbType = div.split("_")[0].split("#")[1];
-	this.tbName = this.tbType + '_tb_' + this.SID;
-	this.table = $(div).dataTable({
+	self.SID = link_no;
+	self.tbType = table_type;
+	self.tbName = $div.find('table').attr('id');
+	self.table = $('#' + self.tbName).dataTable({
 		"bJQueryUI": true,
 		"bDestroy": true,
 		"bScrollCollapse": true,
@@ -15,8 +13,8 @@ SIIL.DataTable = function(div) {
 		"sRowSelect": "multi",
 		"sDom": "RlfrtipS",
 	});
-	this.Tinstance = this.table.api();
-	var cmb = self.tbType + "_selectbar_" + self.SID;
+	self.Tinstance = self.table.api();
+	var cmb = $div.find('.selectbar').attr('id');
 
 	$("#" + cmb).attr("selectedIndex", 0).change(function() {
 		var x = $("#" + cmb + " option:selected").val();
@@ -25,9 +23,9 @@ SIIL.DataTable = function(div) {
 		$("#" + cmb).attr("selectedIndex", 0);
 	});
 
-	$("#" + self.tbName + "_filter" + ' > label:eq(0)' + ' > input:eq(0)').attr("id", self.tbName + "_input").bind("paste cut keyup", function() { //change(function(){
-		$("#" + self.tbName).removeHighlight();
-		$("#" + self.tbName).highlight($("#" + self.tbName + "_input").val());
+	$("#" + self.tbName + "_filter" + ' > label:eq(0)' + ' > input:eq(0)').attr("id", self.tbName + "_input").bind("paste cut keyup", function() {
+		self.table.removeHighlight();
+		self.table.highlight($("#" + self.tbName + "_input").val());
 	});
 };
 

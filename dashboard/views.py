@@ -31,7 +31,9 @@ def LinkNum(request):
 
 def get_table(request):
     global linkCount
-    linkCount += 1
+    new_link = request.REQUEST.get('new_link')
+    if new_link == 'true':
+        linkCount += 1
     table_type = request.REQUEST.get('table_type', '')
     headers = request.POST.getlist('headers[]')
     response = {}
@@ -50,7 +52,6 @@ def index(request):
         dialogs.append("timeline")
     if (len(message_ids) != 0): 
         dialogs.append("message_table")
-
     return render(request, 'dashboard/index.html', Context({"dialogs": dialogs}))
 
 def queryEvent(request):
