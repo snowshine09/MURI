@@ -26,4 +26,5 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^workbench/', include('workbench.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^get_table/', get_table),
 )

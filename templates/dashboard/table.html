@@ -1,0 +1,35 @@
+<div id="{{ table_type }}_dlg_{{ id }}">
+    <div id="{{ table_type }}_selectbar_{{ id }}" class="selectbar dropdown">
+        <select class="selectpicker form-control">
+            <option value="">Generate the next linked window...</option>
+                <optgroup label = "other visualizations...">
+                <option value="timeline_self">Timeline</option>
+                <option value="map_self">Map</option>
+                <option value="network_self">Network</option>
+                <option value="message_self">Messages</option>
+                <option value="event_self">Events (shadow)</option>
+                <option value="person_self">People</option>
+                <option value="organization_self">Organizations</option>
+                <option value="resource_self">Resources</option>
+                <option value="location_self">Locations</option>
+            </optgroup>
+            <optgroup label="Filter to a subset in ...">
+                <option value="{{ table_type }}_subset">{{ table_type }}</option>
+            </optgroup>
+        </select>   
+    </div>
+    <div class="interaction">
+        <div class="showcontext">
+            <a href="javascript:void(0)" onclick="showcontext();return false;">Show Context (parent view)</a>
+        </div>
+    </div>
+    <table id="{{ table_type }}_table_{{ id }}">
+        <thead>
+            <tr>
+            {% for column in columns %}
+                <th>{{ column }}</th>
+            {% endfor %}
+            </tr>
+        </thead>
+    </table>
+</div>

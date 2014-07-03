@@ -17,6 +17,7 @@ from dateutil import parser
 from datetime import timedelta
 import pytz
 import sys  
+from django.template.loader import render_to_string
 reload(sys)  
 sys.setdefaultencoding('utf8')  
 
@@ -26,6 +27,16 @@ def LinkNum(request):
     linkCount +=1
     response = {}
     response['NewLinkNum'] = str(linkCount)
+    return HttpResponse(json.dumps(response), mimetype='application/json')
+
+def get_table(request):
+    global linkCount
+    linkCount += 1
+    table_type = request.REQUEST.get('table_type', '')
+    headers = request.POST.getlist('headers[]')
+    response = {}
+    response['html'] = render_to_string("dashboard/table.html", {'table_type': table_type, 'columns': headers, 'id': str(linkCount)})
+    response['linkNo'] = linkCount
     return HttpResponse(json.dumps(response), mimetype='application/json')
 
 def index(request):

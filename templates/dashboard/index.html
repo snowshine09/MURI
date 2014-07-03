@@ -17,8 +17,16 @@
 <script type="text/javascript" src="{% static 'dashboard/lib/jquery-dialogextend-2.02/build/jquery.dialogextend.js' %}"></script>
 <script type="text/javascript" src="{% static 'dashboard/js/viscontainer.js' %}"></script>
 <script type="text/javascript" src="{% static 'dashboard/js/layout.js' %}"></script> 
-{% compress js %}
+
 <script type="text/javascript" src="{% static 'dashboard/js/linkedview.js' %}"></script>
+<script type="text/javascript" language="javascript" src="{% static 'dashboard/lib/DataTables-1.10.0/media/js/jquery.dataTables.js' %}"></script>
+<script type="text/javascript" language="javascript" src="{% static 'dashboard/lib/DataTables-1.9.4/plugin/ColReorderWithResize.js' %}"></script>
+<!--        <link rel="stylesheet" type="text/css" href="lib/DataTables-1.9.4/media/css/"> -->
+<script type="text/javascript" language="javascript" src="{% static 'dashboard/lib/highlight/jquery_highlight_4.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'dashboard/lib/DataTables-1.9.4/media/css/demo_table_jui.css' %}"> 
+
+<script type="text/javascript" language="javascript" src="{% static 'dashboard/js/event_table.js' %}"></script>
+{% compress js %}
 {% endcompress %}
 {% endblock %}
 
@@ -26,7 +34,6 @@
     {% include 'dashboard/page_header.html' %}
 {% endblock %}
 {% block page-body %}
-    {% include 'dashboard/event_table.html' %}
     {% include 'dashboard/timeline.html' %}
     {% include 'dashboard/map.html' %}
     {% include 'dashboard/network.html' %}
