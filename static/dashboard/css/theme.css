@@ -4,6 +4,9 @@
 .selectbar {
   padding: 5px;
 }
+.fg-button {
+  margin-right: 0px!important;
+}
 .row_selected {
   background-color: rgb(106, 86, 168)!important;
   color: white;

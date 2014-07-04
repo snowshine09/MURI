@@ -501,6 +501,7 @@ function unhighlightFromNetwork(ids) {
 }
 
 function showcontext(event) {
+    event.preventDefault();
 	console.log(event.target);
 	alert("showcontext");
 	var parentID = event.target.parentElement.parentElement.parentElement.id.split("_")[2],

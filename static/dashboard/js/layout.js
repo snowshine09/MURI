@@ -17,9 +17,9 @@ var dialogExtendOptions = {
 
 function randomcolor() {
 	return {
-		red: Math.floor(Math.random() * 256),
-		green: Math.floor(Math.random() * 256),
-		blue: Math.floor(Math.random() * 256)
+		red: Math.floor(Math.random() * 128 + 128),
+		green: Math.floor(Math.random() * 128 + 128),
+		blue: Math.floor(Math.random() * 128 + 128)
 	};
 };
 
