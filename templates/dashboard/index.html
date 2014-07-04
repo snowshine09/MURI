@@ -23,7 +23,7 @@
 <script type="text/javascript" language="javascript" src="{% static 'dashboard/lib/DataTables-1.9.4/plugin/ColReorderWithResize.js' %}"></script>
 <!--        <link rel="stylesheet" type="text/css" href="lib/DataTables-1.9.4/media/css/"> -->
 <script type="text/javascript" language="javascript" src="{% static 'dashboard/lib/highlight/jquery_highlight_4.js' %}"></script>
-<link rel="stylesheet" type="text/css" href="{% static 'dashboard/lib/DataTables-1.9.4/media/css/demo_table_jui.css' %}"> 
+<link rel="stylesheet" type="text/css" href="{% static 'dashboard/lib/DataTables-1.9.4/media/css/jquery.dataTables.css' %}"> 
 <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/network.css' %}">
 <script type="text/javascript" language="javascript" src="{% static 'dashboard/js/event_table.js' %}"></script>
 <script type="text/javascript" language="javascript" src="{% static 'dashboard/js/network.js' %}"></script>
@@ -46,6 +46,4 @@
     <div id="display_dialogs" style="display:none">
         {% for d in dialogs %}{% if not forloop.first %},{% endif %}{{d}}{% endfor %}
     </div>
-
-    <div id="progressbar"><div class="progress-label">Loading...</div></div>
 {% endblock %}

@@ -32,7 +32,9 @@ def LinkNum(request):
 
 def get_table(request):
     global linkCount
-    linkCount += 1
+    new_link = request.REQUEST.get('new_link')
+    if new_link == 'true':
+        linkCount += 1
     table_type = request.REQUEST.get('table_type', '')
     headers = request.POST.getlist('headers[]')
     response = {}
@@ -104,7 +106,6 @@ def index(request):
         dialogs.append("timeline")
     if (len(message_ids) != 0): 
         dialogs.append("message_table")
-
     return render(request, 'dashboard/index.html', Context({"dialogs": dialogs}))
 
 def queryEvent(request):
@@ -267,9 +268,6 @@ def related_entities(request):
         
         if src_id == None and ett_id == None:
             return
-        print ett_id, "is the entities ids for linked entities (related_entities)"
-        print src_id, "is the messages ids for linked entities (related_entities)"
-        
         ## comment: search for entities given msgs/entities
         msgs = Message.objects.filter(uid__in=src_id)
         if(len(ett_id)==0): 
@@ -311,6 +309,7 @@ def related_entities(request):
                 response['msg'].append(msg.getKeyAttr())
         return HttpResponse(json.dumps(response), mimetype='application/json')
     return
+    
 def connected_entities(ett_id,length):
     src_entt = Entity.objects.filter(id__in=ett_id)
     linked_entities = list(src_entt.select_subclasses())
