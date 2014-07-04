@@ -214,9 +214,6 @@ def related_entities(request):
         
         if src_id == None and ett_id == None:
             return
-        print ett_id, "is the entities ids for linked entities (related_entities)"
-        print src_id, "is the messages ids for linked entities (related_entities)"
-        
         ## comment: search for entities given msgs/entities
         msgs = Message.objects.filter(uid__in=src_id)
         if(len(ett_id)==0): 
@@ -258,6 +255,7 @@ def related_entities(request):
                 response['msg'].append(msg.getKeyAttr())
         return HttpResponse(json.dumps(response), mimetype='application/json')
     return
+    
 def connected_entities(ett_id,length):
     src_entt = Entity.objects.filter(id__in=ett_id)
     linked_entities = list(src_entt.select_subclasses())

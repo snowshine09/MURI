@@ -6,9 +6,7 @@ SIIL.DataTable = function($div, table_type, link_no) {
 	self.table = $('#' + self.tbName).dataTable({
 		"bJQueryUI": true,
 		"bDestroy": true,
-		"bScrollCollapse": true,
 		"bAutoWidth": true,
-		'sScrollX': '100%',
 		'sScrollY': '100%',
 		"sRowSelect": "multi",
 		"sDom": "RlfrtipS",
@@ -173,12 +171,11 @@ SIIL.DataTable.prototype.update = function(uType) {
 		} else self.table.$('tr.row_selected').removeClass("row_selected");
 	}
 
-	self.table.$('tr').unbind("click").bind("click", function(e) { //not clear why if not unbind the click event, the clicking will be triggered multiple times
+	self.table.$('tr').bind("click", function(e) { //not clear why if not unbind the click event, the clicking will be triggered multiple times
 		dindex[self.SID] = [];
 		msgID[self.SID] = [];
 		hshape[self.SID] = [];
 		htimeline[self.SID] = [];
-		//alert("enter click");
 		if ($(this).hasClass('row_selected')) {
 			$(this).removeClass('row_selected');
 		} else {
@@ -212,7 +209,6 @@ SIIL.DataTable.prototype.update = function(uType) {
 				var row = self.table.fnGetData($row),
 					dDate = (self.tbType == "message" ? (new Date(row[2])) : row[4]);
 				if ($.inArray(dDate, htimeline[self.SID]) == -1) htimeline[self.SID].push(dDate);
-
 			});
 
 			if (self.tbType == "location") {
@@ -259,7 +255,9 @@ SIIL.DataTable.prototype.update = function(uType) {
 				else if (msgID[self.SID].length == 0) alert("msgID is empty");
 				renderAllExcept(self.tbName, "brush");
 			});
-		} else renderAllExcept(self.tbName, "brush");
+		} else {
+            renderAllExcept(self.tbName, "brush");
+        }
 	});
 };
 

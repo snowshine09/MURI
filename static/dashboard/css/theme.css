@@ -1,23 +1,22 @@
 .ui-widget-header {
-    background: #C5CEFF; !important
+    background: #C5CEFF;
 }
-
+.selectbar {
+  padding: 5px;
+}
+.row_selected {
+  background-color: rgb(106, 86, 168)!important;
+  color: white;
+}
 #page_header {
     padding: 0px;
     margin: 0px;
 }
 
-.selectbar {
-  width:100%;
-  background-color: rgba(102,196,226,0.5);
-  margin:0px!important;
-  padding: 0!important;
-  
-  
-}
-
 .highlight { background-color: yellow }
-
+.DataTables_sort_icon {
+  display: none;
+}
 div.ui-dialog {
   padding: 0!important;
 }
@@ -27,11 +26,6 @@ div.ui-dialog-content {
   overflow:hidden!important;
 }
 
-
-/*div.dlg {
-  overflow:hidden!important;
-}
-*/
 div.cvs {
   overflow:scroll!important;
 }
@@ -40,37 +34,10 @@ div.selectbar.ui-dialog-content {
   overflow:inherit!important;
 }
 
-
-/*selectbar customization overriding*/
-select.form-control{
-    display: inline-block!important;
-    height: inherit!important;
-    width: inherit!important;
-}
-
-/*.ui-dialog-content {
-    overflow: scroll;
-}*/
-
-#progressbar {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    width: 400px;
-    margin: 0 0 0 -150px;
-}
-.progress-label {
-    position: absolute;
-    left: 45%;
-    top: 4px;
-    font-weight: bold;
-    text-shadow: 1px 1px 0 #fff;
-  }
-
-/*tr.odd{
-    background-color: #E2E4FF!important;
-}
-*/
 tr.even{
-    background-color: rgb(241, 236, 255)!important;
+    background-color: rgb(241, 236, 255);
+}
+
+div.dataTables_scrollBody{
+    max-height: 600px;
 }
