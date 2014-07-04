@@ -22,6 +22,7 @@ reload(sys)
 sys.setdefaultencoding('utf8')  
 
 linkCount = 0
+viewtypes = ['event', 'person', 'organization', 'location', 'resource', 'timeline', 'map','network','message']
 def LinkNum(request):
     global linkCount
     linkCount +=1
@@ -40,6 +41,59 @@ def get_table(request):
     response['html'] = render_to_string("dashboard/table.html", {'table_type': table_type, 'columns': headers, 'id': str(linkCount)})
     response['linkNo'] = linkCount
     return HttpResponse(json.dumps(response), mimetype='application/json')
+
+def network_template(request):
+    global linkCount
+    linkCount += 1
+    global viewtypes
+    selfType = request.REQUEST.get('selfType', None)
+    parentID = request.REQUEST.get('parentID',None)
+    MyAltViews = viewtypes
+    print "selfType", selfType
+    print MyAltViews
+    print viewtypes
+    if selfType in MyAltViews:
+        MyAltViews.remove(selfType)
+    response = {}
+    response['html'] = render_to_string("dashboard/network.html", {'vistypes': MyAltViews, 'id': str(linkCount), 'parent_id': parentID})
+    response['linkNo'] = linkCount
+    return HttpResponse(json.dumps(response), mimetype='application/json')
+
+def timeline_template(request):
+    global linkCount
+    linkCount += 1
+    global viewtypes
+    selfType = request.REQUEST.get('selfType', None)
+    parentID = request.REQUEST.get('parentID',None)
+    MyAltViews = viewtypes
+    print "selfType", selfType
+    print MyAltViews
+    print viewtypes
+    if selfType in MyAltViews:
+        MyAltViews.remove(selfType)
+    response = {}
+    response['html'] = render_to_string("dashboard/timeline.html", {'vistypes': MyAltViews, 'id': str(linkCount), 'parent_id': parentID})
+    response['linkNo'] = linkCount
+    return HttpResponse(json.dumps(response), mimetype='application/json')
+
+def map_template(request):
+    global linkCount
+    linkCount += 1
+    global viewtypes
+    selfType = request.REQUEST.get('selfType', None)
+    parentID = request.REQUEST.get('parentID',None)
+    MyAltViews = viewtypes
+    print "selfType", selfType
+    print MyAltViews
+    print viewtypes
+    if selfType in MyAltViews:
+        MyAltViews.remove(selfType)
+    response = {}
+    response['html'] = render_to_string("dashboard/map.html", {'vistypes': MyAltViews, 'id': str(linkCount), 'parent_id': parentID})
+    response['linkNo'] = linkCount
+    return HttpResponse(json.dumps(response), mimetype='application/json')
+
+
 
 def index(request):
     bbox    = request.REQUEST.getlist('map')

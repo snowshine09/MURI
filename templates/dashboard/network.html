@@ -1,70 +1,51 @@
-{% load static %}
-{% load compress %}
-{% block extralib %}
-{% compress js %}
-<script type="text/javascript" language="javascript" src="{% static 'dashboard/js/network.js' %}"></script>
-{% endcompress %}
-<link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/network.css' %}">
-{% endblock %}
-
-<div id="network" class='nw dlg' style='display: none'>
-	<div id="selectbar" class = "selectbar dropdown">
-		<select class="selectpicker form-control">
-			<option value="">Generate the next linked window...</option>
-			<optgroup label = "other visualizations...">
-				<option value="timeline_self">Timeline</option>
-				<option value="map_self">Map</option>
-				<option value="network_self">Network (shadow)</option>
-				<option value="message_self">Messages</option>
-				<option value="event_self">Events</option>
-				<option value="person_self">People</option>
-				<option value="organization_self">Organizations</option>
-				<option value="resource_self">Resources</option>
-				<option value="location_self">Locations</option>
-			</optgroup>
-			<optgroup label = "Filter to a subset in ...">
-				<option value="network_subset">Network</option>
-			</optgroup>
-		</select>   
-	</div>
-	<div class = "interaction">
-		<div class="reset">
-			<a href="javascript:void(0)" onclick="reset();return false;">Reset</a>
-		</div>
-		<div class="showcontext">
-			<a href="javascript:void(0)" onclick="showcontext();return false;">Show Context (parent view)</a>
-		</div>
-		
-
-		<div class = "gravity">
-			<label>Gravity</label>
-			<input type="text" class="gravity_text" 
-			style="border:0; color:#b9cd6d; font-weight:bold;">
-			<div></div>
-		</div>
-		<div class = "charge">
-		</div>
-		<div class = "linkdistance">
-		</div>
-	</div>
-
-	<div class = "slider-group">
-		<div class = "radio">
-			<label>
-				<input type = "radio" name="mode" value="pan" checked>
-				Pan mode
-			</label>
-		</div>
-		<div class = "radio">
-			<label>
-				<input type = "radio" name="mode" value="brush">
-				Brush mode
-			</label>
-		</div>
-		
-	</div>
+<div id="network_dlg_{{id}}" class='network visdlg'>
 	
-	<div id = "nw_cvs" class="cvs">
+	<form class="form-inline interaction" role="form">
+		<div class = "gravity form-group">
+			<label>Gravity
+			</label>
+			<label class="gravity_text" style="color:#b9cd6d; font-weight:bold;">
+			</label>
+			<div id = "network_gravity_{{id}}"></div>
+		</div>
+		<div id = "network_ctxt_{{id}}" class="showcontext form-group">
+			{% if parent_id %}
+			<a href="javascript:void(0)" onclick="showcontext(event);return false;" class = "form-control">Show Context in Link {{parent_id}}</a>
+			{% endif %}
+		</div>
+		<div id="network_selectbar_{{id}}" class = "selectbar dropdown form-group">
+			<select class="selectpicker form-control">
+				<option value="">Generate the next linked window...</option>
+				<optgroup label = "other visualizations...">
+					{% for vistype in vistypes %}
+					<option value = "{{ vistype }}_self">{{ vistype }}</option>
+					{% endfor %}
+				</optgroup>
+				<optgroup label = "Filter to a subset in ...">
+					<option value="network_subset">Network</option>
+				</optgroup>
+			</select>   
+		</div>
+		<div id = "network_mode_{{ id }}" class = "slider-group form-group">
+			<div class = "radio">
+				<label>
+					<input type = "radio" name="mode" value="pan" checked>
+					Pan mode
+				</label>
+			</div>
+			<div class = "radio">
+				<label>
+					<input type = "radio" name="mode" value="brush">
+					Brush mode
+				</label>
+			</div>
+
+		</div>
+	</form>
+
+
+
+	<div id = "network_cvs_{{id}}" class="cvs">
 
 	</div>
 </div>

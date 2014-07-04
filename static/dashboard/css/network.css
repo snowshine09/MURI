@@ -3,11 +3,6 @@ g.node.selected > rect{
     stroke: "#0000FF";
 }
 
-#nw-selectbar {
-	background: #DAA7F2;
-	height: 35px;
-	margin: 3px;
-}
 .cvs text {
   font: 10px sans-serif;
 }
