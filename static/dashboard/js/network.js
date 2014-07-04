@@ -1,10 +1,6 @@
-// $.widget("vis.visnetwork", $.vis.viscontainer, {
-//   options: {},
-//   _create: function() {},
-//   destroy: function() {},
-// });
 SIIL.Network = function(div) {
   var self = this;
+  div = "#" + div;
   this.SID = div.split("_")[2];
   this.Type = div.split("_")[0].split("#")[1];
   this.Name = this.Type + '_cvs_' + this.SID;
@@ -42,11 +38,6 @@ SIIL.Network = function(div) {
     }
     update_mode();
   });
-  //if no radio button is selected, choose pan mode as default
-  // var $radios = $('input:radio[name=mode]');
-  // if ($radios.is(':checked') === false) {
-  //   $radios.filter('[value=pan]').prop('checked', true);
-  // }
 
   var force = d3.layout.force()
     .nodes([])
@@ -57,7 +48,7 @@ SIIL.Network = function(div) {
     .size([self.width, self.height])
     .on("tick", tick);
 
-  this.shiftKey = null;//set shiftkey available all over the body
+  this.shiftKey = null; //set shiftkey available all over the body
   d3.select("body")
     .attr("tabindex", 1)
     .on("keyup", keyflip)
@@ -71,12 +62,10 @@ SIIL.Network = function(div) {
 
   //REGISTER behaviors: zoom, drag, brush
   self.zoom = d3.behavior.zoom()
-  //.center([self.width / 2, self.height / 2])
-  .scaleExtent([0, 15])
+    .scaleExtent([0, 15])
     .x(x_scale)
     .y(y_scale)
     .on("zoom", redraw);
-  // .on("zoomend", zoomended);
 
   self.drag = force.drag()
     .on("dragstart", dragstarted)
@@ -94,10 +83,6 @@ SIIL.Network = function(div) {
     .on("brush", function() {
       var extent = d3.event.target.extent();
       node.classed("selected", function(d) {
-        // if(d.previouslySelected ^
-        //   (extent[0][0] <= d.x && d.x < extent[1][0] && extent[0][1] <= d.y && d.y < extent[1][1]))
-        //   alert(d.node+" is selected");
-        // (Xcordscale(parseFloat(extent[0][0])) <= Xcordscale(parseFloat(d.x)) && Xcordscale(parseFloat(d.x)) < Xcordscale(parseFloat(extent[1][0])) && extent[0][1] <= Xcordscale(parseFloat(d.y))  && Ycordscale(parseFloat(d.y))  < Ycordscale(parseFloat(extent[1][1])) );
         return d.selected = d.previouslySelected ^
           (extent[0][0] <= d.x && d.x < extent[1][0] && extent[0][1] <= d.y && d.y < extent[1][1]);
       });
@@ -124,16 +109,14 @@ SIIL.Network = function(div) {
 
   var svg = d3.select(div)
     .attr("tabindex", 1)
-    .on("keyup", keyflip) //.brush
-    .on("keydown", keyflip) //.brush
+    .on("keyup", keyflip)
+    .on("keydown", keyflip)
     .each(function() {
       this.focus();
     })
     .append("svg:svg")
     .attr("width", self.width)
     .attr("height", self.height)
-    // .attr("viewBox", "0 0 " + 1000 + " " + 800)
-    // .attr("preserveAspectRatio", "xMidYMid meet")
     .attr("pointer-events", "all")
     .style("overflow", "scroll")
     .append('svg:g')
@@ -159,54 +142,38 @@ SIIL.Network = function(div) {
     animate: true,
     slide: function(event, ui) {
       force.gravity(ui.value);
-      $("#network_gravity_" + self.SID).siblings('.gravity_text').val(ui.value);
+      $("#network_gravity_" + self.SID).siblings(".gravity_text").html(ui.value);
       if (force.alpha() == 0) force.start();
-      // force.alpha(0.1);
     }
   });
-  $("#network_gravity_" + self.SID).siblings('.gravity_text').val($("#network_gravity_" + self.SID).slider("value"));
-  // $( "#amount" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) +
-  //   " - $" + $( "#slider-range" ).slider( "values", 1 ) );
+  $("#network_gravity_" + self.SID).siblings('.gravity_text').html($("#network_gravity_" + self.SID).slider("value"));
 
   var nodes = force.nodes();
   var links = force.links();
 
   function keyflip() {
     self.shiftKey = d3.event.shiftKey || d3.event.metaKey;
-    //console.log(self.shiftKey);
   }
 
   function redraw() {
-    //alert("redraw");
     svg.attr("transform",
       "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
-    //force.stop();
   }
 
   function tick() {
     link.attr("x1", function(d) {
-      return d.source.x; //Xcordscale(parseFloat(d.source.x));
+      return d.source.x;
     })
       .attr("y1", function(d) {
-        return d.source.y; //Ycordscale(parseFloat(d.source.y));
+        return d.source.y;
       })
       .attr("x2", function(d) {
-        return d.target.x; //Xcordscale(parseFloat(d.target.x));
+        return d.target.x;
       })
       .attr("y2", function(d) {
-        return d.target.y; //Ycordscale(parseFloat(d.target.y));
+        return d.target.y;
       })
     node.attr("transform", function(d) {
-      // if (leftedge == undefined) leftedge = d.x;
-      // if (rightedge == undefined) rightedge = d.x;
-      // if (topedge == undefined) topedge = d.y;
-      // if (bottomedge == undefined) bottomedge = d.y;
-
-      // if (d.x < leftedge) leftedge = d.x;
-      // if (d.x > rightedge) rightedge = d.x;
-      // if (d.y < topedge) topedge = d.y;
-      // if (d.y > bottomedge) bottomedge = d.y;
-      //return "translate(" + Xcordscale(parseFloat(d.x)) + "," + Ycordscale(parseFloat(d.y)) + ")";
       return "translate(" + d.x + "," + d.y + ")";
     });
   }
@@ -228,16 +195,7 @@ SIIL.Network = function(div) {
 
   function update_mode() {
     if (self.panmode) {
-      // self.zoom_g = svg
-      //   .append('svg:g')
-      //   .attr("class", "zoom")
-      //   .call(self.zoom); //d3.behavior.zoom().on("zoom", redraw)
-      //   .append('svg:g')
-      // .on("mousedown", mousedown);
       svg.selectAll(".brush").remove();
-
-
-
     } else if (self.brushmode == true) {
       self.brush_g = svg.append("g")
         .datum(function() {
@@ -249,7 +207,6 @@ SIIL.Network = function(div) {
         .attr("tabindex", 2)
         .attr("class", "brush")
         .call(self.brush);
-      //svg.selectAll(".zoom").remove();
       self.node_g.on("mousedown",
         // mousedown
         function(d) {
@@ -271,17 +228,7 @@ SIIL.Network = function(div) {
     return n;
   };
 
-
-
-  var self = this;
-  this.resize = function() {
-    // svg.style("height", $('#' + self.Name).outerHeight())
-    //   .style("width", $('#' + self.Name).outerWidth())
-  }
   this.update = function(coType) {
-
-
-
     events_id = []
     dataset[self.SID]['dDate'].top(Infinity).forEach(function(p, i) {
       events_id.push(p.uid);
@@ -297,9 +244,6 @@ SIIL.Network = function(div) {
       node.exit().remove();
       force.nodes(d.nodes)
         .links(d.links);
-      //console.log(d);ƒ
-      //
-      //    link = link.data(links, function(d) { return d.source.id + "-" + d.target.id; });
       link = link.data(d.links);
       link.enter().append("line").attr("class", "link")
         .style("stroke", "#FF0000");
@@ -310,15 +254,6 @@ SIIL.Network = function(div) {
       self.node_g = node.enter().append("g")
         .attr("class", "node")
         .call(self.drag);
-      // .on("mouseover", mouseover)
-      // .on("mouseout", mouseout)
-
-
-      // self.node_g.on("click", function(d) {
-      //   if (d3.event.defaultPrevented && self.panmode) return; // ignore drag
-      //   else
-      //     alert("pan mode is" + self.panmode + " drag enabled for choosing");
-      // });
       node.append("image")
         .attr("xlink:href", function(d) {
           if (d.node == 'organization') {
@@ -337,13 +272,6 @@ SIIL.Network = function(div) {
         .attr("y", -12)
         .attr("width", 36)
         .attr("height", 36);
-      //    node.append("rect")
-      //       .attr("x", -12)
-      //       .attr("y", -12)
-      //       .attr("width", 40)
-      //       .attr("height", 40)
-      // .style("fill", "transparent")
-      //       ;
 
       node.append("text")
         .attr("dx", "-1.95em")
@@ -362,36 +290,5 @@ SIIL.Network = function(div) {
 
     });
   }
-
-  // function mouseover() {
-  //   d3.select(this).select("image").transition()
-  //     .duration(450)
-  //     .attr("width", 64)
-  //     .attr("height", 64);
-  //   highlightFromNetwork(this.__data__.id);
-  // }
-
-  // function mouseout() {
-  //   d3.select(this).select("image").transition()
-  //     .duration(450)
-  //     .attr("width", 36)
-  //     .attr("height", 36);
-  //   unhighlightFromNetwork(this.__data__.id);
-  // }
-
-  // function mousedown() {
-  //   self.brushmode = document.getElementById("network_brush_" + self.SID).checked;
-  //   self.panmode = document.getElementById("network_pan_" + self.SID).checked;
-  //   if (self.brushmode) {
-  //     d3.select(this).fixed = true;
-  //     d3.select(this).classed("sticky", true);
-  //     if (self.shiftKey) d3.select(this).classed("selected", d3.select(this).selected = !d3.select(this).selected);
-  //     else node.classed("selected", function(p) {
-  //       return p.selected = d3.select(this) === p;
-  //     });
-  //   } else if (self.panmode) {
-  //     redraw();
-  //   }
-  // }
 
 };

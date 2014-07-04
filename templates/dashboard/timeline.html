@@ -1,40 +1,21 @@
-{% load static %}
-{% load compress %}
-{% block extralib %}
-{% compress js %}
-<script type="text/javascript" language="javascript" src="{% static 'dashboard/js/timeline.js' %}"></script>
-{% endcompress %}
-<link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/timeline.css' %}">
-{% endblock %}
-
-<div id="timeline"  style='display: none'>
-	<div id="selectbar" class="selectbar dropdown">Generate the next linked window...
-        <select class="selectpicker form-control" label="Other views...">
-            <option value="">---</option>
-            <optgroup label = "other visualizations...">
-                <option value="timeline_self">Timeline (shadow)</option>
-                <option value="map_self">Map</option>
-                <option value="network_self">Network</option>
-                <option value="message_self">Messages</option>
-                <option value="event_self">Events</option>
-                <option value="person_self">People</option>
-                <option value="organization_self">Organizations</option>
-                <option value="resource_self">Resources</option>
-                <option value="location_self">Locations</option>
-            </optgroup>
-            <optgroup label = "Filter to a subset in ...">
-                <option value="event_subset">Timeline</option>
-            </optgroup>
-        </select>   
-    </div>
-    <div class = "interaction">
-        <div class="reset">
-            <a href="javascript:void(0)" onclick="reset();return false;">Reset</a>
+<div id="timeline_dlg_{{id}}" class = 'timeline visdlg'>
+    <form class = "interaction form-inline" role = "form">
+        <div id="network_selectbar_{{id}}" class="selectbar dropdown form-group">
+            <select class="selectpicker form-control" label="Other views...">
+                <option value="">Generate the next linked window...</option>
+                <optgroup label = "other visualizations...">
+                    {% for vistype in vistypes %}
+                    <option value = "{{ vistype }}_self">{{ vistype }}</option>
+                    {% endfor %}
+                </optgroup>
+                <optgroup label = "Filter to a subset in ...">
+                    <option value="event_subset">Timeline</option>
+                </optgroup>
+            </select>   
         </div>
-        <div class="showcontext">
-            <a href="javascript:void(0)" onclick="showcontext();return false;">Show Context (parent view)</a>
+        <div class="showcontext form-group">
+            <a href="javascript:void(0)" onclick="showcontext(event);return false;" class = "form-control">Show Context (parent view)</a>
         </div>
-    </div>
-	<div id = "timeline_cvs">
-	</div>
+        <div id = "timeline_cvs_{{id}}" class = "cvs"></div>
+    </form>
 </div>

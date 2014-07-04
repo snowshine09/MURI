@@ -8,12 +8,20 @@
 }
 
 .selectbar {
-  width:100%;
+  /*width:100%;*/
   background-color: rgba(102,196,226,0.5);
   margin:0px!important;
   padding: 0!important;
-  
-  
+  right: 2px;
+  /*  background: #DAA7F2;
+  height: 35px;
+  margin: 3px;*/
+}
+
+div.showcontext {
+  width: 30%;
+  background-color: yellow;
+  right : 5px;
 }
 
 .highlight { background-color: yellow }
