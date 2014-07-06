@@ -14,7 +14,9 @@
             </select>   
         </div>
         <div class="showcontext form-group">
-            <button href="#" class="btn btn-sm btn-default" onclick="showcontext();return false;">Show Context in Link</button>
+            {% if parent_id %}
+            <a href="javascript:void(0)" onclick="showcontext(event);return false;" class = "form-control">Show Context in Link {{parent_id}}</a>
+            {% endif %}
         </div>
     </form>
     <div id="timeline_cvs_{{id}}" class="cvs"></div>

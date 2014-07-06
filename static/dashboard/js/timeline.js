@@ -172,13 +172,10 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 				dindex[self.SID] = [];
 				msgID[self.SID] = [];
 
-				console.log("dataset[self.SID]['dDate']:" + dataset[self.SID]['dDate'].top(Infinity).length);
 				dataset[self.SID]['dDate'].top(Infinity).forEach(function(p, i) {
-
 					if (+p.date >= +timeextent[self.SID][0] && +p.date <= +timeextent[self.SID][1]) {
 						if ($.inArray(p.uid, dindex[self.SID]) == -1) dindex[self.SID].push(p.uid);
 					}
-
 				});
 				dataset[self.SID]['dMessage'].group().top(Infinity).forEach(function(p, i) {
 					if (+Date.parse(p.key[2]) >= +Date.parse(timeextent[self.SID][0]) && +Date.parse(p.key[2]) <= +Date.parse(timeextent[self.SID][1])) {

@@ -7,6 +7,9 @@ g.node.selected > rect{
   font: 10px sans-serif;
 }
 
+div.gravity{
+  width: 200px;
+}
 .selected text{
   stroke: red;
 }

@@ -90,7 +90,7 @@ SIIL.DataTable.prototype.update = function(uType) {
 	}
 
 	if (self.tbType != 'message') {
-		self.table.column('ID:name').visible(false);
+		//self.table.column('ID:name').visible(false);
 	} else {
 		if (msgID[self.SID].length != 0) {
 			var indexes = self.table.rows().eq(0).filter(function(rowIdx) {
@@ -140,16 +140,23 @@ SIIL.DataTable.prototype.update = function(uType) {
 		if (self.tbType == "location") {
 			hshape[self.SID] = self.table.cells('.row_selected', 'ID:name').data().toArray();
 		}
+        param = {};
 		var selected_rows = self.table.rows('.row_selected');
+        if (self.tbType === 'message') {
+            param['msg_ids'] = self.table.cells('.row_selected', 'ID:name').data().toArray();
+            msgID[self.SID] = self.table.cells('.row_selected', 'ID:name').data().toArray();
+            dindex[self.SID] = [];
+        } else {
+            param['entity_ids'] = self.table.cells('.row_selected', 'ID:name').data().toArray();
+            dindex[self.SID] = self.table.cells('.row_selected', 'ID:name').data().toArray();
+            msgID[self.SID] = [];
+        }
 		if (selected_rows.length > 0) {
 			$.ajax({
 				url: "propagate/",
 				type: 'post',
 				async: false,
-				data: {
-					'ids': self.table.cells('.row_selected', 'ID:name').data().toArray(),
-					'type': self.tbType
-				},
+				data: param,
 				success: function(eid) {
 					dindex[self.SID] = eid['ett_idset'];
 					msgID[self.SID] = eid['msg_idset'];
