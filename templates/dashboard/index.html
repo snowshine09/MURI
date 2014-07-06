@@ -3,35 +3,29 @@
 {% load compress %}
 
 {% block extralib %}
-<!-- <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/layout.css' %}"> -->
 <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/theme.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'dashboard/lib/jcm/jquery.contextMenu.css' %}">
-
+<link rel="stylesheet" type="text/css" href="{% static 'dashboard/lib/DataTables-1.9.4/media/css/jquery.dataTables.css' %}"> 
+<link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/network.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/timeline.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/map.css' %}"> 
 <script type="text/javascript" src="{% static 'dashboard/js/SIIL.js' %}"></script>
-<!-- crossfilter for coordinated view -->
 <script type="text/javascript" src="{% static 'dashboard/lib/d3-3.1.10/d3.js' %}"></script>
 <script type="text/javascript" src="{% static 'dashboard/lib/crossfilter-1.2.0/crossfilter.js' %}"></script>
 <script type="text/javascript" src="{% static 'dashboard/lib/jcm/jquery.contextMenu.js' %}"></script>
 <script type="text/javascript" src="{% static 'dashboard/lib/jcm/jquery.ui.position.js' %}"></script>
-<!-- extended dialogue -->
 <script type="text/javascript" src="{% static 'dashboard/lib/jquery-dialogextend-2.02/build/jquery.dialogextend.js' %}"></script>
 <script type="text/javascript" src="{% static 'dashboard/js/viscontainer.js' %}"></script>
 <script type="text/javascript" src="{% static 'dashboard/js/layout.js' %}"></script> 
-
 <script type="text/javascript" src="{% static 'dashboard/js/linkedview.js' %}"></script>
-<script type="text/javascript" language="javascript" src="{% static 'dashboard/lib/DataTables-1.10.0/media/js/jquery.dataTables.js' %}"></script>
-<script type="text/javascript" language="javascript" src="{% static 'dashboard/lib/DataTables-1.9.4/plugin/ColReorderWithResize.js' %}"></script>
-<!--        <link rel="stylesheet" type="text/css" href="lib/DataTables-1.9.4/media/css/"> -->
-<script type="text/javascript" language="javascript" src="{% static 'dashboard/lib/highlight/jquery_highlight_4.js' %}"></script>
-<link rel="stylesheet" type="text/css" href="{% static 'dashboard/lib/DataTables-1.9.4/media/css/jquery.dataTables.css' %}"> 
-<link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/network.css' %}">
-<script type="text/javascript" language="javascript" src="{% static 'dashboard/js/event_table.js' %}"></script>
-<script type="text/javascript" language="javascript" src="{% static 'dashboard/js/network.js' %}"></script>
-<script type="text/javascript" language="javascript" src="{% static 'dashboard/js/timeline.js' %}"></script>
-<script type="text/javascript" language="javascript" src="{% static 'dashboard/js/map.js' %}"></script>
-<link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/timeline.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/map.css' %}"> 
-<script type="text/javascript" language="javascript" src="{% static 'dashboard/lib/OpenLayers-2.13.1/OpenLayers.js' %}"></script>
+<script type="text/javascript" src="{% static 'dashboard/lib/DataTables-1.10.0/media/js/jquery.dataTables.js' %}"></script>
+<script type="text/javascript" src="{% static 'dashboard/lib/DataTables-1.9.4/plugin/ColReorderWithResize.js' %}"></script>
+<script type="text/javascript" src="{% static 'dashboard/lib/highlight/jquery_highlight_4.js' %}"></script>
+<script type="text/javascript" src="{% static 'dashboard/js/event_table.js' %}"></script>
+<script type="text/javascript" src="{% static 'dashboard/js/network.js' %}"></script>
+<script type="text/javascript" src="{% static 'dashboard/js/timeline.js' %}"></script>
+<script type="text/javascript" src="{% static 'dashboard/js/map.js' %}"></script>
+<script type="text/javascript" src="{% static 'dashboard/lib/OpenLayers-2.13.1/OpenLayers.js' %}"></script>
 <script src="http://maps.google.com/maps/api/js?v=3&amp;sensor=false"></script>
 {% compress js %}
 {% endcompress %}

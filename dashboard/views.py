@@ -22,7 +22,7 @@ reload(sys)
 sys.setdefaultencoding('utf8')  
 
 linkCount = 0
-viewtypes = ['event', 'person', 'organization', 'location', 'resource', 'timeline', 'map','network','message']
+viewtypes = ['event', 'person', 'organization', 'location', 'resource', 'timeline', 'map', 'network', 'message']
 def LinkNum(request):
     global linkCount
     linkCount +=1
@@ -32,26 +32,27 @@ def LinkNum(request):
 
 def get_table(request):
     global linkCount
+    global viewtypes
     new_link = request.REQUEST.get('new_link')
     if new_link == 'true':
         linkCount += 1
     table_type = request.REQUEST.get('table_type', '')
     headers = request.POST.getlist('headers[]')
     response = {}
-    response['html'] = render_to_string("dashboard/table.html", {'table_type': table_type, 'columns': headers, 'id': str(linkCount)})
+    print headers
+    response['html'] = render_to_string("dashboard/table.html", {'table_type': table_type, 'viewtypes': viewtypes, 'columns': headers, 'id': str(linkCount)})
     response['linkNo'] = linkCount
     return HttpResponse(json.dumps(response), mimetype='application/json')
 
 def network_template(request):
     global linkCount
-    linkCount += 1
+    new_link = request.REQUEST.get('new_link')
+    if new_link == 'true':
+        linkCount += 1
     global viewtypes
     selfType = request.REQUEST.get('selfType', None)
     parentID = request.REQUEST.get('parentID',None)
-    MyAltViews = viewtypes
-    print "selfType", selfType
-    print MyAltViews
-    print viewtypes
+    MyAltViews = viewtypes[:]
     if selfType in MyAltViews:
         MyAltViews.remove(selfType)
     response = {}
@@ -61,14 +62,13 @@ def network_template(request):
 
 def timeline_template(request):
     global linkCount
-    linkCount += 1
+    new_link = request.REQUEST.get('new_link')
+    if new_link == 'true':
+        linkCount += 1
     global viewtypes
     selfType = request.REQUEST.get('selfType', None)
     parentID = request.REQUEST.get('parentID',None)
-    MyAltViews = viewtypes
-    print "selfType", selfType
-    print MyAltViews
-    print viewtypes
+    MyAltViews = viewtypes[:]
     if selfType in MyAltViews:
         MyAltViews.remove(selfType)
     response = {}
@@ -78,14 +78,13 @@ def timeline_template(request):
 
 def map_template(request):
     global linkCount
-    linkCount += 1
+    new_link = request.REQUEST.get('new_link')
+    if new_link == 'true':
+        linkCount += 1
     global viewtypes
     selfType = request.REQUEST.get('selfType', None)
     parentID = request.REQUEST.get('parentID',None)
-    MyAltViews = viewtypes
-    print "selfType", selfType
-    print MyAltViews
-    print viewtypes
+    MyAltViews = viewtypes[:]
     if selfType in MyAltViews:
         MyAltViews.remove(selfType)
     response = {}
@@ -236,7 +235,6 @@ def prepareNetwork(request):
         response['links'] = []
         node_types = request.POST.getlist('entities[]', None)
         events_id = request.POST.getlist('events_id[]', None)
-        print events_id, "is the events ids for network (prepareNetwork)"
         if node_types == None or events_id == None:
             return
 
@@ -259,57 +257,46 @@ def prepareNetwork(request):
     return
 
 def related_entities(request):
-    if request.method == 'POST':
-        response = {}
-        response['ett'] = []
-        response['msg'] = []
-        src_id = request.POST.getlist('src_id[]', None)##src entities id
-        ett_id = request.POST.getlist('ett_id[]', None)##src entities id
-        
-        if src_id == None and ett_id == None:
-            return
-        ## comment: search for entities given msgs/entities
-        msgs = Message.objects.filter(uid__in=src_id)
-        if(len(ett_id)==0): 
-            ett_id = []
-        for msg in msgs:
-            events = msg.event.all()
-            for eve in events:
-                print eve.id
-                ett_id.append(eve.id)
-        src_entt = Entity.objects.filter(id__in=ett_id)
-        linked_entities = list(src_entt.select_subclasses())
-        for ett in src_entt:
-            entities = list(chain(ett.findTargets(), ett.findSources()))
-            #print entities
+    response = {'ett_idset': [], 'ett_dateset': [], 'msg_idset': [], 'msg_dateset': []}
+    query_type = request.REQUEST.get('type')
+    ids = request.POST.getlist('ids[]')
+    if query_type == 'message': # from message to entities
+        messages = [msg for msg in Message.objects.filter(uid__in=ids)]
+        events = []
+        for message in messages:
+            events.extend(msg.event.all())
+        # get entities from events
+        event_ids = [event.id for event in events]
+        linked_entities = list(Entity.objects.filter(id__in=event_ids).select_subclasses())
+        for event in events:
+            entities = list(chain(event.findTargets(), event.findSources()))
             linked_entities += entities
-        for entity in linked_entities:
-            response['ett'].append(entity.getKeyAttr())
-        if len(src_id) == 0:##search for messages given entities
-            src_entt = Entity.objects.filter(id__in=ett_id)
-            linked_entities = list(src_entt.select_subclasses())
-            for ett in src_entt:
-                entities = list(chain(ett.findTargets(), ett.findSources()))
-                linked_entities+=entities
-            for single_ett in linked_entities:
-                if(single_ett.id not in ett_id):
-                    ett_id.append(single_ett.id)
-            ##function used to calculate the complete connected enntites recursively
-            ##ett_id = connected_entities(ett_id,len(ett_id));
-                #print entities
-            ett_src = Event.objects.filter(id__in=ett_id)##first propagate to broad entities than settle to event_type and search for related mesgs
-            
-            msgs_id = []
-            for ett in ett_src:
-                for mes in ett.message_set.all():
-                    print "message", mes
-                    msgs_id.append(mes.uid)
-            msgs = Message.objects.filter(uid__in=msgs_id)        
-            for msg in msgs:
-                response['msg'].append(msg.getKeyAttr())
-        return HttpResponse(json.dumps(response), mimetype='application/json')
-    return
-    
+        response['ett_idset'] = list(set([entity.id for entity in linked_entities]))
+        response['ett_dateset'] = list(set([entity.date_begin.strftime('%m/%d/%Y') for entity in linked_entities if entity.date_begin is not None]))
+        # expand messages from events
+        for event in events:
+            messages.extend(msg for msg in event.message_set.all())
+        response['msg_idset'] = list(set([message.uid for message in messages]))
+        response['msg_dateset'] = list(set([message.date.strftime('%m/%d/%Y') for message in messages if message.date is not None]))
+
+    else: # from entities to messages
+        entities = Entity.objects.filter(id__in=ids)
+        linked_entities = list(entities.select_subclasses())
+        for entity in entities:
+            linked_entities += list(chain(entity.findTargets(), entity.findSources()))
+        event_ids = [entity.id for entity in linked_entities]
+        events = Event.objects.filter(id__in=event_ids)
+        messages = []
+        for event in events:
+            messages.extend(event.message_set.all())
+        response['msg_idset'] = list(set([message.uid for message in messages]))
+        response['msg_dateset'] = list(set([message.date.strftime('%m/%d/%Y') for message in messages if message.date is not None]))
+        response['ett_idset'] = list(set([entity.id for entity in linked_entities]))
+        response['ett_dateset'] = list(set([entity.date_begin.strftime('%m/%d/%Y') for entity in linked_entities if entity.date_begin is not None]))
+
+    response['dateset'] = list(set(chain(response['ett_dateset'], response['msg_dateset'])))
+    return HttpResponse(json.dumps(response), mimetype='application/json')
+
 def connected_entities(ett_id,length):
     src_entt = Entity.objects.filter(id__in=ett_id)
     linked_entities = list(src_entt.select_subclasses())

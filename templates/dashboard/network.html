@@ -1,20 +1,17 @@
 <div id="network_dlg_{{id}}" class='network visdlg'>
-	
-	<form class="form-inline interaction" role="form">
-		<div class = "gravity form-group">
-			<label>Gravity
-			</label>
-			<label class="gravity_text" style="color:#b9cd6d; font-weight:bold;">
-			</label>
-			<div id = "network_gravity_{{id}}"></div>
+	<form class="form-inline" role="form">
+		<div class="gravity form-group">
+			<label>Gravity</label>
+			<label class="gravity_text" style="color:#b9cd6d; font-weight:bold;"></label>
+			<div id="network_gravity_{{id}}"></div>
 		</div>
-		<div id = "network_ctxt_{{id}}" class="showcontext form-group">
+		<div id="network_ctxt_{{id}}" class="showcontext form-group">
 			{% if parent_id %}
-			<a href="javascript:void(0)" onclick="showcontext(event);return false;" class = "form-control">Show Context in Link {{parent_id}}</a>
+			<button href="#" class="btn btn-sm btn-default" onclick="showcontext();return false;">Show Context in Link {{parent_id}}</button>
 			{% endif %}
 		</div>
-		<div id="network_selectbar_{{id}}" class = "selectbar dropdown form-group">
-			<select class="selectpicker form-control">
+		<div id="network_selectbar_{{id}}" class="selectbar form-group">
+			<select class="form-control">
 				<option value="">Generate the next linked window...</option>
 				<optgroup label = "other visualizations...">
 					{% for vistype in vistypes %}
@@ -26,26 +23,10 @@
 				</optgroup>
 			</select>   
 		</div>
-		<div id = "network_mode_{{ id }}" class = "slider-group form-group">
-			<div class = "radio">
-				<label>
-					<input type = "radio" name="mode" value="pan" checked>
-					Pan mode
-				</label>
-			</div>
-			<div class = "radio">
-				<label>
-					<input type = "radio" name="mode" value="brush">
-					Brush mode
-				</label>
-			</div>
-
+		<div class="form-group">
+			<button href="#" id="network_mode_{{id}}" class="btn btn-sm btn-primary">Pan mode</button>
 		</div>
 	</form>
-
-
-
 	<div id = "network_cvs_{{id}}" class="cvs">
-
 	</div>
 </div>

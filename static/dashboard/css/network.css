@@ -8,27 +8,18 @@ g.node.selected > rect{
 }
 
 .selected text{
-  color: red;
+  stroke: red;
 }
 .brush .extent {
   fill-opacity: .1;
   stroke: blue;
   shape-rendering: crispEdges;
 }
-
-/*.node {
-  stroke: green;
-  stroke-width: 1.5px;
-}*/
-
+ 
 .node.selected {
   stroke: red;
 }
 
 .link {
   stroke: #999;
-}
-
-.cvs {
-  overflow: scroll;
 }

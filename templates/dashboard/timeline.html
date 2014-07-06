@@ -1,21 +1,21 @@
-<div id="timeline_dlg_{{id}}" class = 'timeline visdlg'>
-    <form class = "interaction form-inline" role = "form">
-        <div id="network_selectbar_{{id}}" class="selectbar dropdown form-group">
+<div id="timeline_dlg_{{id}}" class='timeline visdlg'>
+    <form class="form-inline" role="form">
+        <div id="timeline_selectbar_{{id}}" class="selectbar form-group">
             <select class="selectpicker form-control" label="Other views...">
                 <option value="">Generate the next linked window...</option>
-                <optgroup label = "other visualizations...">
+                <optgroup label="other visualizations...">
                     {% for vistype in vistypes %}
-                    <option value = "{{ vistype }}_self">{{ vistype }}</option>
+                    <option value="{{ vistype }}_self">{{ vistype }}</option>
                     {% endfor %}
                 </optgroup>
-                <optgroup label = "Filter to a subset in ...">
+                <optgroup label="Filter to a subset in ...">
                     <option value="event_subset">Timeline</option>
                 </optgroup>
             </select>   
         </div>
         <div class="showcontext form-group">
-            <a href="javascript:void(0)" onclick="showcontext(event);return false;" class = "form-control">Show Context (parent view)</a>
+            <button href="#" class="btn btn-sm btn-default" onclick="showcontext();return false;">Show Context in Link</button>
         </div>
-        <div id = "timeline_cvs_{{id}}" class = "cvs"></div>
     </form>
+    <div id="timeline_cvs_{{id}}" class="cvs"></div>
 </div>
