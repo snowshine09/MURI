@@ -41,3 +41,7 @@ tr.even{
 div.dataTables_scrollBody{
     max-height: 600px;
 }
+
+.question{
+  background-color:rgba(255, 166, 166, 0.21);
+}

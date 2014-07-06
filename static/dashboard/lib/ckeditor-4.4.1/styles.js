@@ -76,6 +76,7 @@ CKEDITOR.stylesSet.add( 'default', [
 
 	{ name: 'Language: RTL',	element: 'span', attributes: { 'dir': 'rtl' } },
 	{ name: 'Language: LTR',	element: 'span', attributes: { 'dir': 'ltr' } },
+    { name: 'CSS Style', element: 'li', attributes: { 'class': 'question' }, styles: { 'background-color': 'Yellow' } },
 
 	/* Object Styles */
 
@@ -106,6 +107,17 @@ CKEDITOR.stylesSet.add( 'default', [
 	},
 
 	{ name: 'Borderless Table',		element: 'table',	styles: { 'border-style': 'hidden', 'background-color': '#E6E6FA' } },
-	{ name: 'Square Bulleted List',	element: 'ul',		styles: { 'list-style-type': 'square' } }
+	{ name: 'Square Bulleted List',	element: 'ul',		styles: { 'list-style-type': 'square' } },
+	{ name: 'Question Bulleted List',element: 'ul', attributes: { 'class': 'question' }, styles: { 'background-color': 'yellow' } },
+	{ name: 'Question Bullet',element: 'li', attributes: { 'class': 'question' }, styles: { 'background-color': 'yellow' } }
 ] );
 
+CKEDITOR.stylesSet.add( 'my_styles', [
+    // Block-level styles.
+    { name: 'Blue Title', element: 'h2', styles: { color: 'Blue' } },
+    { name: 'Red Title',  element: 'h3', styles: { color: 'Red' } },
+
+    // Inline styles.
+    { name: 'CSS Style', element: 'li', attributes: { 'class': 'question' }, styles: { 'background-color': 'Yellow' } },
+    { name: 'Marker: Yellow', element: 'ul', styles: { "background-color":'rgba(255, 166, 166, 0.21)', 'font-weight':'bold'} }
+]);

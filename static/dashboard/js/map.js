@@ -1,7 +1,4 @@
 $.widget("vis.vismap", $.vis.viscontainer, {
-    // options: {
-    //     dimension : null,
-    // },
     _create: function() {
         this.element.addClass("vismap");
 
@@ -12,7 +9,6 @@ $.widget("vis.vismap", $.vis.viscontainer, {
         this.Type = this.Name.split("_")[0];
         this.map = null;
         this.layers = [];
-        $("#" + this.Type + "_dlg_" + this.SID).removeClass("hidden");
         var map = new OpenLayers.Map(this.element.attr("id"));
         map.addControl(new OpenLayers.Control.LayerSwitcher());
         map.addControl(new OpenLayers.Control.Navigation({

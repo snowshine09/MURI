@@ -14,8 +14,11 @@
             </select>   
         </div>
         <div class="showcontext form-group">
-            <a href="javascript:void(0)" onclick="showcontext(event);return false;" class = "form-control">Show Context (parent view)</a>
+            {% if parent_id %}
+            <a href="javascript:void(0)" onclick="showcontext(event);return false;" class = "form-control">Show Context in Link {{parent_id}}</a>
+            {% endif %}
         </div>
-        <div id = "timeline_cvs_{{id}}" class = "cvs"></div>
+        
     </form>
+    <div id = "timeline_cvs_{{id}}" class = "cvs"></div>
 </div>
