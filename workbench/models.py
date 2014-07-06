@@ -36,11 +36,17 @@ class Note(models.Model):
         return self.content[:50]
 
 class Vis(models.Model):
-    author = models.ForeignKey(User, null=True, blank=True)
+    # author = models.ForeignKey(User, null=True, blank=True)
     type  = models.CharField(max_length=500, null=True, blank=True)
-    vis = models.TextField(null=True, blank=True)
+    color = models.CharField(max_length=500, null=True, blank=True)
+    position = models.CharField(max_length=100, null=True, blank=True)
+    dsource = models.CharField(max_length=500, null=True, blank=True)
+    dindex = models.CharField(max_length=500, null=True, blank=True)
+    msgID = models.CharField(max_length=500, null=True, blank=True)
+    htimeline = models.CharField(max_length=500, null=True, blank=True)
+    timeextent = models.CharField(max_length=500, null=True, blank=True)
     date_updated = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     saved =  models.BooleanField(default=False)
     note = models.ForeignKey(Note, null=True, blank=True,related_name = 'vis_note')
-    def __unicode__(self):
-        return self.vis[:50]
+    # def __unicode__(self):
+    #     return self.id

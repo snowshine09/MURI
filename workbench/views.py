@@ -136,9 +136,16 @@ def addNote(new, request):
 def visEmbed(request):
  	response = {};
 	vistype = request.REQUEST.get('type')
+	viscolor = request.REQUEST.get('color')
+	visSrc = request.REQUEST.get('dsource')
+	visPos = request.REQUEST.get('position')
+	visdindex = request.REQUEST.get('dindex')
+	visMSG = request.REQUEST.get('msgID')
+	vistimeline = request.REQUEST.get('htimeline')
+	vistimeextent = request.REQUEST.get('timeextent')
 	timeUpdated = request.REQUEST.get('date_updated')
 
-	visxml = request.REQUEST.get('vis')
+	# visxml = request.REQUEST.get('vis')
 	save = request.REQUEST.get('saved')
 	if (save == "true"):
 		saved_value = True
@@ -149,7 +156,7 @@ def visEmbed(request):
 	author = 1 #User.objects.get(id=int(userId))
 
 	try:
-		newvis = Vis(type=vistype, author_id=author, date_updated=parser.parse(timeUpdated), saved=saved_value,vis = visxml)
+		newvis = Vis(type=vistype, color=viscolor, position = visPos, dsource = visSrc, dindex = visdindex, msgID = visMSG, htimeline = vistimeline, timeextent = vistimeextent, date_updated=parser.parse(timeUpdated), saved=saved_value)
 		
 		newvis.save()
 		

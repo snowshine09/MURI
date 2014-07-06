@@ -3,24 +3,37 @@ CKEDITOR.plugins.add('embedvis', {
         icons: 'network,person,location',
         editor.addCommand('embednw', {
             exec: function(editor) {
-                var allvisdlg = d3.selectAll(".visdlg");
-                var serializer = new XMLSerializer(),
-                    xmlString = "";
-                allvisdlg[0].forEach(function(visElement) {
-                    var visd = d3.select(visElement).node();
-                    xmlString = xmlString + serializer.serializeToString(visd);
-
-                });
+                var allvisdlg = d3.selectAll(".visdlg"),
+                    vistypes = [];
+                // var serializer = new XMLSerializer(),
+                //     xmlString = "";
+                //store into the database table Vis and mark as unsaved
+                var newvis = {};
+                newvis.date_updated = new Date().toGMTString();
+                newvis.saved = false;
+                // allvisdlg[0].forEach(function(allvisdlg[0][i])
+                for (i = 0; i < allvisdlg[0].length; i++) {
+                    if ($(allvisdlg[0][i]).dialogExtend("state") != "minimized") {
+                        newvis.type = $(allvisdlg[0][i]).attr("id").split("_")[0], SID = $(allvisdlg[0][i]).attr("id").split("_")[2];
+                        newvis.dsource = dataset[SID]['dEvent'];
+                        newvis.color = $(allvisdlg[0][i]).siblings(".ui-dialog-titlebar").css("background-color");
+                        newvis.position = $(allvisdlg[0][i]).parent().position()['left']+','+$(allvisdlg[0][i]).parent().position()['top'];
+                        newvis.dindex = dindex[SID];
+                        newvis.msgID = msgID[SID];
+                        var hTL = '';
+                        for ( j=0;j<htimeline[SID].length;j++){
+                            if(j==0) hTL += htimeline[SID][j];
+                            else hTL += ','+htimeline[SID][j];
+                        }
+                        newvis.htimeline = ;
+                        newvis.timeextent = timeextent[SID];
+                    }
+                };
                 // var tagname = editor.name + "_network"; //wb_editor_1_netowrk
 
 
+                console.log(newvis);
 
-                //store into the database table Vis and mark as unsaved
-                var newvis = {};
-                newvis.type = "network";
-                newvis.date_updated = new Date().toGMTString();
-                newvis.vis = xmlString;
-                newvis.saved = false;
                 $.ajax({
                     url: 'workbench/visEmbed',
                     type: "POST",
