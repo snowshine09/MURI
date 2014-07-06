@@ -123,7 +123,7 @@ SIIL.Network = function($div, link_no) {
 		slide: function(event, ui) {
 			self.force.gravity(ui.value);
 			$("#network_gravity_" + self.SID).siblings(".gravity_text").html(ui.value);
-			if (force.alpha() == 0) force.start();
+			if (self.force.alpha() == 0) self.force.start();
 		}
 	});
 	$("#network_gravity_" + self.SID).siblings('.gravity_text').html($("#network_gravity_" + self.SID).slider("value"));
@@ -174,14 +174,15 @@ SIIL.Network = function($div, link_no) {
 
 		htimeline[self.SID] = [];
 		dindex[self.SID] = [];
-		var selectedNodes = svg.selectAll(".selected");
-		if (selectedNodes) {
-			selectedNodes.each(function(d) {
-				if ($.inArray(d.uid, dindex[self.SID]) == -1) dindex[self.SID].push(d.uid);
-				var dDate = new Date(d.date);
-				if ($.inArray(dDate, htimeline[self.SID]) == -1) htimeline[self.SID].push(dDate);
-			});
-		}
+		svg.selectAll('.selected').each(function(d) {
+			dindex[self.SID].push(d.uid);
+			if ('undefined' !== typeof d.date) {
+				htimeline[self.SID].push(new Date(d.date));
+			}
+		});
+		htimeline[self.SID] = htimeline[self.SID].filter(function(item, idx, arr) {
+			return idx == arr.indexOf(item);
+		});
 		renderAllExcept(self.Name, "brush");
 	}
 
@@ -225,9 +226,9 @@ SIIL.Network = function($div, link_no) {
 	};
 	self.update = function(coorType) {
 		events_id = []
-		dataset[self.SID]['dDate'].top(Infinity).forEach(function(p, i) {
-			events_id.push(p.uid);
-		});
+        for (var i = 0; i < dataset[self.SID]['event'].length; i++) {
+            events_id.push(dataset[self.SID]['event'][i].uid);
+        }
 		if (coorType === "brush") {
 			node.classed("selected", function(d) {
 				if ($.inArray(d.uid, dindex[self.SID]) == -1)
@@ -255,15 +256,15 @@ SIIL.Network = function($div, link_no) {
 					.call(self.drag);
 				node.append("image")
 					.attr("xlink:href", function(d) {
-						if (d.node == 'organization') {
+						if (d.node == 'Organization') {
 							return "static/dashboard/img/organization.png";
-						} else if (d.node == 'person') {
+						} else if (d.node == 'Person') {
 							return "static/dashboard/img/person.png";
-						} else if (d.node == 'event') {
+						} else if (d.node == 'Event') {
 							return "static/dashboard/img/event.png";
-						} else if (d.node == 'footprint') {
+						} else if (d.node == 'Footprint') {
 							return "static/dashboard/img/footprint.png";
-						} else if (d.node == 'resource') {
+						} else if (d.node == 'Resource') {
 							return "static/dashboard/img/resource.png";
 						}
 					})

@@ -24,12 +24,99 @@ function randomcolor() {
 };
 
 var tableHeaders = {
-	'event': [{'title': 'ID', 'name': 'ID'}, {'title': 'Name', 'name': 'Name'}, {'title': 'Type', 'name': 'Type'}, {'title': 'Description', 'name': 'Description'}, {'title': 'Date', 'name': 'Date'}],
-	'location': [{'title': 'ID', 'name': 'ID'}, {'title': 'Name', 'name': 'Name'}, {'title': 'Frequency', 'name': 'Frequency'}],
-	'message': [{'title': 'ID', 'name': 'ID'}, {'title': 'Content', 'name': 'Content'}, {'title': 'Date', 'name': 'Date'}],
-	'person': [{'title': 'ID', 'name': 'ID'}, {'title': 'Name', 'name': 'Name'}, {'title': 'Gender', 'name': 'Gender'}, {'title': 'Race', 'name': 'Race'}, {'title': 'Nationality', 'name': 'Nationality'}, {'title': 'Frequency', 'name': 'Frequency'}],
-	'organization': [{'title': 'ID', 'name': 'ID'}, {'title': 'Name', 'name': 'Name'}, {'title': 'Type', 'name': 'Type'}, {'title': 'Nationality', 'name': 'Nationality'}, {'title': 'Ethnicity', 'name': 'Ethnicity'}, {'title': 'Religion', 'name': 'Religion'}, {'title': 'Frequency', 'name': 'Frequency'}],
-	'resource': [{'title': 'ID', 'name': 'ID'}, {'title': 'Name', 'name': 'Name'}, {'title': 'Condition', 'name': 'Condition'}, {'title': 'Type', 'name': 'Type'}, {'title': 'Frequency', 'name': 'Frequency'}],
+	'event': [{
+		'title': 'ID',
+		'name': 'ID'
+	}, {
+		'title': 'Name',
+		'name': 'Name'
+	}, {
+		'title': 'Type',
+		'name': 'Type'
+	}, {
+		'title': 'Description',
+		'name': 'Description'
+	}, {
+		'title': 'Date',
+		'name': 'Date'
+	}],
+	'location': [{
+		'title': 'ID',
+		'name': 'ID'
+	}, {
+		'title': 'Name',
+		'name': 'Name'
+	}, {
+		'title': 'Frequency',
+		'name': 'Frequency'
+	}],
+	'message': [{
+		'title': 'ID',
+		'name': 'ID'
+	}, {
+		'title': 'Content',
+		'name': 'Content'
+	}, {
+		'title': 'Date',
+		'name': 'Date'
+	}],
+	'person': [{
+		'title': 'ID',
+		'name': 'ID'
+	}, {
+		'title': 'Name',
+		'name': 'Name'
+	}, {
+		'title': 'Gender',
+		'name': 'Gender'
+	}, {
+		'title': 'Race',
+		'name': 'Race'
+	}, {
+		'title': 'Nationality',
+		'name': 'Nationality'
+	}, {
+		'title': 'Frequency',
+		'name': 'Frequency'
+	}],
+	'organization': [{
+		'title': 'ID',
+		'name': 'ID'
+	}, {
+		'title': 'Name',
+		'name': 'Name'
+	}, {
+		'title': 'Type',
+		'name': 'Type'
+	}, {
+		'title': 'Nationality',
+		'name': 'Nationality'
+	}, {
+		'title': 'Ethnicity',
+		'name': 'Ethnicity'
+	}, {
+		'title': 'Religion',
+		'name': 'Religion'
+	}, {
+		'title': 'Frequency',
+		'name': 'Frequency'
+	}],
+	'resource': [{
+		'title': 'ID',
+		'name': 'ID'
+	}, {
+		'title': 'Name',
+		'name': 'Name'
+	}, {
+		'title': 'Condition',
+		'name': 'Condition'
+	}, {
+		'title': 'Type',
+		'name': 'Type'
+	}, {
+		'title': 'Frequency',
+		'name': 'Frequency'
+	}],
 };
 
 var wb_count = 0;
@@ -131,19 +218,56 @@ $(document).ready(function() {
 	});
 });
 
-function initNewLink(create_source_params, link_no, callback) {
-	CreateSource(create_source_params, function(response) {
-		dataset[link_no] = response;
-		timeextent[link_no] = [];
-		htimeline[link_no] = [];
-		dindex[link_no] = [];
-		msgID[link_no] = [];
-		hshape[link_no] = [];
-		callback();
+function getData(table_type, filter_params, link_no, callback) {
+	$.ajax({
+		url: 'filter_data/',
+		type: 'post',
+		data: $.extend({
+			'type': table_type,
+		}, filter_params),
+		success: function(xhr) {
+			dataset[link_no][table_type] = xhr.dataItems;
+			if ('function' === typeof callback) {
+				callback();
+			}
+		},
+		error: function(xhr) {
+			if (xhr.status == 403) {
+				alert(xhr.responseText);
+			} else {
+				alert("Unknown error.");
+			}
+		}
 	});
+}
+
+function initNewLink(table_type, filter_params, link_no, callback) {
+	dataset[link_no] = {
+		'event': [],
+		'message': [],
+		'person': [],
+		'organization': [],
+		'resource': [],
+		'location': [],
+		'footprint': [],
+		'filter': {}
+	};
+	timeextent[link_no] = [];
+	htimeline[link_no] = [];
+	dindex[link_no] = [];
+	msgID[link_no] = [];
+	hshape[link_no] = [];
+
+	if (table_type === 'event') {
+		getData('event', filter_params, link_no, callback());
+	} else {
+		getData('event', filter_params, link_no, function() {
+			getData(table_type, filter_params, link_no, callback);
+		});
+	}
 };
 
-function createMap(link_no, create_source_params) {
+function createMap(link_no, filter_params) {
 	var new_link = (link_no == null);
 	$.ajax({
 		url: "map_template/",
@@ -169,8 +293,8 @@ function createMap(link_no, create_source_params) {
 					$(this).dialog('destroy').remove();
 				}
 			})).dialogExtend(dialogExtendOptions);
-			if (new_link) {
-				initNewLink(null, link_no, function() {
+			if (new_link) { // start window in new link / start a subset
+				initNewLink('map', filter_params, link_no, function() { // filter_params is not null when starting subset
 					map[link_no] = $(xhr.html).find(".cvs").vismap().data("vismap");
 					DlgTcolor[xhr.linkNo] = randomcolor();
 					$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
@@ -180,7 +304,7 @@ function createMap(link_no, create_source_params) {
 					);
 					map[xhr.linkNo].update("init");
 				});
-			} else {
+			} else { // starting window in existing link
 				map[link_no] = $(xhr.html).find(".cvs").vismap().data("vismap");
 				$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
 					DlgTcolor[xhr.linkNo].red + "," +
@@ -193,7 +317,7 @@ function createMap(link_no, create_source_params) {
 	});
 };
 
-function createTimeline(link_no, create_source_params) {
+function createTimeline(link_no, filter_params) {
 	var new_link = (link_no == null);
 	$.ajax({
 		url: "timeline_template/",
@@ -220,10 +344,11 @@ function createTimeline(link_no, create_source_params) {
 					$(this).dialog('destroy').remove();
 				}
 			})).dialogExtend(dialogExtendOptions);
-			if (new_link) {
-				initNewLink(null, link_no, function() {
+			if (new_link) { // start window in new link / start a subset
+				initNewLink('timeline', filter_params, link_no, function() { // filter_params is not null when starting subset
 					timelineset[link_no] = $(xhr.html).find(".cvs").timeline().data("timeline");
 					DlgTcolor[link_no] = randomcolor();
+                    dataset[link_no]['filter'] = filter_params;
 					$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
 						DlgTcolor[link_no].red + "," +
 						DlgTcolor[link_no].green + "," +
@@ -231,7 +356,7 @@ function createTimeline(link_no, create_source_params) {
 					);
 					timelineset[link_no].update();
 				});
-			} else {
+			} else { // starting window in existing link
 				timelineset[link_no] = $(xhr.html).find(".cvs").timeline().data("timeline");
 				$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
 					DlgTcolor[link_no].red + "," +
@@ -244,7 +369,7 @@ function createTimeline(link_no, create_source_params) {
 	});
 };
 
-function createNetwork(link_no, create_source_params) {
+function createNetwork(link_no, filter_params) {
 	var new_link = (link_no == null);
 	$.ajax({
 		url: "network_template/",
@@ -271,8 +396,9 @@ function createNetwork(link_no, create_source_params) {
 				}
 			})).dialogExtend(dialogExtendOptions);
 			network[link_no] = new SIIL.Network($(xhr.html), link_no);
-			if (new_link) {
-				initNewLink(create_source_params, link_no, function() {
+			if (new_link) { // start window in new link / start a subset
+				initNewLink('event', filter_params, link_no, function() { // filter_params is not null when starting subset
+					dataset[link_no]['filter'] = filter_params;
 					DlgTcolor[link_no] = randomcolor();
 					$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
 						DlgTcolor[link_no].red + "," +
@@ -281,7 +407,7 @@ function createNetwork(link_no, create_source_params) {
 					);
 					network[link_no].update();
 				});
-			} else {
+			} else { // starting window in existing link
 				network[link_no].update();
 				$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
 					DlgTcolor[link_no].red + "," +
@@ -293,7 +419,7 @@ function createNetwork(link_no, create_source_params) {
 	});
 };
 
-function createDialog(table_type, link_no, create_source_params) {
+function createDialog(table_type, link_no, filter_params) {
 	var new_link = (link_no == null);
 	$.ajax({
 		url: 'get_table/',
@@ -319,9 +445,10 @@ function createDialog(table_type, link_no, create_source_params) {
 				}
 			}, dialogOptions)).dialogExtend(dialogExtendOptions);
 			tables[table_type][link_no] = new SIIL.DataTable($(xhr.html), table_type, link_no);
-			if (new_link) {
+			if (new_link) { // start window in new link / start a subset
 				DlgTcolor[link_no] = randomcolor();
-				initNewLink(create_source_params, link_no, function() {
+				initNewLink(table_type, filter_params, link_no, function() { // filter_params is not null when starting subset
+					dataset[link_no]['filter'] = filter_params;
 					$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background", "rgb(" +
 						DlgTcolor[link_no].red + "," +
 						DlgTcolor[link_no].green + "," +
@@ -329,16 +456,18 @@ function createDialog(table_type, link_no, create_source_params) {
 					);
 					tables[table_type][link_no].update();
 				});
-				if (create_source_params != null && create_source_params['type'] === 'message') {
-					dataset[link_no]["parent"] = create_source_params['self_id'];
+				if (filter_params != null && filter_params['type'] === 'message') {
+					dataset[link_no]["parent"] = filter_params['self_id'];
 				}
-			} else {
-				tables[table_type][link_no].update();
-				$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-					DlgTcolor[link_no].red + "," +
-					DlgTcolor[link_no].green + "," +
-					DlgTcolor[link_no].blue + ")"
-				);
+			} else { // starting window in existing link
+				getData(table_type, dataset[link_no]['filter'], link_no, function() {
+					tables[table_type][link_no].update();
+					$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
+						DlgTcolor[link_no].red + "," +
+						DlgTcolor[link_no].green + "," +
+						DlgTcolor[link_no].blue + ")"
+					);
+				});
 			}
 		}
 	});

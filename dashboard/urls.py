@@ -30,4 +30,5 @@ urlpatterns = patterns('',
     url(r'^network_template/', network_template),
     url(r'^timeline_template/', timeline_template),
     url(r'^map_template/', map_template),
+    url(r'^filter_data/', filter_data),
 )

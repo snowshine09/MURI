@@ -15,7 +15,6 @@ var network = {};
 var map = {};
 var timelineset = {};
 var workbench = {};
-var sourceDataset = {};
 var dataset = {};
 var DlgTcolor = {};
 var dindex = {}; //for brushing, record selected entities' indexes
@@ -26,59 +25,6 @@ var hshape = {};
 var visxml = {};
 var cindex = {};
 
-function CreateSource(param, callback) {
-	var response = {}
-	$.post("data", param, function(result) {
-		// Various formatters.
-		var dsource = result.events;
-		var wktParser = new OpenLayers.Format.WKT();
-		var footprints = [];
-
-		dsource.forEach(function(d, i) {
-			d.date = new Date(d.date);
-			var fp = d.footprint;
-			if (fp.shape) {
-				var feature = wktParser.read(fp.shape);
-				var origin_prj = new OpenLayers.Projection("EPSG:" + fp.srid);
-				var dest_prj = new OpenLayers.Projection("EPSG:900913");
-				feature.geometry.transform(origin_prj, dest_prj); // projection of google map
-				feature.attributes.id = fp.uid;
-				feature.attributes.name = fp.name;
-				fp.shape = feature;
-			}
-		});
-
-		response['set'] = crossfilter(dsource); //jQuery.extend(true, {}, sourceDataset);
-		response['dDate'] = response['set'].dimension(function(d) {
-			return d.date;
-		});
-		response['dFootprint'] = response['set'].dimension(function(d) {
-			return [d.footprint.uid, d.footprint.name, d.footprint.shape, d.footprint.srid];
-		});
-		response['gDate'] = response['dDate'].group(d3.time.day);
-		response['dResource'] = response['set'].dimension(function(d) {
-			var res = d.resource;
-			return [res.uid, res.name, res.condition, res.resource_type];
-		});
-		response['dEvent'] = response['set'].dimension(function(d) {
-			return [d.uid, d.name, d.types, d.excerpt, d.date];
-		});
-		response['dPerson'] = response['set'].dimension(function(d) {
-			return [d.person.uid, d.person.name, d.person.gender, d.person.race, d.person.nationality];
-		});
-		response['dOrganization'] = response['set'].dimension(function(d) {
-			var org = d.organization;
-			return [org.uid, org.name, org.types, org.nationality, org.ethnicity, org.religion];
-		});
-		response['dMessage'] = response['set'].dimension(function(d) {
-			var mes = d.message;
-			return [mes.uid, mes.content, mes.date]
-		});
-		if ("function" === typeof callback) {
-			callback(response);
-		}
-	});
-}
 
 //dynamic generation coordinated windows
 function generateOthers(div, vis) { //div is source, vis is target
@@ -131,23 +77,18 @@ function generateOthers(div, vis) { //div is source, vis is target
 				alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
 				break;
 			}
-			$.ajaxSetup({
-				async: false
-			});
-
 			switch (self.Type) {
 				case 'map':
 					break;
 				case 'message':
 					createDialog('message', null, {
-						'type': 'message',
+						'filter_type': 'message',
 						'id': msgID[self.SID],
-						'self_id': self.SID
 					});
 					break;
 				case 'event':
 					createDialog('event', null, {
-						'type': 'event',
+						'filter_type': 'event',
 						'id': dindex[self.SID]
 					});
 					break;
@@ -156,19 +97,19 @@ function generateOthers(div, vis) { //div is source, vis is target
 				case 'location':
 				case 'resource':
 					createDialog(self.Type, null, {
-						'type': 'event',
+						'filter_type': 'event',
 						'id': dindex[self.SID]
 					});
 					break;
 				case 'network':
 					createNetwork(null, {
-						'type': 'entity',
+						'filter_type': 'network',
 						'id': dindex[self.SID]
 					});
 					break;
 				case 'timeline':
 					createTimeline(null, {
-						'type': 'time',
+						'filter_type': 'timeline',
 						'start': timeextent[self.SID][0],
 						'end': timeextent[self.SID][1]
 					});
