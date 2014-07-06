@@ -1,18 +1,10 @@
-<div id="{{ table_type }}_dlg_{{ id }}">
+<div id="{{ table_type }}_dlg_{{ id }}" class='visdlg'>
     <form class="form-inline" role="form">
         <div id="{{ table_type }}_selectbar_{{ id }}" class="selectbar form-group">
             <select class="form-control">
                 <option value="">Generate the next linked window...</option>
                     <optgroup label = "other visualizations...">
-                    <option value="timeline_self">Timeline</option>
-                    <option value="map_self">Map</option>
-                    <option value="network_self">Network</option>
-                    <option value="message_self">Messages</option>
-                    <option value="event_self">Events</option>
-                    <option value="person_self">People</option>
-                    <option value="organization_self">Organizations</option>
-                    <option value="resource_self">Resources</option>
-                    <option value="location_self">Locations</option>
+                    {% for viewtype in viewtypes %}{% if table_type != viewtype %}<option value="{{ viewtype }}_self">{{ viewtype }}</option>{% endif %}{% endfor %}
                 </optgroup>
                 <optgroup label="Filter to a subset in ...">
                     <option value="{{ table_type }}_subset">{{ table_type }}</option>
@@ -22,13 +14,11 @@
         <div class="form-group">
             <button href="#" class="btn btn-sm btn-default" onclick="showcontext();return false;">Show Context (parent view)</button>
         </div>
+        <div class="form-group">
+            <label class="selected-count">0</label> item(s) highlighted
+        </div>
     </form>
     <table id="{{ table_type }}_table_{{ id }}">
-        <thead>
-            <tr>
-            {% for column in columns %}<th>{{ column }}</th>
-            {% endfor %}
-            </tr>
-        </thead>
+
     </table>
 </div>

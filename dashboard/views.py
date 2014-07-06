@@ -22,7 +22,7 @@ reload(sys)
 sys.setdefaultencoding('utf8')  
 
 linkCount = 0
-viewtypes = ['event', 'person', 'organization', 'location', 'resource', 'timeline', 'map','network','message']
+viewtypes = ['event', 'person', 'organization', 'location', 'resource', 'timeline', 'map', 'network', 'message']
 def LinkNum(request):
     global linkCount
     linkCount +=1
@@ -32,26 +32,27 @@ def LinkNum(request):
 
 def get_table(request):
     global linkCount
+    global viewtypes
     new_link = request.REQUEST.get('new_link')
     if new_link == 'true':
         linkCount += 1
     table_type = request.REQUEST.get('table_type', '')
     headers = request.POST.getlist('headers[]')
     response = {}
-    response['html'] = render_to_string("dashboard/table.html", {'table_type': table_type, 'columns': headers, 'id': str(linkCount)})
+    print headers
+    response['html'] = render_to_string("dashboard/table.html", {'table_type': table_type, 'viewtypes': viewtypes, 'columns': headers, 'id': str(linkCount)})
     response['linkNo'] = linkCount
     return HttpResponse(json.dumps(response), mimetype='application/json')
 
 def network_template(request):
     global linkCount
-    linkCount += 1
+    new_link = request.REQUEST.get('new_link')
+    if new_link == 'true':
+        linkCount += 1
     global viewtypes
     selfType = request.REQUEST.get('selfType', None)
     parentID = request.REQUEST.get('parentID',None)
-    MyAltViews = viewtypes
-    print "selfType", selfType
-    print MyAltViews
-    print viewtypes
+    MyAltViews = viewtypes[:]
     if selfType in MyAltViews:
         MyAltViews.remove(selfType)
     response = {}
@@ -61,14 +62,13 @@ def network_template(request):
 
 def timeline_template(request):
     global linkCount
-    linkCount += 1
+    new_link = request.REQUEST.get('new_link')
+    if new_link == 'true':
+        linkCount += 1
     global viewtypes
     selfType = request.REQUEST.get('selfType', None)
     parentID = request.REQUEST.get('parentID',None)
-    MyAltViews = viewtypes
-    print "selfType", selfType
-    print MyAltViews
-    print viewtypes
+    MyAltViews = viewtypes[:]
     if selfType in MyAltViews:
         MyAltViews.remove(selfType)
     response = {}
@@ -78,14 +78,13 @@ def timeline_template(request):
 
 def map_template(request):
     global linkCount
-    linkCount += 1
+    new_link = request.REQUEST.get('new_link')
+    if new_link == 'true':
+        linkCount += 1
     global viewtypes
     selfType = request.REQUEST.get('selfType', None)
     parentID = request.REQUEST.get('parentID',None)
-    MyAltViews = viewtypes
-    print "selfType", selfType
-    print MyAltViews
-    print viewtypes
+    MyAltViews = viewtypes[:]
     if selfType in MyAltViews:
         MyAltViews.remove(selfType)
     response = {}
@@ -125,20 +124,17 @@ def queryEvent(request):
 
     return HttpResponse(json.dumps(response), mimetype='application/json')
 
-def getData(request):
-    response = {}
-    response['events'] = []
+def filter_data(request):
+    response = {'dataItems': []}
+    data_type = request.REQUEST.get('type')
+    filter_type = request.REQUEST.get('filter_type', '')
     ids = request.POST.getlist('id[]', None)
-    dtype = request.REQUEST.get('type', None)
-    if ids == []:
+    if len(filter_type) == 0:
         events = Event.objects.all().order_by('date_begin')
-        
     else:
-        if dtype == "event":
-            print "event set condition is not empty", ids
+        if filter_type == "event":
             events = Event.objects.filter(id__in=ids).order_by('date_begin')
-        elif dtype == "message":
-            print "message set condition is not empty", ids
+        elif filter_type == "message":
             msgs = Message.objects.filter(uid__in=ids)
             evt_id = []
             for msg in msgs:
@@ -146,9 +142,8 @@ def getData(request):
                 for eve in msg_events:
                     print eve.id
                     evt_id.append(eve.id)
-            events = Event.objects.filter(id__in=evt_id)
-        elif dtype == "entity":
-            print "entity set condition is not empty", ids
+            events = Event.objects.filter(id__in=evt_id).order_by('date_begin')
+        elif filter_type == "network":
             src_entt = Entity.objects.filter(id__in=ids)
             ett_id = []
             linked_entities = list(src_entt.select_subclasses())
@@ -158,158 +153,101 @@ def getData(request):
             for single_ett in linked_entities:
                 if(single_ett.id not in ett_id):
                     ett_id.append(single_ett.id)
-            events = Event.objects.filter(id__in=ett_id)
-        elif dtype == "time":
+            events = Event.objects.filter(id__in=ett_id).order_by('date_begin')
+        elif filter_type == "timeline":
             start = request.REQUEST.get('start', None)
             end = request.REQUEST.get('end', None)
-            events = Event.objects.filter(date__range=[parser.parse(start), parser.parse(end)])
-
-    for event in events:
-        e_info = {}
-        e_info = event.getKeyAttr()
-
-
-        e_info['organizations']  = [] 
-        e_info['resources']  = [] 
-        e_info['persons']  = [] 
-        e_info['footprints']  = [] 
-        e_info['messages']  = [] 
-
-        for mes in event.message_set.all():
-            e_info['messages'].append(mes.getKeyAttr())
-
-        linked_entities = list(chain(event.findTargets(), event.findSources()))
-        for entity in linked_entities:
-            #print entity.getKeyAttr(),entity
-            if hasattr(entity, 'organization'):
-                e_info['organizations'].append(entity.getKeyAttr())
-            elif hasattr(entity, 'resource'):
-                e_info['resources'].append(entity.getKeyAttr())
-            elif hasattr(entity, 'person'):
-                #print entity,hasattr(entity,"node"),hasattr(entity,"person"),dir(entity)
-                e_info['persons'].append(entity.getKeyAttr())
-            elif hasattr(entity, 'footprint'):
-                e_info['footprints'].append(entity.getKeyAttr())
-
-        response['events'] += flatten(e_info)
-    print "returned object len:",len(response['events']),sys.getsizeof(response['events'])
+            events = Event.objects.filter(date__range=[parser.parse(start), parser.parse(end)]).order_by('date_begin')
+        else:
+            return HttpResponse('Invalid filter type.', status=403)
+    if data_type == 'event':
+        for event in events:
+            response['dataItems'].append(event.getKeyAttr())
+    elif data_type == 'message':
+        messages = []
+        for event in events:
+            messages.extend([message for message in event.message_set.all()])
+        for message in messages:
+            response['dataItems'].append(message.getKeyAttr())
+    elif data_type == 'person' or data_type == 'organization' or data_type == 'resource':
+        entity_dup = []
+        for event in events:
+            entity_dup.extend([entity for entity in list(chain(event.findTargets(), event.findSources())) if hasattr(entity, data_type)])
+        for p in list(set(entity_dup)):
+            entity_info = p.getKeyAttr()
+            entity_info['frequency'] = entity_dup.count(p)
+            response['dataItems'].append(entity_info)
+    elif data_type == 'location':
+        entity_dup = []
+        for event in events:
+            entity_dup.extend([entity for entity in list(chain(event.findTargets(), event.findSources())) if hasattr(entity, 'footprint')])
+        for p in list(set(entity_dup)):
+            entity_info = p.getKeyAttr()
+            entity_info['frequency'] = entity_dup.count(p)
+            response['dataItems'].append(entity_info)
+    elif data_type == 'timeline': 
+        response['dataItems'] = []
+        for event in events:
+            if event.date_begin is not None:
+                response['dataItems'].append(event.date_begin.strftime('%m/%d/%Y'))
+    else:
+        return HttpResponse('Invalid filter type.', status=403)
     return HttpResponse(json.dumps(response), mimetype='application/json')
 
-def flatten(dic):
-    res = []
-    for person in dic['persons']+[{}]: ## {} is used to confirm that in the case (or event_info) where person is not available, other related entities can still be recorded
-    	rec = {}
-    	rec['uid'] = dic['uid']
-    	rec['name'] = dic['name']
-    	rec['types'] = dic['types']
-    	rec['date'] = dic['date']
-    	rec['excerpt'] = dic['excerpt']
-
-        if len(dic['persons']) != 0 and person == {}:
-            continue
-    	rec['person'] = person
-        for org in dic['organizations']+[{}]:
-                if len(dic['organizations']) != 0 and org == {}:
-                    continue
-                rec['organization'] = org
-                for resource in dic['resources']+[{}]:
-                    if len(dic['resources']) != 0 and resource == {}:
-                        continue
-                    rec['resource'] = resource
-                    for fp in dic['footprints']+[{}]:
-                        if len(dic['footprints']) != 0 and fp == {}:
-                            continue
-                        rec['footprint'] = fp
-                        for mes in dic['messages']+[{}]:
-                            if len(dic['messages']) != 0 and mes == {}:
-                                continue
-                            rec['message'] = mes
-                            # print rec
-                            res.append(copy.deepcopy(rec))
-    #print "res",len(res),sys.getsizeof(res)
-    return res
 
 def prepareNetwork(request):
-    if request.method == 'POST':
-        response = {}
-        response['nodes'] = []
-        response['links'] = []
-        node_types = request.POST.getlist('entities[]', None)
-        events_id = request.POST.getlist('events_id[]', None)
-        print events_id, "is the events ids for network (prepareNetwork)"
-        if node_types == None or events_id == None:
-            return
+    response = {}
+    response['nodes'] = []
+    response['links'] = []
+    events_id = request.POST.getlist('events_id[]', None)
+    graph = nx.DiGraph()
+    events = Entity.objects.filter(id__in=events_id)
+    linked_entities = list(events.select_subclasses())
 
-        graph = nx.DiGraph()
+    for eve in events:
+        entities = list(chain(eve.findTargets(), eve.findSources()))
+        linked_entities += entities
+    for entity in linked_entities:
+        graph.add_node(entity.id, {'uid': entity.id, 'node': type(entity).__name__, 'name': entity.name})
 
-        events = Entity.objects.filter(id__in=events_id)
-        linked_entities = list(events.select_subclasses())
+    relations = Relationship.objects.filter( Q(source__in=linked_entities) & Q(target__in=linked_entities) )
+    for relation in relations:
+        graph.add_edge(relation.source.id, relation.target.id, relation.getAllAttr())
 
-        for eve in events:
-            entities = list(chain(eve.findTargets(), eve.findSources()))
-            linked_entities += entities
-        for entity in linked_entities:
-            graph.add_node(entity.id, entity.getKeyAttr())
-
-        relations = Relationship.objects.filter( Q(source__in=linked_entities) & Q(target__in=linked_entities) )
-        for relation in relations:
-            graph.add_edge(relation.source.id, relation.target.id, relation.getAllAttr())
-
-        return HttpResponse(json_graph.dumps(graph), mimetype='application/json')
-    return
+    return HttpResponse(json_graph.dumps(graph), mimetype='application/json')
 
 def related_entities(request):
-    if request.method == 'POST':
-        response = {}
-        response['ett'] = []
-        response['msg'] = []
-        src_id = request.POST.getlist('src_id[]', None)##src entities id
-        ett_id = request.POST.getlist('ett_id[]', None)##src entities id
-        
-        if src_id == None and ett_id == None:
-            return
-        ## comment: search for entities given msgs/entities
-        msgs = Message.objects.filter(uid__in=src_id)
-        if(len(ett_id)==0): 
-            ett_id = []
-        for msg in msgs:
-            events = msg.event.all()
-            for eve in events:
-                print eve.id
-                ett_id.append(eve.id)
-        src_entt = Entity.objects.filter(id__in=ett_id)
-        linked_entities = list(src_entt.select_subclasses())
-        for ett in src_entt:
-            entities = list(chain(ett.findTargets(), ett.findSources()))
-            #print entities
-            linked_entities += entities
-        for entity in linked_entities:
-            response['ett'].append(entity.getKeyAttr())
-        if len(src_id) == 0:##search for messages given entities
-            src_entt = Entity.objects.filter(id__in=ett_id)
-            linked_entities = list(src_entt.select_subclasses())
-            for ett in src_entt:
-                entities = list(chain(ett.findTargets(), ett.findSources()))
-                linked_entities+=entities
-            for single_ett in linked_entities:
-                if(single_ett.id not in ett_id):
-                    ett_id.append(single_ett.id)
-            ##function used to calculate the complete connected enntites recursively
-            ##ett_id = connected_entities(ett_id,len(ett_id));
-                #print entities
-            ett_src = Event.objects.filter(id__in=ett_id)##first propagate to broad entities than settle to event_type and search for related mesgs
-            
-            msgs_id = []
-            for ett in ett_src:
-                for mes in ett.message_set.all():
-                    print "message", mes
-                    msgs_id.append(mes.uid)
-            msgs = Message.objects.filter(uid__in=msgs_id)        
-            for msg in msgs:
-                response['msg'].append(msg.getKeyAttr())
-        return HttpResponse(json.dumps(response), mimetype='application/json')
-    return
-    
+    response = {'ett_idset': [], 'ett_dateset': [], 'msg_idset': [], 'msg_dateset': []}
+
+    msg_ids = request.POST.getlist('msg_ids[]', None)
+    entity_ids = request.POST.getlist('entity_ids[]', None)
+
+    msgs = Message.objects.filter(uid__in=msg_ids)
+    if (len(entity_ids)==0): 
+        entity_ids = []
+
+    for msg in msgs:
+        entity_ids.extend([event.id for event in msg.event.all()])
+    ori_entities = Entity.objects.filter(id__in=entity_ids)
+    linked_entities = list(ori_entities.select_subclasses())
+    for entity in ori_entities:
+        linked_entities.extend(list(chain(entity.findTargets(), entity.findSources())))
+    response['ett_idset'] = list(set([entity.id for entity in linked_entities]))
+    response['ett_dateset'] = list(set([entity.date_begin.strftime('%m/%d/%Y') for entity in linked_entities if entity.date_begin is not None]))
+
+
+    if len(msg_ids) == 0:
+        entity_ids.extend([entity.id for entity in linked_entities])
+        msgs_id = []
+        for event in Event.objects.filter(id__in=entity_ids):
+            msgs_id.extend([msg.uid for msg in event.message_set.all()])
+        msgs = Message.objects.filter(uid__in=msgs_id)        
+    response['msg_idset'] = list(set([message.uid for message in msgs]))
+    response['msg_dateset'] = list(set([message.date.strftime('%m/%d/%Y') for message in msgs if message.date is not None]))
+
+    response['dateset'] = list(set(chain(response['ett_dateset'], response['msg_dateset'])))
+    return HttpResponse(json.dumps(response), mimetype='application/json')
+
 def connected_entities(ett_id,length):
     src_entt = Entity.objects.filter(id__in=ett_id)
     linked_entities = list(src_entt.select_subclasses())

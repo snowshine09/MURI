@@ -3,35 +3,31 @@ g.node.selected > rect{
     stroke: "#0000FF";
 }
 
-.cvs text {
-  font: 10px sans-serif;
-}
+
 
 div.gravity{
   width: 200px;
 }
+.cvs text {
+  font: 10px Tahoma;
+  font-weight: bold;
+  stroke: white;
+  stroke-width: 0.4px;
+}
 .selected text{
-  color: red;
+  fill: red;
+  stroke: red;
 }
 .brush .extent {
   fill-opacity: .1;
   stroke: blue;
   shape-rendering: crispEdges;
 }
-
-/*.node {
-  stroke: green;
-  stroke-width: 1.5px;
-}*/
-
+ 
 .node.selected {
   stroke: red;
 }
 
 .link {
   stroke: #999;
-}
-
-.cvs {
-  overflow: scroll;
 }

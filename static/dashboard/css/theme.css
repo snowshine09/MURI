@@ -1,8 +1,14 @@
-.ui-widget-header {
-    background: #C5CEFF;
+.ui-dialog-titlebar {
+    background: #FFFFFF;
 }
-.selectbar {
+.form-group {
   padding: 5px;
+}
+g.node {
+  cursor: pointer;  
+}
+.fg-button {
+  margin-right: 0px!important;
 }
 .row_selected {
   background-color: rgb(106, 86, 168)!important;
@@ -14,8 +20,29 @@
 }
 
 .highlight { background-color: yellow }
-.DataTables_sort_icon {
-  display: none;
+
+.paginate_button {
+  cursor: pointer;
+  border: 1px solid #CCC;
+  padding: 3px;
+  text-decoration: none!important;
+  margin: 2px;
+}
+.dataTables_length {
+  margin: 5px;
+}
+.dataTables_info {
+  font-weight: bold;
+}
+.dataTables_filter {
+  margin: 5px;
+}
+.dataTables_paginate {
+  margin: 8px;
+}
+.paginate_button:hover {
+  color: #FFF!important;
+  background-color: #2A6496!important;
 }
 div.ui-dialog {
   padding: 0!important;
@@ -24,10 +51,6 @@ div.ui-dialog {
 div.ui-dialog-content {
   padding: 0!important;
   overflow:hidden!important;
-}
-
-div.cvs {
-  overflow:scroll!important;
 }
 
 div.selectbar.ui-dialog-content {
