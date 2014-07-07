@@ -166,8 +166,6 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
 
                 var $links = self.table.$('tr').find('a.ref-link');
                 $links.on('click', function() {
-
-                    //alert("clicked ref-link");
                     var linkBtn = this;
                     var visID = $(linkBtn).attr("vid");
                     alert("visid = " + visID);
@@ -179,8 +177,48 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
                             'visID': visID
                         },
                         success: function(xhr) {
-                            console.log(xhr.html);
-                            var elements = $(xhr.html);
+                            var dSrc = $(xhr.dsource);
+                            xhr.dindex = xhr.dindex.split(',');
+                            xhr.msgID = xhr.msgID.split(',');
+                            xhr.htimeline = xhr.htimeline.split(',');
+
+                            switch (xhr.type) {
+                                case 'map':
+                                    break;
+                                case 'message':
+                                    createDialog('message', xhr.NewLinkNum, {
+                                        'filter_type': 'message',
+                                        'id': xhr.msgID,
+                                    });
+                                    break;
+                                case 'event':
+                                    createDialog('event', xhr.NewLinkNum, {
+                                        'filter_type': 'event',
+                                        'id': xhr.dindex
+                                    });
+                                    break;
+                                case 'person':
+                                case 'organization':
+                                case 'location':
+                                case 'resource':
+                                    createDialog(self.Type, xhr.NewLinkNum, {
+                                        'filter_type': 'event',
+                                        'id': xhr.dindex
+                                    });
+                                    break;
+                                case 'network':
+                                    createNetwork(xhr.NewLinkNum, {
+                                        'filter_type': 'network',
+                                        'id': xhr.dindex
+                                    });
+                                    break;
+                                case 'timeline':
+                                    createTimeline(xhr.NewLinkNum, {
+                                        'filter_type': 'timeline',
+                                        'start': xhr.timeextent.split(',')[0],
+                                        'end': xhr.timeextent.split(',')[1]
+                                    });
+                            }
                             elements.each(function() {
                                 // var found = $('.visdlg', $(this));
                                 // found.each(function() {
@@ -196,7 +234,8 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
                                 }, dialogOptions))
                                     .dialogExtend(dialogExtendOptions);
                                 // });
-                                var curID = $(this).attr("id").split("_")[2], cvs = "network_cvs_" + curID;
+                                var curID = $(this).attr("id").split("_")[2],
+                                    cvs = "network_cvs_" + curID;
                                 network[curID] = new SIIL.Network("#" + cvs);
                                 $(this).find(".gravity").slider({
                                     value: 0.2,

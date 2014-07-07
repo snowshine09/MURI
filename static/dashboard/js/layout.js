@@ -259,7 +259,7 @@ function initNewLink(table_type, filter_params, link_no, callback) {
 	hshape[link_no] = [];
 
 	if (table_type === 'event') {
-		getData('event', filter_params, link_no, callback());
+		getData('event', filter_params, link_no, callback);
 	} else {
 		getData('event', filter_params, link_no, function() {
 			getData(table_type, filter_params, link_no, callback);

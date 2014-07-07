@@ -135,16 +135,24 @@ def addNote(new, request):
 
 def visEmbed(request):
  	response = {};
-	vistype = request.REQUEST.get('type')
-	viscolor = request.REQUEST.get('color')
-	visSrc = request.REQUEST.get('dsource')
-	visPos = request.REQUEST.get('position')
-	visdindex = request.REQUEST.get('dindex')
-	visMSG = request.REQUEST.get('msgID')
-	vistimeline = request.REQUEST.get('htimeline')
-	vistimeextent = request.REQUEST.get('timeextent')
+ 	# visSIDs = request.POST.getlist('SIDs[]',None)
 	timeUpdated = request.REQUEST.get('date_updated')
+	# for SID in visSIDs:
+	# 	src_info = request.REQUEST.get(SID)
+	# 	visSrc = src_info.dsource
+	# 	vistypes_info = src_info.types_info
+	# 	viscolor = src_info.color
+	# 	vishtimeline = src_info.htimeline
+	# 	visdindex = src_info.dindex
+	# 	visMSG =  src_info.msgID
+	# 	vistimeextent = src_info.timeextent
+	# 	for vistype in vistypes_info:
+	# 		print type_info
+	# SIDs = ",".join(visSIDs)
 
+	print request.REQUEST
+	print request.POST
+	visJSON = request.POST.dict()
 	# visxml = request.REQUEST.get('vis')
 	save = request.REQUEST.get('saved')
 	if (save == "true"):
@@ -156,7 +164,7 @@ def visEmbed(request):
 	author = 1 #User.objects.get(id=int(userId))
 
 	try:
-		newvis = Vis(type=vistype, color=viscolor, position = visPos, dsource = visSrc, dindex = visdindex, msgID = visMSG, htimeline = vistimeline, timeextent = vistimeextent, date_updated=parser.parse(timeUpdated), saved=saved_value)
+		newvis = Vis(visJSON = visJSON, date_updated=parser.parse(timeUpdated), saved=saved_value)
 		
 		newvis.save()
 		

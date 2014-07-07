@@ -307,15 +307,23 @@ def notes(request):
 #         }.get(x, 9) 
 
 def visRetrieve(request):
+    global linkCount
+    linkCount = linkCount + 1
     print "enter vis Retrieve"
     response={}
     vid = request.REQUEST.get('visID')
     print vid
     visrec = Vis.objects.get(id = vid)
-    response["html"] = visrec.vis 
-    response["author"] = visrec.author_id
-    response["note"]=visrec.note_id
+    response["color"] = visrec.color 
+    response["position"] = visrec.position
+    response["dsource"]=visrec.dsource
     response["type"] = visrec.type 
+    response["dindex"] = visrec.dindex 
+    response["msgID"] = visrec.msgID 
+    response["htimeline"] = visrec.htimeline 
+    response["timeextent"] = visrec.timeextent 
+    response["note"] = visrec.note
+    response["NewLinkNum"] = linkCount
     return HttpResponse(json.dumps(response), mimetype='application/json')
 
 
