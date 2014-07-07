@@ -327,23 +327,42 @@ def notes(request):
 #         }.get(x, 9) 
 
 def visRetrieve(request):
-    global linkCount
-    linkCount = linkCount + 1
+    global linkCount 
     print "enter vis Retrieve"
     response={}
     vid = request.REQUEST.get('visID')
-    print vid
+    # print vid
     visrec = Vis.objects.get(id = vid)
-    response["color"] = visrec.color 
-    response["position"] = visrec.position
-    response["dsource"]=visrec.dsource
-    response["type"] = visrec.type 
-    response["dindex"] = visrec.dindex 
-    response["msgID"] = visrec.msgID 
-    response["htimeline"] = visrec.htimeline 
-    response["timeextent"] = visrec.timeextent 
-    response["note"] = visrec.note
-    response["NewLinkNum"] = linkCount
+    visJSON = json.loads(visrec.visJSON)
+    # print visJSON
+    print 'SIDs', type(visJSON)
+    for SID in visJSON['SIDs']:
+        linkCount = linkCount + 1
+        visJSON[SID]['linkNo'] = linkCount
+    response["date_updated"] = visrec.date_updated
+    # response["dsource"]=visrec.dsource
+    # response["type"] = visrec.type 
+    # response["dindex"] = visrec.dindex 
+    # response["msgID"] = visrec.msgID 
+    # response["htimeline"] = visrec.htimeline 
+    # response["timeextent"] = visrec.timeextent 
+    # response["note"] = visrec.note
+    # response["NewLinkNum"] = linkCount
+    # visSIDs = request.POST.getlist('SIDs[]',None)
+
+    # for SID in visSIDs:
+    #   src_info = request.REQUEST.get(SID)
+    #   visSrc = src_info.dsource
+    #   vistypes_info = src_info.types_info
+    #   viscolor = src_info.color
+    #   vishtimeline = src_info.htimeline
+    #   visdindex = src_info.dindex
+    #   visMSG =  src_info.msgID
+    #   vistimeextent = src_info.timeextent
+    #   for vistype in vistypes_info:
+    #       print type_info
+    # SIDs = ",".join(visSIDs)
+    response["visJSON"] = visJSON
     return HttpResponse(json.dumps(response), mimetype='application/json')
 
 

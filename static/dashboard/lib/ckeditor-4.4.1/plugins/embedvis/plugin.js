@@ -16,7 +16,10 @@ CKEDITOR.plugins.add('embedvis', {
                             newvis[SID] = {};
                             IDs.push(SID);
                             newvis[SID].types_info = {};
-                            newvis[SID].dsource = dataset[SID]['event'];
+                            newvis[SID].dsource = [];
+                            for (j = 0; j < dataset[SID]['event'].length; j++) {
+                                newvis[SID].dsource.push(dataset[SID]['event'][j]['uid']);
+                            }
                             newvis[SID].color = $(allvisdlg[0][i]).siblings(".ui-dialog-titlebar").css("background-color");
                             newvis[SID].dindex = dindex[SID];
                             newvis[SID].msgID = msgID[SID];
@@ -42,7 +45,9 @@ CKEDITOR.plugins.add('embedvis', {
                 $.ajax({
                     url: 'workbench/visEmbed',
                     type: "POST",
-                    data: newvis,
+                    data: {
+                        "newvis": JSON.stringify(newvis)
+                    },
                     success: function(res) {
                         editor.insertHtml('<a href="#" vid="' + res.id + '" class="ref-link"><sup>[' + newvis.date_updated + ' ]</sup></a>');
                         if (visxml[editor.name] == undefined) visxml[editor.name] = [];

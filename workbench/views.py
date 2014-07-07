@@ -136,7 +136,7 @@ def addNote(new, request):
 def visEmbed(request):
  	response = {};
  	# visSIDs = request.POST.getlist('SIDs[]',None)
-	timeUpdated = request.REQUEST.get('date_updated')
+	
 	# for SID in visSIDs:
 	# 	src_info = request.REQUEST.get(SID)
 	# 	visSrc = src_info.dsource
@@ -149,19 +149,17 @@ def visEmbed(request):
 	# 	for vistype in vistypes_info:
 	# 		print type_info
 	# SIDs = ",".join(visSIDs)
+	visJSON = json.loads(request.REQUEST.get('newvis'))
+	print "REQUEST",request.REQUEST
+	print "visJSON",visJSON
 
-	print request.REQUEST
-	print request.POST
-	visJSON = request.POST.dict()
-	# visxml = request.REQUEST.get('vis')
+	
+	timeUpdated = visJSON['date_updated']
 	save = request.REQUEST.get('saved')
 	if (save == "true"):
 		saved_value = True
 	else:
 		saved_value = False
-
-
-	author = 1 #User.objects.get(id=int(userId))
 
 	try:
 		newvis = Vis(visJSON = visJSON, date_updated=parser.parse(timeUpdated), saved=saved_value)
