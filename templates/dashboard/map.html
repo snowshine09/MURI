@@ -13,9 +13,11 @@
                 </optgroup>
             </select>   
         </div>
+        {% if parent_id %}
         <div class="showcontext form-group">
              <button href="#" class="btn btn-sm btn-default" onclick="showcontext();return false;">Show Context</button>
         </div>
+        {% endif %}
     </form>
 	<div id="map_cvs_{{id}}" class="map cvs"></div>
     <div id="footprint_popup" class="hidden">

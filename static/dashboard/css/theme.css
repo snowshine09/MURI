@@ -31,8 +31,12 @@ g.node {
 .dataTables_length {
   margin: 5px;
 }
+.dataTables_wrapper {
+  border-bottom: 1px black solid;
+}
 .dataTables_info {
   font-weight: bold;
+  margin: 8px;
 }
 .dataTables_filter {
   margin: 5px;
@@ -47,7 +51,9 @@ g.node {
 div.ui-dialog {
   padding: 0!important;
 }
-
+div.ui-dialog-titlebar {
+  padding: 3px 10px!important;
+}
 div.ui-dialog-content {
   padding: 0!important;
   overflow:hidden!important;

@@ -5,11 +5,11 @@
 			<label class="gravity_text" style="color:#b9cd6d; font-weight:bold;"></label>
 			<div id="network_gravity_{{id}}"></div>
 		</div>
+		{% if parent_id %}
 		<div id="network_ctxt_{{id}}" class="showcontext form-group">
-			{% if parent_id %}
 			<button href="#" class="btn btn-sm btn-default" onclick="showcontext();return false;">Show Context in Link {{parent_id}}</button>
-			{% endif %}
 		</div>
+		{% endif %}
 		<div id="network_selectbar_{{id}}" class="selectbar form-group">
 			<select class="form-control">
 				<option value="">Generate the next linked window...</option>

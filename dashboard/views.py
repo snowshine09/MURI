@@ -124,6 +124,22 @@ def queryEvent(request):
 
     return HttpResponse(json.dumps(response), mimetype='application/json')
 
+def filter_data_by_time(request):
+    response = {'entities': [], 'messages': []}
+    start = request.REQUEST.get('start', None)
+    end = request.REQUEST.get('end', None)
+    events = Event.objects.filter(date_begin__range=[parser.parse(start), parser.parse(end)]).order_by('date_begin')
+    messages = Message.objects.filter(date__range=[parser.parse(start), parser.parse(end)]).order_by('date')
+    linked_entities = list(events)
+    for event in events:
+        entities = list(chain(event.findTargets(), event.findSources()))
+        linked_entities += entities
+    for entity in linked_entities:
+        response['entities'].append(entity.id)
+    for message in messages:
+        response['messages'].append(message.uid)
+    return HttpResponse(json.dumps(response), mimetype='application/json')
+
 def filter_data(request):
     response = {'dataItems': []}
     data_type = request.REQUEST.get('type')
@@ -157,16 +173,17 @@ def filter_data(request):
         elif filter_type == "timeline":
             start = request.REQUEST.get('start', None)
             end = request.REQUEST.get('end', None)
-            events = Event.objects.filter(date__range=[parser.parse(start), parser.parse(end)]).order_by('date_begin')
+            events = Event.objects.filter(date_begin__range=[parser.parse(start), parser.parse(end)]).order_by('date_begin')
         else:
             return HttpResponse('Invalid filter type.', status=403)
     if data_type == 'event':
         for event in events:
             response['dataItems'].append(event.getKeyAttr())
     elif data_type == 'message':
-        messages = []
+        messages_dup = []
         for event in events:
-            messages.extend([message for message in event.message_set.all()])
+            messages_dup.extend([message for message in event.message_set.all()])
+        messages = list(set(messages_dup))
         for message in messages:
             response['dataItems'].append(message.getKeyAttr())
     elif data_type == 'person' or data_type == 'organization' or data_type == 'resource':
@@ -186,14 +203,15 @@ def filter_data(request):
             entity_info['frequency'] = entity_dup.count(p)
             response['dataItems'].append(entity_info)
     elif data_type == 'timeline': 
-        response['dataItems'] = []
+        dates_dup = []
         for event in events:
-            if event.date_begin is not None:
-                response['dataItems'].append(event.date_begin.strftime('%m/%d/%Y'))
+            dates_dup.extend([message.date.strftime('%m/%d/%Y') for message in event.message_set.all() if message.date is not None])
+        dates = list(set(dates_dup))
+        for date in sorted(dates):
+            response['dataItems'].append((date, dates_dup.count(date)))
     else:
-        return HttpResponse('Invalid filter type.', status=403)
+        return HttpResponse('Invalid filter type: ' + data_type, status=403)
     return HttpResponse(json.dumps(response), mimetype='application/json')
-
 
 def prepareNetwork(request):
     response = {}
@@ -208,7 +226,9 @@ def prepareNetwork(request):
         entities = list(chain(eve.findTargets(), eve.findSources()))
         linked_entities += entities
     for entity in linked_entities:
-        graph.add_node(entity.id, {'uid': entity.id, 'node': type(entity).__name__, 'name': entity.name})
+        if entity.date_begin is not None:
+            date = entity.date_begin.strftime('%m/%d/%Y') 
+        graph.add_node(entity.id, {'uid': entity.id, 'node': type(entity).__name__, 'name': entity.name, 'date': date})
 
     relations = Relationship.objects.filter( Q(source__in=linked_entities) & Q(target__in=linked_entities) )
     for relation in relations:

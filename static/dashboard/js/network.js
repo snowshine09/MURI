@@ -38,8 +38,7 @@ SIIL.Network = function($div, link_no) {
 		.links([])
 		.gravity(0.2)
 		.charge(-400)
-	// .linkDistance(120)
-	.size([self.width, self.height])
+		.size([self.width, self.height])
 		.on("tick", tick);
 
 	self.shiftKey = null; //set shiftkey available all over the body
@@ -113,7 +112,7 @@ SIIL.Network = function($div, link_no) {
 	var node = svg.selectAll(".node");
 	var link = svg.selectAll(".link");
 
-	update_mode();
+	
 
 	$("#network_gravity_" + self.SID).slider({
 		value: 0.2,
@@ -140,16 +139,13 @@ SIIL.Network = function($div, link_no) {
 	function tick() {
 		link.attr("x1", function(d) {
 			return d.source.x;
-		})
-			.attr("y1", function(d) {
-				return d.source.y;
-			})
-			.attr("x2", function(d) {
-				return d.target.x;
-			})
-			.attr("y2", function(d) {
-				return d.target.y;
-			})
+		}).attr("y1", function(d) {
+			return d.source.y;
+		}).attr("x2", function(d) {
+			return d.target.x;
+		}).attr("y2", function(d) {
+			return d.target.y;
+		});
 		node.attr("transform", function(d) {
 			return "translate(" + d.x + "," + d.y + ")";
 		});
@@ -167,7 +163,6 @@ SIIL.Network = function($div, link_no) {
 
 	function dragended(d) {
 		d3.select(this).classed("dragging", false);
-		//force.stop();
 	}
 
 	function updateOthers() {
@@ -183,10 +178,33 @@ SIIL.Network = function($div, link_no) {
 		htimeline[self.SID] = htimeline[self.SID].filter(function(item, idx, arr) {
 			return idx == arr.indexOf(item);
 		});
-		renderAllExcept(self.Name, "brush");
+		$.ajax({
+			url: "propagate/",
+			type: 'post',
+			async: false,
+			data: {
+				'entity_ids': dindex[self.SID]
+			},
+			success: function(eid) {
+				msgID[self.SID] = eid['msg_idset'];
+				renderAllExcept(self.Name, "brush");
+			}
+		});
 	}
 
 	function update_mode() {
+		node_g.on("mousedown", function(d) {
+			d.fixed = true;
+			d3.select(this).classed("sticky", true);
+			if (self.shiftKey) {
+				d3.select(this).classed("selected", d.selected = !d.selected);
+			} else {
+				node.classed("selected", function(p) {
+					return p.selected = d === p;
+				});
+			}
+			updateOthers();
+		});
 		if (self.mode == "pan") {
 			svg.selectAll(".brush").remove();
 		} else {
@@ -200,21 +218,6 @@ SIIL.Network = function($div, link_no) {
 				.attr("tabindex", 2)
 				.attr("class", "brush")
 				.call(self.brush);
-			node_g.on("mousedown",
-				// mousedown
-				function(d) {
-					d.fixed = true;
-					d3.select(this).classed("sticky", true);
-					if (self.shiftKey) {
-						d3.select(this).classed("selected", d.selected = !d.selected);
-					} else {
-						node.classed("selected", function(p) {
-							return p.selected = d === p;
-						});
-					}
-					updateOthers();
-				}
-			);
 		}
 	}
 	d3.selection.prototype.size = function() {
@@ -226,9 +229,9 @@ SIIL.Network = function($div, link_no) {
 	};
 	self.update = function(coorType) {
 		events_id = []
-        for (var i = 0; i < dataset[self.SID]['event'].length; i++) {
-            events_id.push(dataset[self.SID]['event'][i].uid);
-        }
+		for (var i = 0; i < dataset[self.SID]['event'].length; i++) {
+			events_id.push(dataset[self.SID]['event'][i].uid);
+		}
 		if (coorType === "brush") {
 			node.classed("selected", function(d) {
 				if ($.inArray(d.uid, dindex[self.SID]) == -1)
@@ -236,50 +239,54 @@ SIIL.Network = function($div, link_no) {
 				else return true;
 			});
 		} else {
-			$.post("network", {
-				'events_id': events_id
-			}, function(d) {
-				link = link.data([]);
-				link.exit().remove();
-				node = node.data([]);
-				node.exit().remove();
-				self.force.nodes(d.nodes)
-					.links(d.links);
-				link = link.data(d.links);
-				link.enter().append("line").attr("class", "link")
-					.style("stroke", "#FF0000");
+			$.ajax({
+				url: 'network',
+				type: 'post',
+				data: {
+					'events_id': events_id
+				},
+				success: function(xhr) {
+					link = link.data([]);
+					link.exit().remove();
+					node = node.data([]);
+					node.exit().remove();
+					self.force.nodes(xhr.nodes)
+						.links(xhr.links);
+					link = link.data(xhr.links);
+					link.enter().append("line").attr("class", "link")
+						.style("stroke", "#FF0000");
+					node = node.data(xhr.nodes);
+					node_g = node.enter().append("g")
+						.attr("class", "node")
+						.call(self.drag);
+					node.append("image")
+						.attr("xlink:href", function(d) {
+							if (d.node == 'Organization') {
+								return "static/dashboard/img/organization.png";
+							} else if (d.node == 'Person') {
+								return "static/dashboard/img/person.png";
+							} else if (d.node == 'Event') {
+								return "static/dashboard/img/event.png";
+							} else if (d.node == 'Footprint') {
+								return "static/dashboard/img/footprint.png";
+							} else if (d.node == 'Resource') {
+								return "static/dashboard/img/resource.png";
+							}
+						})
+						.attr("x", -12)
+						.attr("y", -12)
+						.attr("width", 36)
+						.attr("height", 36);
 
-				//   node = node.data(nodes, function(d) { return d.id;});
-				node = node.data(d.nodes);
-				node_g = node.enter().append("g")
-					.attr("class", "node")
-					.call(self.drag);
-				node.append("image")
-					.attr("xlink:href", function(d) {
-						if (d.node == 'Organization') {
-							return "static/dashboard/img/organization.png";
-						} else if (d.node == 'Person') {
-							return "static/dashboard/img/person.png";
-						} else if (d.node == 'Event') {
-							return "static/dashboard/img/event.png";
-						} else if (d.node == 'Footprint') {
-							return "static/dashboard/img/footprint.png";
-						} else if (d.node == 'Resource') {
-							return "static/dashboard/img/resource.png";
-						}
-					})
-					.attr("x", -12)
-					.attr("y", -12)
-					.attr("width", 36)
-					.attr("height", 36);
-
-				node.append("text")
-					.attr("dx", "-1.95em")
-					.attr("dy", "-.95em")
-					.text(function(d) {
-						return d.name
-					});
-				self.force.start();
+					node.append("text")
+						.attr("dx", "-1.95em")
+						.attr("dy", "-.95em")
+						.text(function(d) {
+							return d.name
+						});
+					self.force.start();
+                    update_mode();
+				}
 			});
 		}
 	}

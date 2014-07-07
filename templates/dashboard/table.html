@@ -4,16 +4,18 @@
             <select class="form-control">
                 <option value="">Generate the next linked window...</option>
                     <optgroup label = "other visualizations...">
-                    {% for viewtype in viewtypes %}{% if table_type != viewtype %}<option value="{{ viewtype }}_self">{{ viewtype }}</option>{% endif %}{% endfor %}
+                    {% for viewtype in viewtypes %}{% if table_type != viewtype %}<option value="{{ viewtype }}_self">{{ viewtype|title }}</option>{% endif %}{% endfor %}
                 </optgroup>
                 <optgroup label="Filter to a subset in ...">
-                    <option value="{{ table_type }}_subset">{{ table_type }}</option>
+                    <option value="{{ table_type }}_subset">{{ table_type|title }}</option>
                 </optgroup>
             </select>   
         </div>
+        {% if parent_id %}
         <div class="form-group">
             <button href="#" class="btn btn-sm btn-default" onclick="showcontext();return false;">Show Context (parent view)</button>
         </div>
+        {% endif %}
         <div class="form-group">
             <label class="selected-count">0</label> item(s) highlighted
         </div>
