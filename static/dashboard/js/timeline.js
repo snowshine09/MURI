@@ -11,18 +11,24 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 			$("#" + cmb + " option:selected").removeAttr('selected');
 			$("#" + cmb).attr("selectedIndex", 0);
 		});
-
-		var start = dataset[self.SID]['dDate'].top(1)[0],
-			end = dataset[self.SID]['dDate'].bottom(1)[0];
+		this.maxFreq = 0;
+		for (var i = 0; i < dataset[self.SID]['timeline'].length; i++) {
+			date = dataset[self.SID]['timeline'][i][0];
+			dataset[self.SID]['timeline'][i][0] = new Date(date);
+			if (this.maxFreq < dataset[self.SID]['timeline'][i][1]) {
+				this.maxFreq = dataset[self.SID]['timeline'][i][1];
+			}
+		}
+		self.start = new Date(dataset[self.SID]['timeline'][0][0]),
+		self.end = new Date(dataset[self.SID]['timeline'][dataset[self.SID]['timeline'].length - 1][0]);
+        self.end.setDate(self.end.getDate() + 1);
 		self.charts = [
 			self.barChart() //onlu one chart(vis) method in this list
-			.dimension(dataset[self.SID]['dDate'])
-			.group(dataset[self.SID]['dDate'].group())
 			.round(d3.time.day.round)
 			.x(d3.time.scale()
-				.domain([new Date(2010, 0, 1), new Date(2010, 5, 1)])
+				.domain([new Date(self.start), new Date(self.end)])
 				.rangeRound([0, 10 * 90]))
-			.filter([dataset[self.SID]['dDate'].bottom(1)[0].key, dataset[self.SID]['dDate'].top(1)[0].key])
+			.filter([self.start, self.end])
 		];
 		d3.selectAll("#" + this.Name)
 			.data(self.charts)
@@ -33,7 +39,7 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 		var self = this,
 			g = d3.select("#" + this.Name).select("g"),
 			x = d3.time.scale()
-			.domain([new Date(2010, 0, 1), new Date(2010, 5, 1)])
+			.domain([new Date(self.start), new Date(self.end)])
 			.rangeRound([0, 10 * 90]);
 		if (htimeline[self.SID].length != 0) {
 			self.brush.clear();
@@ -63,13 +69,13 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 			y = d3.scale.linear().range([100, 0]),
 			id = 0,
 			axis = d3.svg.axis().orient("bottom"),
-			brushDirty, dimension, group, round;
+			brushDirty, round;
 		self.brush = d3.svg.brush();
 
 		function chart(div) {
 			var width = x.range()[1],
 				height = y.range()[0];
-			y.domain([0, group.top(1)[0].value]);
+			y.domain([0, self.maxFreq]);
 
 			div.each(function() {
 				var div = d3.select(this),
@@ -99,7 +105,7 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 						.attr("class", function(d) {
 							return d + " bar";
 						})
-						.datum(group.all());
+						.datum(dataset[self.SID]['timeline']);
 
 					g.selectAll(".foreground.bar")
 						.attr("clip-path", "url(#clip-0-" + self.SID + ")");
@@ -126,7 +132,7 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 					d;
 				while (++i < n) {
 					d = groups[i];
-					path.push("M", x(d.key), ",", height, "V", y(d.value), "h9V", height);
+					path.push("M", x(d[0]), ",", height, "V", y(d[1]), "h9V", height);
 				}
 				return path.join("");
 			}
@@ -160,31 +166,30 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 
 		self.brush.on("brushend.chart", function() {
 			htimeline[self.SID] = [];
-
+                            dindex[self.SID] = [];
+                msgID[self.SID] = [];
 			if (self.brush.empty()) {
 				var div = d3.select(this.parentNode.parentNode.parentNode);
 				div.select(".title a").style("display", "none");
 				div.select("#clip-0-" + self.SID + " rect").attr("x", null).attr("width", "100%");
 				timeextent[self.SID] = [];
 			} else {
-
 				timeextent[self.SID] = self.brush.extent();
-				dindex[self.SID] = [];
-				msgID[self.SID] = [];
 
-				dataset[self.SID]['dDate'].top(Infinity).forEach(function(p, i) {
-					if (+p.date >= +timeextent[self.SID][0] && +p.date <= +timeextent[self.SID][1]) {
-						if ($.inArray(p.uid, dindex[self.SID]) == -1) dindex[self.SID].push(p.uid);
+				$.ajax({
+					url: 'filter_data_by_time/',
+					type: 'post',
+                    data: {
+                        start: timeextent[self.SID][0],
+                        end: timeextent[self.SID][1]
+                    },
+					success: function(xhr) {
+						dindex[self.SID] = xhr.entities;
+						msgID[self.SID] = xhr.messages;
+                        renderAllExcept(self.Name, "brush");
 					}
-				});
-				dataset[self.SID]['dMessage'].group().top(Infinity).forEach(function(p, i) {
-					if (+Date.parse(p.key[2]) >= +Date.parse(timeextent[self.SID][0]) && +Date.parse(p.key[2]) <= +Date.parse(timeextent[self.SID][1])) {
-						if ($.inArray(p.key[0], msgID[self.SID]) == -1) msgID[self.SID].push(p.key[0]);
-					}
-				});
-
+				})
 			}
-			renderAllExcept(self.Name, "brush");
 		});
 
 		chart.margin = function(_) {
@@ -207,27 +212,13 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 			return chart;
 		};
 
-		chart.dimension = function(_) {
-			if (!arguments.length) return dimension;
-			dimension = _;
-			return chart;
-		};
-
 		chart.filter = function(_) {
 			if (_) {
 				self.brush.extent(_);
-				//dimension.filterRange(_);
 			} else {
 				self.brush.clear();
-				//dimension.filterAll();
 			}
 			brushDirty = true;
-			return chart;
-		};
-
-		chart.group = function(_) {
-			if (!arguments.length) return group;
-			group = _;
 			return chart;
 		};
 

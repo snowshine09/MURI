@@ -5,9 +5,9 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 		self.SID = self.Name.split("_")[2];
 		self.map = new OpenLayers.Map(self.Name);
 		self.map.addControl(new OpenLayers.Control.LayerSwitcher());
-		self.map.addControl(new OpenLayers.Control.Navigation({
-			zoomWheelEnabled: true,
-		}));
+		// self.map.addControl(new OpenLayers.Control.Navigation({
+		// 	zoomWheelEnabled: true,
+		// }));
 		var gphy = new OpenLayers.Layer.Google(
 			"Google Physical", {
 				type: google.maps.MapTypeId.TERRAIN
@@ -81,7 +81,7 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 					box: true
 				}
 			),
-			navigate: new OpenLayers.Control.Navigation()
+			navigate: new OpenLayers.Control.Navigation({'autoActivate': true})
 		};
 		for (var key in mapControls) {
 			self.map.addControl(mapControls[key]);
@@ -120,18 +120,24 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 			case "init":
 				linelayer.removeAllFeatures();
 				pointlayer.removeAllFeatures();
-				dataset[self.SID]['dFootprint'].group().top(Infinity).forEach(function(d, i) {
-					var fp = d.key;
-					if (fp[0] != undefined && d.value != 0) {
-						if (fp[2] != undefined) { // has shape attr
-							if (fp[2].geometry instanceof OpenLayers.Geometry.Point) {
-								points.push(fp[2]);
-							} else {
-								lines.push(fp[2]);
-							}
+				var wktParser = new OpenLayers.Format.WKT();
+				for (var i = 0; i < dataset[self.SID]['location'].length; i++) {
+					var location = dataset[self.SID]['location'][i];
+					if (location['shape'] !== undefined) {
+						var feature = wktParser.read(location['shape']);
+						var origin_prj = new OpenLayers.Projection("EPSG:" + location['srid']);
+						var dest_prj = new OpenLayers.Projection("EPSG:900913");
+						feature.geometry.transform(origin_prj, dest_prj); // projection of google map
+						feature.attributes.id = location['uid'];
+						feature.attributes.name = location['name'];
+						location['shape'] = feature;
+						if (feature instanceof OpenLayers.Geometry.Point) {
+							points.push(location['shape']);
+						} else {
+							lines.push(location['shape']);
 						}
 					}
-				});
+				}
 				linelayer.addFeatures(lines);
 				pointlayer.addFeatures(points);
 				for (var i = 0; i < linelayer.features.length; i++) {
@@ -167,7 +173,7 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 		}
 	},
 	highlight: function(features_id) {
-        var self = this;
+		var self = this;
 		for (var i = 0; i < self.highlightedFeatures.length; i++) {
 			self.mapControls['select'].unhighlight(self.highlightedFeatures[i]);
 		}
@@ -223,34 +229,13 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 			}
 		});
 
-		if (selectedFeas.length == 0) {
-			// dataset[self.SID]['dFootprint'].filterAll();
-
-		} else {
+		if (selectedFeas.length != 0) {
 			// filter event data by above feature ids
 			var count = 0;
-			dataset[self.SID]['dFootprint'].filter(function(fp) { // fp is an array [id, name, shape, srid]
-				if (fp[0] != undefined) {
-
-					for (var j = 0; j < selectedFeas.length; j++) {
-						if (fp[0] === selectedFeas[j]) {
-							if ($.inArray(fp[0], hshape[self.SID]) == -1) hshape[self.SID].push(fp[0]);
-							// count++;
-							// return true;
-						}
-					}
-				}
-				return false;
-			});
-			console.log(count);
+            hshape[self.SID] = selectedFeas;
 		}
 		renderAllExcept(self.Name, "brush");
 	},
-
-	updateSize: function() {
-		this.map.updateSize();
-	},
-
 	destroy: function() {
 		this.map.destroy();
 		this._super("_destroy");

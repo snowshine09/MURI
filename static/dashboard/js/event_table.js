@@ -6,8 +6,7 @@ SIIL.DataTable = function($div, table_type, link_no) {
 	self.table = $('#' + self.tbName).DataTable({
 		autoWidth: true,
 		scrollY: '100%',
-		stateSave: true,
-		dom: 'lftip',
+		dom: 'lftirp',
 		pagingType: 'full',
 		columns: tableHeaders[table_type],
 	});
@@ -76,6 +75,7 @@ SIIL.DataTable.prototype.update = function(uType) {
 	// highlighting
 	self.table.$('tr.row_selected').removeClass("row_selected");
 	if (dindex[self.SID].length != 0) {
+        // highlight entries in Entity table
 		var indexes = self.table.rows().eq(0).filter(function(rowIdx) {
 			var tmp = self.table.cell(rowIdx, 0).data();
 			return $.inArray(tmp, dindex[self.SID]) != -1 ? true : false;
@@ -84,15 +84,14 @@ SIIL.DataTable.prototype.update = function(uType) {
 	}
 
 	if (self.tbType != 'message') {
-		//self.table.column('ID:name').visible(false);
+		self.table.column('ID:name').visible(false);
 	} else {
+        // highlight entries in Message table
 		if (msgID[self.SID].length != 0) {
 			var indexes = self.table.rows().eq(0).filter(function(rowIdx) {
 				var tmp = self.table.cell(rowIdx, 0).data();
 				return $.inArray(tmp, msgID[self.SID]) != -1 ? true : false;
 			});
-
-			// Add a class to those rows using an index selector
 			self.table.$('tr.row_selected').removeClass("row_selected");
 			self.table.rows(indexes).nodes().to$().addClass('row_selected');
 		} else {
@@ -101,12 +100,11 @@ SIIL.DataTable.prototype.update = function(uType) {
 	}
 
 	if (self.tbType == "location" && hshape[self.SID].length != 0) {
+        // highlight entries in Location table
 		var indexes = self.table.rows().eq(0).filter(function(rowIdx) {
 			var tmp = self.table.cell(rowIdx, 0).data();
 			return $.inArray(tmp, hshape[self.SID]) != -1 ? true : false;
 		});
-
-		// Add a class to those rows using an index selector
 		self.table.$('tr.row_selected').removeClass("row_selected");
 		self.table.rows(indexes).nodes().to$().addClass('row_selected');
 	}

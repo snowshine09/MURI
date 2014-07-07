@@ -67,16 +67,16 @@ function generateOthers(div, vis) { //div is source, vis is target
 		case 'subset': //self is like the source related info, whilst the result related is the target subset
 			var count = 0;
 
-			if (self.Type == 'message' && msgID[self.SID].length == 0) {
-				alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
-				break;
-			} else if (self.Type == 'timeline' && timeextent[self.SID].length == 0) {
-				alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
-				break;
-			} else if (dindex[self.SID].length == 0) {
-				alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
-				break;
-			}
+			// if (self.Type == 'message' && msgID[self.SID].length == 0) {
+			// 	alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
+			// 	break;
+			// } else if (self.Type == 'timeline' && timeextent[self.SID].length == 0) {
+			// 	alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
+			// 	break;
+			// } else if (dindex[self.SID].length == 0) {
+			// 	alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
+			// 	break;
+			// }
 			switch (self.Type) {
 				case 'map':
 					break;
