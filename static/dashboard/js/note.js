@@ -166,53 +166,66 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
 
                 var $links = self.table.$('tr').find('a.ref-link');
                 $links.on('click', function() {
-
-                    //alert("clicked ref-link");
                     var linkBtn = this;
                     var visID = $(linkBtn).attr("vid");
                     alert("visid = " + visID);
                     $.ajax({
                         url: "visOnceMore",
-                        type: "GET",
+                        type: "POST",
                         async: false,
                         data: {
                             'visID': visID
                         },
                         success: function(xhr) {
-                            console.log(xhr.html);
-                            var elements = $(xhr.html);
-                            elements.each(function() {
-                                // var found = $('.visdlg', $(this));
-                                // found.each(function() {
-                                $(this).addClass("regenerated").dialog($.extend({
-                                    title: "Regenerated VIS",
-                                    position: ['left', 56],
-                                    close: function(event, ui) {
-                                        var tmp = $(this).attr("id");
-                                        //alert("deleting" + tmp);
-                                        $(this).dialog('destroy').remove();
-                                    },
-                                    height: 800
-                                }, dialogOptions))
-                                    .dialogExtend(dialogExtendOptions);
-                                // });
-                                var curID = $(this).attr("id").split("_")[2], cvs = "network_cvs_" + curID;
-                                network[curID] = new SIIL.Network("#" + cvs);
-                                $(this).find(".gravity").slider({
-                                    value: 0.2,
-                                    max: 1,
-                                    step: 0.01,
-                                    animate: true,
-                                    slide: function(event, ui) {
-                                        force.gravity(ui.value);
-                                        $(this).siblings('.gravity_text').val(ui.value);
-                                        if (force.alpha() == 0) force.start();
-                                        // force.alpha(0.1);
+                            var dSrc = $(xhr.dsource);
+                            xhr.dindex = xhr.dindex.split(',');
+                            xhr.msgID = xhr.msgID.split(',');
+                            xhr.htimeline = xhr.htimeline.split(',');
+                            for (i = 0; i < xhr.visJSON.SIDs.length; i++) {
+                                var thisSID = xhr.visJSON.SIDs[i],
+                                    thistypes = xhr.visJSON[thisSID].type_info.keys();
+                                DlgTcolor[xhr.visJSON[thisSID].linkNo] = xhr.visJSON[thisSID].color;
+                                for (j = 0; j < thistypes.length; j++) {
+                                    switch (thistypes[j]) {
+                                        case 'map':
+                                            break;
+                                        case 'message':
+                                            createDialog('message', xhr.visJSON[thisSID].linkNo, {
+                                                'filter_type': 'message',
+                                                'id': xhr.visJSON[thisSID].msgID,
+                                            });
+                                            break;
+                                        case 'event':
+                                            createDialog('event', xhr.visJSON[thisSID].linkNo, {
+                                                'filter_type': 'event',
+                                                'id': xhr.visJSON[thisSID].dindex
+                                            });
+                                            break;
+                                        case 'person':
+                                        case 'organization':
+                                        case 'location':
+                                        case 'resource':
+                                            createDialog(self.Type, xhr.visJSON[thisSID].linkNo, {
+                                                'filter_type': 'event',
+                                                'id': xhr.visJSON[thisSID].dindex
+                                            });
+                                            break;
+                                        case 'network':
+                                            createNetwork(xhr.visJSON[thisSID].linkNo, {
+                                                'filter_type': 'network',
+                                                'id': xhr.visJSON[thisSID].dindex
+                                            });
+                                            break;
+                                        case 'timeline':
+                                            createTimeline(xhr.visJSON[thisSID].linkNo, {
+                                                'filter_type': 'timeline',
+                                                'start': xhr.visJSON[thisSID].timeextent.split(',')[0],
+                                                'end': xhr.visJSON[thisSID].timeextent.split(',')[1]
+                                            });
                                     }
-                                });
+                                }
 
-
-                            })
+                            }
                         },
                         error: function(xhr) {
                             alert("ERROR: " + xhr.responseText);

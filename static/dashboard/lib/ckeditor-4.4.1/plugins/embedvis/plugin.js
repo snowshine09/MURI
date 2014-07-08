@@ -3,30 +3,53 @@ CKEDITOR.plugins.add('embedvis', {
         icons: 'network,person,location',
         editor.addCommand('embednw', {
             exec: function(editor) {
-                var allvisdlg = d3.selectAll(".visdlg");
-                var serializer = new XMLSerializer(),
-                    xmlString = "";
-                allvisdlg[0].forEach(function(visElement) {
-                    var visd = d3.select(visElement).node();
-                    xmlString = xmlString + serializer.serializeToString(visd);
-
-                });
-                // var tagname = editor.name + "_network"; //wb_editor_1_netowrk
-
-
-
-                //store into the database table Vis and mark as unsaved
+                var allvisdlg = d3.selectAll(".visdlg"),
+                    IDs = [];
                 var newvis = {};
-                newvis.type = "network";
                 newvis.date_updated = new Date().toGMTString();
-                newvis.vis = xmlString;
                 newvis.saved = false;
+                for (i = 0; i < allvisdlg[0].length; i++) {
+                    if ($(allvisdlg[0][i]).dialogExtend("state") != "minimized") {
+                        var vType = $(allvisdlg[0][i]).attr("id").split("_")[0],
+                            SID = $(allvisdlg[0][i]).attr("id").split("_")[2];
+                        if (newvis[SID] == undefined) {
+                            newvis[SID] = {};
+                            IDs.push(SID);
+                            newvis[SID].types_info = {};
+                            newvis[SID].dsource = [];
+                            for (j = 0; j < dataset[SID]['event'].length; j++) {
+                                newvis[SID].dsource.push(dataset[SID]['event'][j]['uid']);
+                            }
+                            newvis[SID].color = $(allvisdlg[0][i]).siblings(".ui-dialog-titlebar").css("background-color");
+                            newvis[SID].dindex = dindex[SID];
+                            newvis[SID].msgID = msgID[SID];
+                            var hTL = '';
+                            if (htimeline[SID] != undefined) {
+                                for (j = 0; j < htimeline[SID].length; j++) {
+                                    if (j == 0) hTL += htimeline[SID][j];
+                                    else hTL += ',' + htimeline[SID][j];
+                                }
+                                newvis[SID].htimeline = hTL;
+                            }
+                            if (timeextent[SID] != undefined) {
+                                newvis[SID].timeextent = timeextent[SID][0] + ',' + timeextent[SID][1];
+                            }
+                        }
+                        newvis[SID].types_info[vType] = $(allvisdlg[0][i]).parent().position()['left'] + ',' + $(allvisdlg[0][i]).parent().position()['top'];
+                    }
+                }
+                newvis.SIDs = IDs;
+
+                console.log(newvis);
+
                 $.ajax({
                     url: 'workbench/visEmbed',
                     type: "POST",
-                    data: newvis,
+                    data: {
+                        "newvis": JSON.stringify(newvis)
+                    },
                     success: function(res) {
-                        editor.insertHtml('<a href="#" vid="' + res.id + '" class="ref-link"><sup>[' + newvis.date_updated + ' ' + newvis.type + ']</sup></a>');
+                        editor.insertHtml('<a href="#" vid="' + res.id + '" class="ref-link"><sup>[' + newvis.date_updated + ' ]</sup></a>');
                         if (visxml[editor.name] == undefined) visxml[editor.name] = [];
                         visxml[editor.name].push(res.id);
                     },
@@ -42,6 +65,8 @@ CKEDITOR.plugins.add('embedvis', {
                 });
 
             }
+            // var tagname = editor.name + "_network"; //wb_editor_1_netowrk
+
         });
         var self = this;
         // editor.addCommand('embednw', {
