@@ -21,7 +21,6 @@ var dindex = {}; //for brushing, record selected entities' indexes
 var msgID = {};
 var timeextent = {}; //two elements array to control and reflect change of timeline
 var htimeline = {}; //discontinuous time
-var hshape = {};
 var visxml = {};
 var cindex = {};
 
@@ -33,11 +32,11 @@ function generateOthers(div, vis) { //div is source, vis is target
 	self.SID = div.split("_")[2];
 	self.Type = div.split("_")[0];
 	var target = {};
-	target.Type = vis.split("_")[0]; // e.g. message_self , message_subset
+	target.Type = vis.split("_")[0];
 	target.Src = vis.split("_")[1];
 
 	switch (target.Src) {
-		case 'self': //data equivalent
+		case 'self': // in existing link
 			switch (target.Type) {
 				case "timeline":
 					createTimeline(self.SID, null);
@@ -56,27 +55,24 @@ function generateOthers(div, vis) { //div is source, vis is target
 				case "person":
 				case "organization":
 				case "resource":
+                case "location":
 					createDialog(target.Type, self.SID, null);
-					break;
-				case "location":
-					createDialog('location', self.SID, null);
-					if (hshape[self.SID] == undefined) hshape[self.SID] = [];
 					break;
 			}
 			break;
-		case 'subset': //self is like the source related info, whilst the result related is the target subset
+		case 'subset':
 			var count = 0;
 
-			// if (self.Type == 'message' && msgID[self.SID].length == 0) {
-			// 	alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
-			// 	break;
-			// } else if (self.Type == 'timeline' && timeextent[self.SID].length == 0) {
-			// 	alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
-			// 	break;
-			// } else if (dindex[self.SID].length == 0) {
-			// 	alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
-			// 	break;
-			// }
+			if (self.Type == 'message' && msgID[self.SID].length == 0) {
+				alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
+				break;
+			} else if (self.Type == 'timeline' && timeextent[self.SID].length == 0) {
+				alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
+				break;
+			} else if (dindex[self.SID].length == 0) {
+				alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
+				break;
+			}
 			switch (self.Type) {
 				case 'map':
 					break;
@@ -117,41 +113,25 @@ function generateOthers(div, vis) { //div is source, vis is target
 			break;
 	}
 }
-//
-// Renders the specified chart or list.
-function render(method) {
-	d3.select(this).call(method); // I don't understand, what method is being called?
-}
 
-// Whenever the brush moves, re-render everything.
-function renderAll(sid) {
-	if (map[sid]) {
-		map[sid].update();
-	}
-	renderAllButMap(sid);
-}
-
-function renderAllExcept(except_name, coorType) {
-	var toDraw = [],
-		except_type = except_name.split("_")[0],
-		SID = except_name.split("_")[2];
-
+function renderAllExcept(self_name, SID, type) {
+	var toDraw = []
 	var all = ['map', 'location', 'timeline', 'network', 'person', 'message', 'resource', 'event', 'organization'];
-	for (var i = 0, len = all.length; i < len; i++) {
-		if (all[i] != except_type) {
+	for (var i = 0; i < all.length; i++) {
+		if (all[i] != self_name) {
 			toDraw.push(all[i])
 		}
 	}
-	for (var i = 0, len = toDraw.length; i < len; i++) {
+	for (var i = 0; i < toDraw.length; i++) {
 		switch (toDraw[i]) {
 			case "map":
-				if (map[SID]) map[SID].update(coorType);
+				if (map[SID]) map[SID].update(type);
 				break;
 			case "timeline":
 				if (timelineset[SID]) timelineset[SID].update();
 				break;
 			case "network":
-				if (network[SID]) network[SID].update(coorType);
+				if (network[SID]) network[SID].update(type);
 				break;
 			case "person":
 			case "message":
@@ -159,62 +139,51 @@ function renderAllExcept(except_name, coorType) {
 			case "resource":
 			case "event":
 			case "organization":
-				if (tables[toDraw[i]][SID]) tables[toDraw[i]][SID].update(coorType);
+				if (tables[toDraw[i]][SID]) tables[toDraw[i]][SID].update(type);
 				break;
 		}
 	}
 }
 
-function renderAllButNetwork(sid) {
-	if (map[sid]) {
-		map[sid].update();
-	}
-	if (timeline[sid]) {
-		timeline[sid].each(render);
-	}
-}
-
-function renderAllButMap(sid) {
-	if (timeline[sid]) {
-		timeline[sid].each(render);
-	}
-	if (tables['event'][sid]) {
-		tables['event'][sid].update();
-	}
-	if (tables['location'][sid]) {
-		tables['location'][sid].update();
-	}
-	if (tables['message'][sid]) {
-		tables['message'][sid].update();
-	}
-	if (tables['resource'][sid]) {
-		tables['resource'][sid].update();
-	}
-	if (tables['organization'][sid]) {
-		tables['organization'][sid].update();
-	}
-	if (tables['person'][sid]) {
-		tables['person'][sid].update();
-	}
-	if (network[sid]) {
-		network[sid].update();
-	}
+function propagate(self_type, SID, source_ids, callback) {
+    var param = {};
+    msgID[SID] = [];
+    dindex[SID] = [];
+    htimeline[SID] = [];
+    if (self_type === 'message') {
+        param['msg_ids'] = source_ids;
+        msgID[SID] = source_ids;
+    } else { // propagate from entities
+        param['entity_ids'] = source_ids;
+        dindex[SID] = source_ids;
+    }
+    if (source_ids.length > 0) {
+        $.ajax({
+            url: 'propagate/',
+            type: 'post',
+            async: false,
+            data: param,
+            success: function(eid) {
+                dindex[SID] = eid['ett_idset'];
+                msgID[SID] = eid['msg_idset'];
+                for (var i = 0; i < eid['dateset'].length; i++) {
+                    htimeline[SID].push(new Date(eid['dateset'][i]))
+                }
+                renderAllExcept(self_type, SID, "brush");
+                if ('function' === typeof callback) {
+                    callback();
+                }
+            }
+        });
+    } else {
+        renderAllExcept(self_type, SID, "brush");
+    }
 }
 
 function highlight(footprint_id) {
 	if (map) {
 		map.highlight([footprint_id]);
 	}
-}
-
-function highlightFromNetwork(ids) {
-	for (var i = 0, len = ids.length; i < len; i++) {
-		dDate.top(Infinity).forEach(function(p, i) {});
-	}
-}
-
-function unhighlightFromNetwork(ids) {
-	for (var i = 0, len = ids.length; i < len; i++) {}
 }
 
 function showcontext(event) {

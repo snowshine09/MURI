@@ -3,8 +3,8 @@ SIIL.Network = function($div, link_no) {
 	self.SID = link_no;
 	self.Type = 'network';
 	self.Name = 'network_cvs_' + self.SID;
-	self.width = $("#network_dlg_" + self.SID).innerWidth(); //outerWidth();
-	self.height = $("#network_dlg_" + self.SID).innerHeight();
+	self.width = 800;
+	self.height = 700;
 	self.mode = "pan";
 	var cmb = $div.find('.selectbar').attr('id');
 	$("#" + cmb).attr("selectedIndex", 0).change(function() {
@@ -26,9 +26,11 @@ SIIL.Network = function($div, link_no) {
 		if ($('#network_mode_' + self.SID).text() == 'Pan mode') {
 			self.mode = "brush";
 			$('#network_mode_' + self.SID).text('Brush mode');
+			self.force.stop();
 		} else {
 			self.mode = "pan"
 			$('#network_mode_' + self.SID).text('Pan mode');
+			self.force.start();
 		}
 		update_mode();
 	});
@@ -97,7 +99,6 @@ SIIL.Network = function($div, link_no) {
 		.attr("width", self.width)
 		.attr("height", self.height)
 		.attr("pointer-events", "all")
-		.style("overflow", "scroll")
 		.append('svg:g')
 		.attr("class", "zoom")
 		.call(self.zoom)
@@ -112,8 +113,15 @@ SIIL.Network = function($div, link_no) {
 	var node = svg.selectAll(".node");
 	var link = svg.selectAll(".link");
 
-	
-
+	$('#' + self.Name).click(function(e) {
+		e.preventDefault();
+		if (e.target.nodeName === 'rect') {
+			node.classed('selected', function() {
+				return false;
+			});
+            updateOthers();
+		}
+	});
 	$("#network_gravity_" + self.SID).slider({
 		value: 0.2,
 		max: 1,
@@ -154,7 +162,6 @@ SIIL.Network = function($div, link_no) {
 	function dragstarted(d) {
 		d3.event.sourceEvent.stopPropagation();
 		d3.select(this).classed("dragging", true);
-		self.force.start();
 	}
 
 	function dragged(d) {
@@ -166,30 +173,12 @@ SIIL.Network = function($div, link_no) {
 	}
 
 	function updateOthers() {
-
-		htimeline[self.SID] = [];
-		dindex[self.SID] = [];
+		$('#' + self.Name).parents('.ui-dialog-content').find('.selected-count').text(svg.selectAll('.selected')[0].length);
+		var selectedIds = [];
 		svg.selectAll('.selected').each(function(d) {
-			dindex[self.SID].push(d.uid);
-			if ('undefined' !== typeof d.date) {
-				htimeline[self.SID].push(new Date(d.date));
-			}
+			selectedIds.push(d.uid);
 		});
-		htimeline[self.SID] = htimeline[self.SID].filter(function(item, idx, arr) {
-			return idx == arr.indexOf(item);
-		});
-		$.ajax({
-			url: "propagate/",
-			type: 'post',
-			async: false,
-			data: {
-				'entity_ids': dindex[self.SID]
-			},
-			success: function(eid) {
-				msgID[self.SID] = eid['msg_idset'];
-				renderAllExcept(self.Name, "brush");
-			}
-		});
+		propagate('network', self.SID, selectedIds);
 	}
 
 	function update_mode() {
@@ -227,20 +216,23 @@ SIIL.Network = function($div, link_no) {
 		});
 		return n;
 	};
-	self.update = function(coorType) {
-		events_id = []
-		for (var i = 0; i < dataset[self.SID]['event'].length; i++) {
-			events_id.push(dataset[self.SID]['event'][i].uid);
-		}
-		if (coorType === "brush") {
-			node.classed("selected", function(d) {
-				if ($.inArray(d.uid, dindex[self.SID]) == -1)
-					return false;
-				else return true;
-			});
-		} else {
+	self.highlight = function() {
+		node.classed("selected", function(d) {
+			if ($.inArray(d.uid, dindex[self.SID]) == -1)
+				return false;
+			else return true;
+		});
+		$('#' + self.Name).parents('.ui-dialog-content').find('.selected-count').text(svg.selectAll('.selected')[0].length);
+	};
+	self.update = function(update_type) {
+		var self = this;
+		if (update_type === "init") {
+			events_id = []
+			for (var i = 0; i < dataset[self.SID]['event'].length; i++) {
+				events_id.push(dataset[self.SID]['event'][i].uid);
+			}
 			$.ajax({
-				url: 'network',
+				url: 'network/',
 				type: 'post',
 				data: {
 					'events_id': events_id
@@ -250,11 +242,9 @@ SIIL.Network = function($div, link_no) {
 					link.exit().remove();
 					node = node.data([]);
 					node.exit().remove();
-					self.force.nodes(xhr.nodes)
-						.links(xhr.links);
+					self.force.nodes(xhr.nodes).links(xhr.links);
 					link = link.data(xhr.links);
-					link.enter().append("line").attr("class", "link")
-						.style("stroke", "#FF0000");
+					link.enter().append("line").attr("class", "link");
 					node = node.data(xhr.nodes);
 					node_g = node.enter().append("g")
 						.attr("class", "node")
@@ -272,11 +262,10 @@ SIIL.Network = function($div, link_no) {
 							} else if (d.node == 'Resource') {
 								return "static/dashboard/img/resource.png";
 							}
-						})
-						.attr("x", -12)
+						}).attr("x", -12)
 						.attr("y", -12)
-						.attr("width", 36)
-						.attr("height", 36);
+						.attr("width", 24)
+						.attr("height", 24);
 
 					node.append("text")
 						.attr("dx", "-1.95em")
@@ -285,9 +274,12 @@ SIIL.Network = function($div, link_no) {
 							return d.name
 						});
 					self.force.start();
-                    update_mode();
+					update_mode();
+					self.highlight();
 				}
 			});
+		} else {
+			self.highlight();
 		}
 	}
 };

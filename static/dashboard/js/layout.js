@@ -14,19 +14,18 @@ var dialogExtendOptions = {
 };
 
 function randomcolor() {
-	return {
-		red: Math.floor(Math.random() * 128 + 128),
-		green: Math.floor(Math.random() * 128 + 128),
-		blue: Math.floor(Math.random() * 128 + 128)
-	};
+	var red = Math.floor(Math.random() * 128 + 128).toString(16),
+		green = Math.floor(Math.random() * 128 + 128).toString(16),
+		blue = Math.floor(Math.random() * 128 + 128).toString(16);
+	return color = '#' + red + green + blue;
 };
 var tableNames = {
-    'event': 'Events',
-    'location': 'Locations',
-    'message': 'Messages',
-    'person': 'People',
-    'organization': 'Organizations',
-    'resource': 'Resources',
+	'event': 'Events',
+	'location': 'Locations',
+	'message': 'Messages',
+	'person': 'People',
+	'organization': 'Organizations',
+	'resource': 'Resources',
 };
 var tableHeaders = {
 	'event': [{
@@ -254,15 +253,13 @@ function initNewLink(table_type, filter_params, link_no, callback) {
 		'organization': [],
 		'resource': [],
 		'location': [],
-        'timeline': [],
+		'timeline': [],
 		'filter': {},
 	};
 	timeextent[link_no] = [];
 	htimeline[link_no] = [];
 	dindex[link_no] = [];
 	msgID[link_no] = [];
-	hshape[link_no] = [];
-
 	if (table_type === 'event') {
 		getData('event', filter_params, link_no, callback);
 	} else {
@@ -277,9 +274,9 @@ function createMap(link_no, filter_params) {
 	$.ajax({
 		url: "map_template/",
 		type: "post",
+		async: false,
 		data: {
-			selfType: "map",
-			new_link: 'new_link',
+			'new_link': new_link,
 		},
 		success: function(xhr) {
 			if (new_link) {
@@ -291,7 +288,6 @@ function createMap(link_no, filter_params) {
 			$(xhr.html).dialog($.extend({}, dialogOptions, {
 				title: 'Map of link ' + link_no,
 				position: ['left', 36],
-				width: 600,
 				height: 600,
 				close: function(event, ui) {
 					delete map[$(this).attr("id").split("_")[2]];
@@ -302,24 +298,19 @@ function createMap(link_no, filter_params) {
 				initNewLink('location', filter_params, link_no, function() { // filter_params is not null when starting subset
 					map[link_no] = $(xhr.html).find(".cvs").vismap().data("vismap");
 					DlgTcolor[xhr.linkNo] = randomcolor();
-					$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-						DlgTcolor[xhr.linkNo].red + "," +
-						DlgTcolor[xhr.linkNo].green + "," +
-						DlgTcolor[xhr.linkNo].blue + ")"
-					);
+					$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", DlgTcolor[link_no]);
 					map[xhr.linkNo].update("init");
 				});
 			} else { // starting window in existing link
-				map[link_no] = $(xhr.html).find(".cvs").vismap().data("vismap");
-				$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-					DlgTcolor[xhr.linkNo].red + "," +
-					DlgTcolor[xhr.linkNo].green + "," +
-					DlgTcolor[xhr.linkNo].blue + ")"
-				);
-				map[xhr.linkNo].update("init");
+				getData('location', dataset[link_no]['filter'], link_no, function() {
+					map[link_no] = $(xhr.html).find(".cvs").vismap().data("vismap");
+					$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", DlgTcolor[link_no]);
+					map[xhr.linkNo].update("init");
+				});
 			}
 		}
 	});
+	return link_no;
 };
 
 function createTimeline(link_no, filter_params) {
@@ -327,8 +318,8 @@ function createTimeline(link_no, filter_params) {
 	$.ajax({
 		url: "timeline_template/",
 		type: "post",
+		async: false,
 		data: {
-			selfType: "timeline",
 			'new_link': new_link,
 		},
 		success: function(xhr) {
@@ -353,27 +344,19 @@ function createTimeline(link_no, filter_params) {
 				initNewLink('timeline', filter_params, link_no, function() { // filter_params is not null when starting subset
 					timelineset[link_no] = $(xhr.html).find(".cvs").timeline().data("timeline");
 					DlgTcolor[link_no] = randomcolor();
-                    dataset[link_no]['filter'] = filter_params;
-					$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-						DlgTcolor[link_no].red + "," +
-						DlgTcolor[link_no].green + "," +
-						DlgTcolor[link_no].blue + ")"
-					);
-					timelineset[link_no].update();
+					dataset[link_no]['filter'] = filter_params;
+					$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", DlgTcolor[link_no]);
 				});
 			} else { // starting window in existing link
-                getData('timeline', dataset[link_no]['filter'], link_no, function() {
-    				timelineset[link_no] = $(xhr.html).find(".cvs").timeline().data("timeline");
-    				$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-    					DlgTcolor[link_no].red + "," +
-    					DlgTcolor[link_no].green + "," +
-    					DlgTcolor[link_no].blue + ")"
-    				);
-    				timelineset[link_no].update();
-                });
+				getData('timeline', dataset[link_no]['filter'], link_no, function() {
+					timelineset[link_no] = $(xhr.html).find(".cvs").timeline().data("timeline");
+					$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", DlgTcolor[link_no]);
+					timelineset[link_no].update();
+				});
 			}
 		}
 	});
+	return link_no;
 };
 
 function createNetwork(link_no, filter_params) {
@@ -381,8 +364,8 @@ function createNetwork(link_no, filter_params) {
 	$.ajax({
 		url: "network_template/",
 		type: "post",
+		async: false,
 		data: {
-			selfType: "network",
 			'new_link': new_link,
 		},
 		success: function(xhr) {
@@ -395,8 +378,6 @@ function createNetwork(link_no, filter_params) {
 			$(xhr.html).dialog($.extend({}, dialogOptions, {
 				title: 'Network of link ' + link_no,
 				position: ['left', 36],
-				width: 800,
-				height: 800,
 				close: function(event, ui) {
 					delete network[$(this).attr("id").split("_")[2]];
 					$(this).dialog('destroy').remove();
@@ -407,23 +388,16 @@ function createNetwork(link_no, filter_params) {
 				initNewLink('event', filter_params, link_no, function() { // filter_params is not null when starting subset
 					dataset[link_no]['filter'] = filter_params;
 					DlgTcolor[link_no] = randomcolor();
-					$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-						DlgTcolor[link_no].red + "," +
-						DlgTcolor[link_no].green + "," +
-						DlgTcolor[link_no].blue + ")"
-					);
-					network[link_no].update();
+					$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", DlgTcolor[link_no]);
+					network[link_no].update('init');
 				});
 			} else { // starting window in existing link
-				network[link_no].update();
-				$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-					DlgTcolor[link_no].red + "," +
-					DlgTcolor[link_no].green + "," +
-					DlgTcolor[link_no].blue + ")"
-				);
+				network[link_no].update('init');
+				$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", DlgTcolor[link_no]);
 			}
 		}
 	});
+	return link_no;
 };
 
 function createDialog(table_type, link_no, filter_params) {
@@ -431,6 +405,7 @@ function createDialog(table_type, link_no, filter_params) {
 	$.ajax({
 		url: 'get_table/',
 		type: 'post',
+		async: false,
 		data: {
 			'table_type': table_type,
 			'headers': tableHeaders[table_type],
@@ -456,11 +431,7 @@ function createDialog(table_type, link_no, filter_params) {
 				DlgTcolor[link_no] = randomcolor();
 				initNewLink(table_type, filter_params, link_no, function() { // filter_params is not null when starting subset
 					dataset[link_no]['filter'] = filter_params;
-					$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background", "rgb(" +
-						DlgTcolor[link_no].red + "," +
-						DlgTcolor[link_no].green + "," +
-						DlgTcolor[link_no].blue + ")"
-					);
+					$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background", DlgTcolor[link_no]);
 					tables[table_type][link_no].update();
 				});
 				if (filter_params != null && filter_params['type'] === 'message') {
@@ -469,13 +440,10 @@ function createDialog(table_type, link_no, filter_params) {
 			} else { // starting window in existing link
 				getData(table_type, dataset[link_no]['filter'], link_no, function() {
 					tables[table_type][link_no].update();
-					$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", "rgb(" +
-						DlgTcolor[link_no].red + "," +
-						DlgTcolor[link_no].green + "," +
-						DlgTcolor[link_no].blue + ")"
-					);
+					$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", DlgTcolor[link_no]);
 				});
 			}
 		}
 	});
+	return link_no;
 };

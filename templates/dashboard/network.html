@@ -1,35 +1,35 @@
 <div id="network_dlg_{{id}}" class='network visdlg'>
-	<form class="form-inline" role="form">
-		<div class="gravity form-group">
-			<label>Gravity</label>
-			<label class="gravity_text" style="color:#b9cd6d; font-weight:bold;"></label>
-			<div id="network_gravity_{{id}}"></div>
-		</div>
-		{% if parent_id %}
-		<div id="network_ctxt_{{id}}" class="showcontext form-group">
-			<button href="#" class="btn btn-sm btn-default" onclick="showcontext();return false;">Show Context in Link {{parent_id}}</button>
-		</div>
-		{% endif %}
-		<div id="network_selectbar_{{id}}" class="selectbar form-group">
-			<select class="form-control">
-				<option value="">Generate the next linked window...</option>
-				<optgroup label = "other visualizations...">
-					{% for vistype in vistypes %}
-					<option value = "{{ vistype }}_self">{{ vistype }}</option>
-					{% endfor %}
-				</optgroup>
-				<optgroup label = "Filter to a subset in ...">
-					<option value="network_subset">Network</option>
-				</optgroup>
-			</select>   
-		</div>
-		<div class="form-group">
-			<button href="#" id="network_mode_{{id}}" class="btn btn-sm btn-primary">Pan mode</button>
-		</div>
-        <div class="form-group">
-            <label class="selected-count">0</label> item(s) highlighted
-        </div>
-	</form>
-	<div id = "network_cvs_{{id}}" class="cvs">
+	<div>
+		<form class="form-inline" role="form">
+			<div class="gravity form-group">
+				<label>Gravity</label>
+				<label class="gravity_text" style="color:#b9cd6d; font-weight:bold;"></label>
+				<div id="network_gravity_{{id}}"></div>
+			</div>
+			{% if parent_id %}
+			<div id="network_ctxt_{{id}}" class="showcontext form-group">
+				<button href="#" class="btn btn-sm btn-default" onclick="showcontext();return false;">Show Context in Link {{parent_id}}</button>
+			</div>
+			{% endif %}
+			<div id="network_selectbar_{{id}}" class="selectbar form-group">
+				<select class="form-control">
+					<option value="">Open in linked window...</option>
+					<optgroup label = "Linked window...">
+						{% for viewtype in viewtypes %}{% if 'network' != viewtype %}<option value="{{ viewtype }}_self">{{ viewtype|title }}</option>{% endif %}{% endfor %}
+					</optgroup>
+					<optgroup label = "Filter to subset ...">
+						<option value="network_subset">Network</option>
+					</optgroup>
+				</select>   
+			</div>
+			<div class="form-group">
+				<button href="#" id="network_mode_{{id}}" class="btn btn-sm btn-primary">Pan mode</button>
+			</div>
+	        <div class="form-group">
+	            <label class="selected-count">0</label> item(s) highlighted
+	        </div>
+		</form>
+	</div>
+	<div id="network_cvs_{{id}}" class="cvs">
 	</div>
 </div>

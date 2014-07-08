@@ -1,11 +1,12 @@
 g.node.selected > rect{
     stroke-width:1px;
-    stroke: "#0000FF";
+    stroke: rgb(106, 86, 168);
 }
 
 div.gravity{
   width: 200px;
 }
+
 .cvs text {
   font: 10px Tahoma;
   font-weight: bold;
@@ -13,17 +14,17 @@ div.gravity{
   stroke-width: 0.4px;
 }
 .selected text{
-  fill: red;
-  stroke: red;
+  fill: rgb(106, 86, 168);
+  stroke: rgb(106, 86, 168);
 }
 .brush .extent {
   fill-opacity: .1;
-  stroke: blue;
+  stroke: rgb(106, 86, 168);
   shape-rendering: crispEdges;
 }
  
 .node.selected {
-  stroke: red;
+  stroke: rgb(106, 86, 168);
 }
 
 .link {

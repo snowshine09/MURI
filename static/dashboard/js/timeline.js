@@ -21,39 +21,40 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 		}
 		self.start = new Date(dataset[self.SID]['timeline'][0][0]),
 		self.end = new Date(dataset[self.SID]['timeline'][dataset[self.SID]['timeline'].length - 1][0]);
-        self.end.setDate(self.end.getDate() + 1);
+		self.end.setDate(self.end.getDate() + 1);
 		self.charts = [
 			self.barChart() //onlu one chart(vis) method in this list
 			.round(d3.time.day.round)
 			.x(d3.time.scale()
 				.domain([new Date(self.start), new Date(self.end)])
 				.rangeRound([0, 10 * 90]))
-			.filter([self.start, self.end])
 		];
 		d3.selectAll("#" + this.Name)
 			.data(self.charts)
-			.each(render);
+			.each(function(method) {
+				d3.select(this).call(method);
+			});
 
 	},
 	update: function() {
-		var self = this,
-			g = d3.select("#" + this.Name).select("g"),
-			x = d3.time.scale()
-			.domain([new Date(self.start), new Date(self.end)])
-			.rangeRound([0, 10 * 90]);
-		if (htimeline[self.SID].length != 0) {
+		var self = this;
+		if (htimeline[self.SID].length > 0) {
+			var g = d3.select("#" + this.Name).select("g");
+			var x = d3.time.scale()
+				.domain([new Date(self.start), new Date(self.end)])
+				.rangeRound([0, 10 * 90]);
 			self.brush.clear();
 			g.select(".brush").call(self.brush);
 			g.select("#clip-0-" + self.SID + " rect")
 				.attr("width", 0);
-		}
-		g.select("#clip-1-" + self.SID).selectAll("rect").remove();
-		for (var i = 0; i < htimeline[self.SID].length; i++) {
-			g.select("#clip-1-" + self.SID)
-				.append("rect")
-				.attr("x", x(htimeline[self.SID][i]))
-				.attr("width", 9)
-				.attr("height", 100);
+			g.select("#clip-1-" + self.SID).selectAll("rect").remove();
+			for (var i = 0; i < htimeline[self.SID].length; i++) {
+				g.select("#clip-1-" + self.SID)
+					.append("rect")
+					.attr("x", x(htimeline[self.SID][i]))
+					.attr("width", 9)
+					.attr("height", 100);
+			}
 		}
 	},
 	barChart: function() {
@@ -166,8 +167,8 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 
 		self.brush.on("brushend.chart", function() {
 			htimeline[self.SID] = [];
-                            dindex[self.SID] = [];
-                msgID[self.SID] = [];
+			dindex[self.SID] = [];
+			msgID[self.SID] = [];
 			if (self.brush.empty()) {
 				var div = d3.select(this.parentNode.parentNode.parentNode);
 				div.select(".title a").style("display", "none");
@@ -175,18 +176,17 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 				timeextent[self.SID] = [];
 			} else {
 				timeextent[self.SID] = self.brush.extent();
-
 				$.ajax({
 					url: 'filter_data_by_time/',
 					type: 'post',
-                    data: {
-                        start: timeextent[self.SID][0],
-                        end: timeextent[self.SID][1]
-                    },
+					data: {
+						start: timeextent[self.SID][0],
+						end: timeextent[self.SID][1]
+					},
 					success: function(xhr) {
 						dindex[self.SID] = xhr.entities;
 						msgID[self.SID] = xhr.messages;
-                        renderAllExcept(self.Name, "brush");
+						renderAllExcept('timeline', self.SID, "brush");
 					}
 				})
 			}

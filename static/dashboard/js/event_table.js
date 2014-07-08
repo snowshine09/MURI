@@ -10,6 +10,9 @@ SIIL.DataTable = function($div, table_type, link_no) {
 		pagingType: 'full',
 		columns: tableHeaders[table_type],
 	});
+	if (self.tbType != 'message') {
+		self.table.column('ID:name').visible(false);
+	}
 	var cmb = $div.find('.selectbar').attr('id');
 
 	$("#" + cmb).attr("selectedIndex", 0).change(function() {
@@ -73,20 +76,8 @@ SIIL.DataTable.prototype.update = function(uType) {
 	}
 
 	// highlighting
-	self.table.$('tr.row_selected').removeClass("row_selected");
-	if (dindex[self.SID].length != 0) {
-        // highlight entries in Entity table
-		var indexes = self.table.rows().eq(0).filter(function(rowIdx) {
-			var tmp = self.table.cell(rowIdx, 0).data();
-			return $.inArray(tmp, dindex[self.SID]) != -1 ? true : false;
-		});
-		self.table.rows(indexes).nodes().to$().addClass('row_selected');
-	}
-
-	if (self.tbType != 'message') {
-		self.table.column('ID:name').visible(false);
-	} else {
-        // highlight entries in Message table
+	if (self.tbType == 'message') {
+		// highlight entries in Message table
 		if (msgID[self.SID].length != 0) {
 			var indexes = self.table.rows().eq(0).filter(function(rowIdx) {
 				var tmp = self.table.cell(rowIdx, 0).data();
@@ -97,66 +88,30 @@ SIIL.DataTable.prototype.update = function(uType) {
 		} else {
 			self.table.$('tr.row_selected').removeClass("row_selected");
 		}
+	} else {
+		// highlight entries in Entity table
+		if (dindex[self.SID].length != 0) {
+			var indexes = self.table.rows().eq(0).filter(function(rowIdx) {
+				var tmp = self.table.cell(rowIdx, 0).data();
+				return $.inArray(tmp, dindex[self.SID]) != -1 ? true : false;
+			});
+			self.table.$('tr.row_selected').removeClass("row_selected");
+			self.table.rows(indexes).nodes().to$().addClass('row_selected');
+		} else {
+			self.table.$('tr.row_selected').removeClass("row_selected");
+		}
 	}
 
-	if (self.tbType == "location" && hshape[self.SID].length != 0) {
-        // highlight entries in Location table
-		var indexes = self.table.rows().eq(0).filter(function(rowIdx) {
-			var tmp = self.table.cell(rowIdx, 0).data();
-			return $.inArray(tmp, hshape[self.SID]) != -1 ? true : false;
-		});
-		self.table.$('tr.row_selected').removeClass("row_selected");
-		self.table.rows(indexes).nodes().to$().addClass('row_selected');
-	}
 	$("#" + self.tbName).parents('.ui-dialog-content').find('.selected-count').text(self.table.$('tr.row_selected').length);
 	self.table.$('tr').unbind('click').bind('click', function(e) { //not clear why if not unbind the click event, the clicking will be triggered multiple times
-		hshape[self.SID] = [];
-		htimeline[self.SID] = [];
 		document.getSelection().removeAllRanges();
-		if ($(this).hasClass('row_selected')) {
-			$(this).removeClass('row_selected');
+		if (e.shiftKey) {
+			$(this).toggleClass('row_selected');
 		} else {
-			if (!e.shiftKey) {
-				self.table.$('tr.row_selected').removeClass('row_selected');
-			}
+			self.table.$('tr.row_selected').removeClass('row_selected');
 			$(this).addClass('row_selected');
 		}
 		$("#" + self.tbName).parents('.ui-dialog-content').find('.selected-count').text(self.table.$('tr.row_selected').length);
-		if (self.tbType == "location") {
-			hshape[self.SID] = self.table.cells('.row_selected', 'ID:name').data().toArray();
-		}
-		param = {};
-		var selected_rows = self.table.rows('.row_selected');
-		if (self.tbType === 'message') {
-			param['msg_ids'] = self.table.cells('.row_selected', 'ID:name').data().toArray();
-			msgID[self.SID] = self.table.cells('.row_selected', 'ID:name').data().toArray();
-			dindex[self.SID] = [];
-		} else {
-			param['entity_ids'] = self.table.cells('.row_selected', 'ID:name').data().toArray();
-			dindex[self.SID] = self.table.cells('.row_selected', 'ID:name').data().toArray();
-			msgID[self.SID] = [];
-		}
-		if (selected_rows.length > 0) {
-			$.ajax({
-				url: "propagate/",
-				type: 'post',
-				async: false,
-				data: param,
-				success: function(eid) {
-					dindex[self.SID] = eid['ett_idset'];
-					msgID[self.SID] = eid['msg_idset'];
-					for (var i = 0; i < eid['dateset'].length; i++) {
-						htimeline[self.SID].push(new Date(eid['dateset'][i]))
-					}
-					renderAllExcept(self.tbName, "brush");
-				}
-			});
-		} else {
-			renderAllExcept(self.tbName, "brush");
-		}
+		propagate(self.tbType, self.SID, self.table.cells('.row_selected', 'ID:name').data().toArray());
 	});
-};
-
-SIIL.DataTable.prototype.destroy = function() {
-	this.table.remove();
 };

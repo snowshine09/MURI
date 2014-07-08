@@ -2,11 +2,11 @@
     <form class="form-inline" role="form">
         <div id="{{ table_type }}_selectbar_{{ id }}" class="selectbar form-group">
             <select class="form-control">
-                <option value="">Generate the next linked window...</option>
-                    <optgroup label = "other visualizations...">
+                <option value="">Open in linked window...</option>
+                    <optgroup label = "Linked window...">
                     {% for viewtype in viewtypes %}{% if table_type != viewtype %}<option value="{{ viewtype }}_self">{{ viewtype|title }}</option>{% endif %}{% endfor %}
                 </optgroup>
-                <optgroup label="Filter to a subset in ...">
+                <optgroup label="Filter to subset...">
                     <option value="{{ table_type }}_subset">{{ table_type|title }}</option>
                 </optgroup>
             </select>   

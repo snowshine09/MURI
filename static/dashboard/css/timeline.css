@@ -20,7 +20,7 @@
 }
 
 .foreground.bar {
-  fill: steelblue;
+  fill: rgb(106, 86, 168);
 
 }
 
@@ -43,7 +43,7 @@
 }
 
 .brush rect.extent {
-  fill: steelblue;
+  fill: rgb(106, 86, 168);
   fill-opacity: .125;
 }
 
