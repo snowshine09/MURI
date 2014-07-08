@@ -23,7 +23,7 @@ reload(sys)
 sys.setdefaultencoding('utf8')  
 
 linkCount = 0
-viewtypes = ['event', 'person', 'organization', 'location', 'resource', 'timeline', 'map', 'network', 'message']
+viewtypes = ['event', 'message', 'person', 'organization', 'location', 'resource', 'timeline', 'map', 'network']
 def LinkNum(request):
     global linkCount
     linkCount +=1
@@ -51,13 +51,9 @@ def network_template(request):
     if new_link == 'true':
         linkCount += 1
     global viewtypes
-    selfType = request.REQUEST.get('selfType', None)
     parentID = request.REQUEST.get('parentID',None)
-    MyAltViews = viewtypes[:]
-    if selfType in MyAltViews:
-        MyAltViews.remove(selfType)
     response = {}
-    response['html'] = render_to_string("dashboard/network.html", {'vistypes': MyAltViews, 'id': str(linkCount), 'parent_id': parentID})
+    response['html'] = render_to_string("dashboard/network.html", {'viewtypes': viewtypes, 'id': str(linkCount), 'parent_id': parentID})
     response['linkNo'] = linkCount
     return HttpResponse(json.dumps(response), mimetype='application/json')
 
@@ -67,13 +63,9 @@ def timeline_template(request):
     if new_link == 'true':
         linkCount += 1
     global viewtypes
-    selfType = request.REQUEST.get('selfType', None)
     parentID = request.REQUEST.get('parentID',None)
-    MyAltViews = viewtypes[:]
-    if selfType in MyAltViews:
-        MyAltViews.remove(selfType)
     response = {}
-    response['html'] = render_to_string("dashboard/timeline.html", {'vistypes': MyAltViews, 'id': str(linkCount), 'parent_id': parentID})
+    response['html'] = render_to_string("dashboard/timeline.html", {'viewtypes': viewtypes, 'id': str(linkCount), 'parent_id': parentID})
     response['linkNo'] = linkCount
     return HttpResponse(json.dumps(response), mimetype='application/json')
 
@@ -83,13 +75,9 @@ def map_template(request):
     if new_link == 'true':
         linkCount += 1
     global viewtypes
-    selfType = request.REQUEST.get('selfType', None)
     parentID = request.REQUEST.get('parentID',None)
-    MyAltViews = viewtypes[:]
-    if selfType in MyAltViews:
-        MyAltViews.remove(selfType)
     response = {}
-    response['html'] = render_to_string("dashboard/map.html", {'vistypes': MyAltViews, 'id': str(linkCount), 'parent_id': parentID})
+    response['html'] = render_to_string("dashboard/map.html", {'viewtypes': viewtypes, 'id': str(linkCount), 'parent_id': parentID})
     response['linkNo'] = linkCount
     return HttpResponse(json.dumps(response), mimetype='application/json')
 

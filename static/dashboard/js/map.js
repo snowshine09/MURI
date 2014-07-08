@@ -4,10 +4,7 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 		self.Name = self.element.attr("id");
 		self.SID = self.Name.split("_")[2];
 		self.map = new OpenLayers.Map(self.Name);
-		self.map.addControl(new OpenLayers.Control.LayerSwitcher());
-		// self.map.addControl(new OpenLayers.Control.Navigation({
-		// 	zoomWheelEnabled: true,
-		// }));
+
 		var gphy = new OpenLayers.Layer.Google(
 			"Google Physical", {
 				type: google.maps.MapTypeId.TERRAIN
@@ -32,7 +29,7 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 		);
 		self.map.addLayers([gphy, gmap, ghyb, gsat]);
 
-		var pointlayer = new OpenLayers.Layer.Vector("Points", {
+		self.pointlayer = new OpenLayers.Layer.Vector("Points", {
 			styleMap: new OpenLayers.StyleMap({
 				'default': new OpenLayers.Style({
 					externalGraphic: 'static/dashboard/img/red_pin.png',
@@ -44,22 +41,22 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 				})
 			})
 		});
-		var linelayer = new OpenLayers.Layer.Vector("Lines", {
+		self.linelayer = new OpenLayers.Layer.Vector("Lines", {
 			styleMap: new OpenLayers.StyleMap({
 				'default': new OpenLayers.Style({
-					strokeWidth: 3,
+					strokeWidth: 2,
 					strokeColor: '#FF0000',
 					fillColor: '#FFDB73',
 					fillOpacity: 0.4
 
 				}),
 				'select': new OpenLayers.Style({
-					strokeWidth: 3,
-					strokeColor: '#0000FF'
+					strokeWidth: 5,
+					strokeColor: 'rgb(106, 86, 168)'
 				})
 			})
 		});
-		self.map.addLayers([pointlayer, linelayer]);
+		self.map.addLayers([self.pointlayer, self.linelayer]);
 
 		self.map.setCenter(new OpenLayers.LonLat(44.42200, 33.32500).transform(
 			new OpenLayers.Projection("EPSG:4326"),
@@ -67,31 +64,24 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 		), 12);
 
 		var controlPanel = new OpenLayers.Control.Panel();
-		var mapControls = {
-			select: new OpenLayers.Control.SelectFeature(
-				[linelayer, pointlayer], {
-					clickout: true,
-					toggle: true,
-					multiple: false,
-					hover: false,
-					toggleKey: "ctrlKey", // ctrl key removes from selection
-					multipleKey: "shiftKey", // shift key adds to selection
-					onSelect: self.filterByLocation,
-					onUnselect: self.filterByLocation,
-					box: true
-				}
-			),
-			navigate: new OpenLayers.Control.Navigation({'autoActivate': true})
+		self.map.addControl(new OpenLayers.Control.LayerSwitcher());
+		self.mapControls = {
+			select: new OpenLayers.Control.SelectFeature([self.linelayer, self.pointlayer], {
+				clickout: true,
+				toggle: true,
+				multiple: false,
+				hover: false,
+				onSelect: self.filterByLocation,
+				onUnselect: self.filterByLocation,
+				box: true
+			}),
+			navigate: new OpenLayers.Control.Navigation()
 		};
-		for (var key in mapControls) {
-			self.map.addControl(mapControls[key]);
-			controlPanel.addControls([mapControls[key]]);
+		for (var key in self.mapControls) {
+			self.map.addControl(self.mapControls[key]);
+			controlPanel.addControls([self.mapControls[key]]);
 		}
 		self.map.addControl(controlPanel);
-
-		self.linelayer = linelayer;
-		self.pointlayer = pointlayer;
-		self.mapControls = mapControls;
 
 		var cmb = "map_selectbar_" + self.SID;
 
@@ -104,22 +94,20 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 	},
 	update: function(uType) {
 		var self = this;
-		var linelayer = self.linelayer;
-		var pointlayer = self.pointlayer;
-		var selectLineFeatureControl = new OpenLayers.Control.SelectFeature(linelayer);
-		self.map.addControl(selectLineFeatureControl);
-		selectLineFeatureControl.activate();
-		selectLineFeatureControl.unselectAll();
-		var selectPointFeatureControl = new OpenLayers.Control.SelectFeature(pointlayer);
-		self.map.addControl(selectPointFeatureControl);
-		selectPointFeatureControl.activate();
-		selectPointFeatureControl.unselectAll();
-		var points = [],
-			lines = [];
 		switch (uType) {
 			case "init":
-				linelayer.removeAllFeatures();
-				pointlayer.removeAllFeatures();
+				var points = [],
+					lines = [];
+				self.selectLineFeatureControl = new OpenLayers.Control.SelectFeature(self.linelayer);
+				self.map.addControl(self.selectLineFeatureControl);
+				self.selectLineFeatureControl.activate();
+				self.selectLineFeatureControl.unselectAll();
+				self.selectPointFeatureControl = new OpenLayers.Control.SelectFeature(self.pointlayer);
+				self.map.addControl(self.selectPointFeatureControl);
+				self.selectPointFeatureControl.activate();
+				self.selectPointFeatureControl.unselectAll();
+				self.linelayer.removeAllFeatures();
+				self.pointlayer.removeAllFeatures();
 				var wktParser = new OpenLayers.Format.WKT();
 				for (var i = 0; i < dataset[self.SID]['location'].length; i++) {
 					var location = dataset[self.SID]['location'][i];
@@ -138,37 +126,21 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 						}
 					}
 				}
-				linelayer.addFeatures(lines);
-				pointlayer.addFeatures(points);
-				for (var i = 0; i < linelayer.features.length; i++) {
-					if ($.inArray(linelayer.features[i].attributes.id, hshape[self.SID]) != -1) {
-						selectLineFeatureControl.select(linelayer.features[i]);
-					}
-				}
-
-				for (var i = 0; i < pointlayer.features.length; i++) {
-					if ($.inArray(pointlayer.features[i].attributes.id, hshape[self.SID]) != -1) {
-						selectPointFeatureControl.select(pointlayer.features[i]);
-					}
-				}
-				linelayer.redraw();
-				pointlayer.redraw();
-
-				break;
+				self.linelayer.addFeatures(lines);
+				self.pointlayer.addFeatures(points);
 			case "brush":
-				for (var i = 0; i < linelayer.features.length; i++) {
-					if ($.inArray(linelayer.features[i].attributes.id, hshape[self.SID]) != -1) {
-						selectLineFeatureControl.select(linelayer.features[i]);
+				for (var i = 0; i < self.linelayer.features.length; i++) {
+					if ($.inArray(self.linelayer.features[i].attributes.id, dindex[self.SID]) != -1) {
+						self.selectLineFeatureControl.select(self.linelayer.features[i]);
 					}
 				}
-
-				for (var i = 0; i < pointlayer.features.length; i++) {
-					if ($.inArray(pointlayer.features[i].attributes.id, hshape[self.SID]) != -1) {
-						selectPointFeatureControl.select(pointlayer.features[i]);
+				for (var i = 0; i < self.pointlayer.features.length; i++) {
+					if ($.inArray(self.pointlayer.features[i].attributes.id, dindex[self.SID]) != -1) {
+						self.selectPointFeatureControl.select(self.pointlayer.features[i]);
 					}
 				}
-				linelayer.redraw();
-				pointlayer.redraw();
+				self.linelayer.redraw();
+				self.pointlayer.redraw();
 				break;
 		}
 	},
@@ -221,20 +193,19 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 	filterByLocation: function(feature) {
 		var self = $(this.div).parents('.ui-dialog-content').vismap().data("vismap");
 		var selectedFeas = []; // selected feature ids
-		hshape[self.SID] = [];
 		// get the id of all selected features
-		this.layers.forEach(function(layer) {
-			for (var i = 0, len = layer.selectedFeatures.length; i < len; i++) {
-				selectedFeas.push(layer.selectedFeatures[i].attributes.id);
+		if (this.layers != null) {
+			this.layers.forEach(function(layer) {
+				for (var i = 0, len = layer.selectedFeatures.length; i < len; i++) {
+					selectedFeas.push(layer.selectedFeatures[i].attributes.id);
+				}
+			});
+		} else {
+			for (var i = 0, len = this.layer.selectedFeatures.length; i < len; i++) {
+				selectedFeas.push(this.layer.selectedFeatures[i].attributes.id);
 			}
-		});
-
-		if (selectedFeas.length != 0) {
-			// filter event data by above feature ids
-			var count = 0;
-            hshape[self.SID] = selectedFeas;
 		}
-		renderAllExcept(self.Name, "brush");
+        propagate('map', self.SID, selectedFeas);
 	},
 	destroy: function() {
 		this.map.destroy();

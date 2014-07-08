@@ -38,7 +38,7 @@ CKEDITOR.plugins.add('embedvis', {
                             //     newvis[SID].timeextent = timeextent[SID][0] + ',' + timeextent[SID][1];
                             // }
                         }
-                        newvis[SID].types_info[vType] = $(allvisdlg[0][i]).parent().position()['left'] + ',' + $(allvisdlg[0][i]).parent().position()['top'];
+                        newvis[SID].types_info[vType] = $(allvisdlg[0][i]).parent().offset();
                     }
                 }
                 newvis.SIDs = IDs;

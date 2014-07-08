@@ -2,13 +2,11 @@
     <form class="form-inline" role="form">
         <div id="timeline_selectbar_{{id}}" class="selectbar form-group">
             <select class="selectpicker form-control" label="Other views...">
-                <option value="">Generate the next linked window...</option>
-                <optgroup label="other visualizations...">
-                    {% for vistype in vistypes %}
-                    <option value="{{ vistype }}_self">{{ vistype }}</option>
-                    {% endfor %}
+                <option value="">Open in linked window...</option>
+                <optgroup label="Linked window...">
+                    {% for viewtype in viewtypes %}{% if 'timeline' != viewtype %}<option value="{{ viewtype }}_self">{{ viewtype|title }}</option>{% endif %}{% endfor %}
                 </optgroup>
-                <optgroup label="Filter to a subset in ...">
+                <optgroup label="Filter to subset...">
                     <option value="event_subset">Timeline</option>
                 </optgroup>
             </select>   

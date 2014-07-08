@@ -1,27 +1,20 @@
 <div id="map_dlg_{{id}}" class='visdlg'>
-    <form class="form-inline" role="form">
-    	<div id="map_selectbar_{{ id }}" class="selectbar form-group">
-            <select class="selectpicker form-control" label="Other views...">
-                <option value="">Generate the next linked window...</option>
-                <optgroup label = "other visualizations...">
-                    {% for vistype in vistypes %}
-                    <option value = "{{ vistype }}_self">{{ vistype }}</option>
-                    {% endfor %}
-                </optgroup>
-                <optgroup label = "Filter to a subset in ...">
-                    <option value="map_subset">Map</option>
-                </optgroup>
-            </select>   
-        </div>
-        {% if parent_id %}
-        <div class="showcontext form-group">
-             <button href="#" class="btn btn-sm btn-default" onclick="showcontext();return false;">Show Context</button>
-        </div>
-        {% endif %}
-    </form>
-	<div id="map_cvs_{{id}}" class="map cvs"></div>
-    <div id="footprint_popup" class="hidden">
-        <label class="header">ID: </label><span style="width:15px"></span><label id="footprint_id"></label><br>
-        <label class="header">Name: </label><span style="width:15px"></span><label id="footprint_name"></label><br>
+    <div>
+        <form class="form-inline" role="form">
+        	<div id="map_selectbar_{{ id }}" class="selectbar form-group">
+                <select class="selectpicker form-control" label="Other views...">
+                    <option value="">Open in linked window...</option>
+                    <optgroup label = "Linked window...">
+                        {% for viewtype in viewtypes %}{% if 'map' != viewtype %}<option value="{{ viewtype }}_self">{{ viewtype|title }}</option>{% endif %}{% endfor %}
+                    </optgroup>
+                </select>   
+            </div>
+            {% if parent_id %}
+            <div class="showcontext form-group">
+                 <button href="#" class="btn btn-sm btn-default" onclick="showcontext();return false;">Show Context</button>
+            </div>
+            {% endif %}
+        </form>
     </div>
+	<div id="map_cvs_{{id}}" class="map cvs"></div>
 </div>
