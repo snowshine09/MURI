@@ -99,15 +99,15 @@ function generateOthers(div, vis) { //div is source, vis is target
 					break;
 				case 'network':
 					createNetwork(null, {
-						'filter_type': 'network',
+						'filter_type': 'event',
 						'id': dindex[self.SID]
 					});
 					break;
 				case 'timeline':
 					createTimeline(null, {
 						'filter_type': 'timeline',
-						'start': timeextent[self.SID][0],
-						'end': timeextent[self.SID][1]
+						'start': htimeline[self.SID][0],
+						'end': htimeline[self.SID][htimeline[self.SID].length - 1]
 					});
 			}
 			break;

@@ -108,8 +108,12 @@ SIIL.DataTable.prototype.update = function(uType) {
 		if (e.shiftKey) {
 			$(this).toggleClass('row_selected');
 		} else {
-			self.table.$('tr.row_selected').removeClass('row_selected');
-			$(this).addClass('row_selected');
+			if (self.table.$('tr.row_selected').length == 1 && $(this).hasClass('row_selected')) {
+				$(this).removeClass('row_selected');
+			} else {
+				self.table.$('tr.row_selected').removeClass('row_selected');
+				$(this).addClass('row_selected');
+			}
 		}
 		$("#" + self.tbName).parents('.ui-dialog-content').find('.selected-count').text(self.table.$('tr.row_selected').length);
 		propagate(self.tbType, self.SID, self.table.cells('.row_selected', 'ID:name').data().toArray());

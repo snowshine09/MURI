@@ -34,19 +34,20 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 			.each(function(method) {
 				d3.select(this).call(method);
 			});
-
+        timeextent[self.SID] = [self.start, self.end];
 	},
 	update: function() {
 		var self = this;
+        var g = d3.select("#" + this.Name).select("g");
 		if (htimeline[self.SID].length > 0) {
-			var g = d3.select("#" + this.Name).select("g");
+			
 			var x = d3.time.scale()
 				.domain([new Date(self.start), new Date(self.end)])
 				.rangeRound([0, 10 * 90]);
 			self.brush.clear();
 			g.select(".brush").call(self.brush);
 			g.select("#clip-0-" + self.SID + " rect")
-				.attr("width", 0);
+                .attr("width", 0);
 			g.select("#clip-1-" + self.SID).selectAll("rect").remove();
 			for (var i = 0; i < htimeline[self.SID].length; i++) {
 				g.select("#clip-1-" + self.SID)
@@ -55,7 +56,11 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 					.attr("width", 9)
 					.attr("height", 100);
 			}
-		}
+		} else {
+            g.select("#clip-0-" + self.SID + " rect")
+                .attr("width", 0);
+            g.select("#clip-1-" + self.SID).selectAll("rect").remove();
+        }
 	},
 	barChart: function() {
 
@@ -167,26 +172,29 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 
 		self.brush.on("brushend.chart", function() {
 			htimeline[self.SID] = [];
+            for (var i = 0; i < dataset[self.SID]['timeline'].length; i++) {
+                var date = dataset[self.SID]['timeline'][i][0];
+                if (+date >= +self.brush.extent()[0] && +date <= +self.brush.extent()[1]) {
+                    htimeline[self.SID].push(date);
+                }
+            }
 			dindex[self.SID] = [];
 			msgID[self.SID] = [];
 			if (self.brush.empty()) {
 				var div = d3.select(this.parentNode.parentNode.parentNode);
-				div.select(".title a").style("display", "none");
-				div.select("#clip-0-" + self.SID + " rect").attr("x", null).attr("width", "100%");
-				timeextent[self.SID] = [];
+                renderAllExcept('timeline', self.SID, 'brush');
 			} else {
-				timeextent[self.SID] = self.brush.extent();
 				$.ajax({
 					url: 'filter_data_by_time/',
 					type: 'post',
 					data: {
-						start: timeextent[self.SID][0],
-						end: timeextent[self.SID][1]
+						start: self.brush.extent()[0],
+						end: self.brush.extent()[1]
 					},
 					success: function(xhr) {
 						dindex[self.SID] = xhr.entities;
 						msgID[self.SID] = xhr.messages;
-						renderAllExcept('timeline', self.SID, "brush");
+						renderAllExcept('timeline', self.SID, 'brush');
 					}
 				})
 			}

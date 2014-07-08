@@ -346,6 +346,7 @@ function createTimeline(link_no, filter_params) {
 					DlgTcolor[link_no] = randomcolor();
 					dataset[link_no]['filter'] = filter_params;
 					$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", DlgTcolor[link_no]);
+                    timelineset[link_no].update();
 				});
 			} else { // starting window in existing link
 				getData('timeline', dataset[link_no]['filter'], link_no, function() {
