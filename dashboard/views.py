@@ -17,6 +17,7 @@ from dateutil import parser
 from datetime import timedelta
 import pytz
 import sys  
+import ast
 from django.template.loader import render_to_string
 reload(sys)  
 sys.setdefaultencoding('utf8')  
@@ -333,13 +334,14 @@ def visRetrieve(request):
     vid = request.REQUEST.get('visID')
     # print vid
     visrec = Vis.objects.get(id = vid)
-    visJSON = json.loads(visrec.visJSON)
-    # print visJSON
+    visJSON = ast.literal_eval(visrec.visJSON)
+
+    print 'visJSON',visJSON
     print 'SIDs', type(visJSON)
     for SID in visJSON['SIDs']:
         linkCount = linkCount + 1
         visJSON[SID]['linkNo'] = linkCount
-    response["date_updated"] = visrec.date_updated
+    response["date_updated"] = visrec.date_updated.strftime('%m/%d/%Y')
     # response["dsource"]=visrec.dsource
     # response["type"] = visrec.type 
     # response["dindex"] = visrec.dindex 

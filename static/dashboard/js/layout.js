@@ -227,6 +227,7 @@ function getData(table_type, filter_params, link_no, callback) {
 	$.ajax({
 		url: 'filter_data/',
 		type: 'post',
+        async: false,
 		data: $.extend({
 			'type': table_type,
 		}, filter_params),
@@ -277,6 +278,7 @@ function createMap(link_no, filter_params) {
 	$.ajax({
 		url: "map_template/",
 		type: "post",
+        async: false,
 		data: {
 			selfType: "map",
 			new_link: 'new_link',

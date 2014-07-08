@@ -177,51 +177,86 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
                             'visID': visID
                         },
                         success: function(xhr) {
-                            var dSrc = $(xhr.dsource);
-                            xhr.dindex = xhr.dindex.split(',');
-                            xhr.msgID = xhr.msgID.split(',');
-                            xhr.htimeline = xhr.htimeline.split(',');
                             for (i = 0; i < xhr.visJSON.SIDs.length; i++) {
                                 var thisSID = xhr.visJSON.SIDs[i],
-                                    thistypes = xhr.visJSON[thisSID].type_info.keys();
+                                    thistypes = Object.keys(xhr.visJSON[thisSID].types_info);
                                 DlgTcolor[xhr.visJSON[thisSID].linkNo] = xhr.visJSON[thisSID].color;
-                                for (j = 0; j < thistypes.length; j++) {
-                                    switch (thistypes[j]) {
-                                        case 'map':
-                                            break;
-                                        case 'message':
-                                            createDialog('message', xhr.visJSON[thisSID].linkNo, {
-                                                'filter_type': 'message',
-                                                'id': xhr.visJSON[thisSID].msgID,
-                                            });
-                                            break;
-                                        case 'event':
-                                            createDialog('event', xhr.visJSON[thisSID].linkNo, {
-                                                'filter_type': 'event',
-                                                'id': xhr.visJSON[thisSID].dindex
-                                            });
-                                            break;
-                                        case 'person':
-                                        case 'organization':
-                                        case 'location':
-                                        case 'resource':
-                                            createDialog(self.Type, xhr.visJSON[thisSID].linkNo, {
-                                                'filter_type': 'event',
-                                                'id': xhr.visJSON[thisSID].dindex
-                                            });
-                                            break;
-                                        case 'network':
-                                            createNetwork(xhr.visJSON[thisSID].linkNo, {
-                                                'filter_type': 'network',
-                                                'id': xhr.visJSON[thisSID].dindex
-                                            });
-                                            break;
-                                        case 'timeline':
-                                            createTimeline(xhr.visJSON[thisSID].linkNo, {
-                                                'filter_type': 'timeline',
-                                                'start': xhr.visJSON[thisSID].timeextent.split(',')[0],
-                                                'end': xhr.visJSON[thisSID].timeextent.split(',')[1]
-                                            });
+                                for (j = 0; j < thistypes.length; j++) { //var type in xhr.visJSON[thisSID].type_infos
+                                    if (j == 0) {
+                                        switch (thistypes[j]) {
+                                            case 'map':
+                                                break;
+                                            case 'message':
+                                                    xhr.visJSON[thisSID].linkNo = createDialog('message', null, {
+                                                        'filter_type': 'event',
+                                                        'id': xhr.visJSON[thisSID].dsource,
+                                                    });
+                                                break;
+                                            case 'event':
+                                                xhr.visJSON[thisSID].linkNo = createDialog('event', null, {
+                                                    'filter_type': 'event',
+                                                    'id': xhr.visJSON[thisSID].dsource
+                                                });
+                                                break;
+                                            case 'person':
+                                            case 'organization':
+                                            case 'location':
+                                            case 'resource':
+                                                xhr.visJSON[thisSID].linkNo = createDialog(thistypes[j], null, {
+                                                    'filter_type': 'event',
+                                                    'id': xhr.visJSON[thisSID].dsource
+                                                });
+                                                break;
+                                            case 'network':
+                                                xhr.visJSON[thisSID].linkNo = createNetwork(null, {
+                                                    'filter_type': 'network',
+                                                    'id': xhr.visJSON[thisSID].dsource
+                                                });
+                                                break;
+                                            case 'timeline':
+                                                xhr.visJSON[thisSID].linkNo = createTimeline(null, {
+                                                    'filter_type': 'timeline',
+                                                    'start': xhr.visJSON[thisSID].timeextent[0],
+                                                    'end': xhr.visJSON[thisSID].timeextent[1]
+                                                });
+                                        }
+                                    } else {
+                                        switch (thistypes[j]) {
+                                            case 'map':
+                                                break;
+                                            case 'message':
+                                                    createDialog('message', xhr.visJSON[thisSID].linkNo, {
+                                                        'filter_type': 'event',
+                                                        'id': xhr.visJSON[thisSID].dsource,
+                                                    });
+                                                break;
+                                            case 'event':
+                                                createDialog('event', xhr.visJSON[thisSID].linkNo, {
+                                                    'filter_type': 'event',
+                                                    'id': xhr.visJSON[thisSID].dsource
+                                                });
+                                                break;
+                                            case 'person':
+                                            case 'organization':
+                                            case 'location':
+                                            case 'resource':
+                                                createDialog(thistypes[j], xhr.visJSON[thisSID].linkNo, {
+                                                    'filter_type': 'event',
+                                                    'id': xhr.visJSON[thisSID].dsource
+                                                });
+                                                break;
+                                            case 'network':
+                                                createNetwork(xhr.visJSON[thisSID].linkNo, {
+                                                    'filter_type': 'network',
+                                                    'id': xhr.visJSON[thisSID].dsource
+                                                });
+                                                break;
+                                            case 'timeline':
+                                                createTimeline(xhr.visJSON[thisSID].linkNo, {
+                                                    'filter_type': 'event',
+                                                    'id': xhr.visJSON[thisSID].dsource
+                                                });
+                                        }
                                     }
                                 }
 
