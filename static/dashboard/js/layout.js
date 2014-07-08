@@ -299,13 +299,11 @@ function createMap(link_no, filter_params) {
 					map[link_no] = $(xhr.html).find(".cvs").vismap().data("vismap");
 					DlgTcolor[xhr.linkNo] = randomcolor();
 					$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", DlgTcolor[link_no]);
-					map[xhr.linkNo].update("init");
 				});
 			} else { // starting window in existing link
 				getData('location', dataset[link_no]['filter'], link_no, function() {
 					map[link_no] = $(xhr.html).find(".cvs").vismap().data("vismap");
 					$('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", DlgTcolor[link_no]);
-					map[xhr.linkNo].update("init");
 				});
 			}
 		}

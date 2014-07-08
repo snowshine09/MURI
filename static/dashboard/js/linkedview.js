@@ -48,9 +48,6 @@ function generateOthers(div, vis) { //div is source, vis is target
 					createNetwork(self.SID, null);
 					break;
 				case "message":
-					createDialog('message', self.SID, null);
-					msgID[self.SID] = [];
-					break;
 				case "event":
 				case "person":
 				case "organization":
@@ -66,7 +63,7 @@ function generateOthers(div, vis) { //div is source, vis is target
 			if (self.Type == 'message' && msgID[self.SID].length == 0) {
 				alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
 				break;
-			} else if (self.Type == 'timeline' && timeextent[self.SID].length == 0) {
+			} else if (self.Type == 'timeline' && htimeline[self.SID].length == 0) {
 				alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
 				break;
 			} else if (dindex[self.SID].length == 0) {
@@ -125,7 +122,7 @@ function renderAllExcept(self_name, SID, type) {
 	for (var i = 0; i < toDraw.length; i++) {
 		switch (toDraw[i]) {
 			case "map":
-				if (map[SID]) map[SID].update(type);
+				if (map[SID]) map[SID].update();
 				break;
 			case "timeline":
 				if (timelineset[SID]) timelineset[SID].update();
