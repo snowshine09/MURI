@@ -179,8 +179,16 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
                         success: function(xhr) {
                             for (i = 0; i < xhr.visJSON.SIDs.length; i++) {
                                 var thisSID = xhr.visJSON.SIDs[i],
-                                    thistypes = Object.keys(xhr.visJSON[thisSID].types_info);
-                                
+                                    thistypes = Object.keys(xhr.visJSON[thisSID].types_info),
+                                    thishtimeline = [],
+                                    thistimeextent = [];
+                                for (k = 0; k < xhr.visJSON[thisSID].htimeline.length; k++) {
+                                    thishtimeline.push(new Date(xhr.visJSON[thisSID].htimeline[k]));
+                                }
+                                for (k = 0; k < xhr.visJSON[thisSID].timeextent.length; k++) {
+                                    thistimeextent.push(new Date(xhr.visJSON[thisSID].timeextent[k]));
+                                }
+
                                 for (j = 0; j < thistypes.length; j++) { //var type in xhr.visJSON[thisSID].type_infos
                                     if (j == 0) {
                                         switch (thistypes[j]) {
@@ -192,12 +200,12 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
                                                     'id': xhr.visJSON[thisSID].dsource,
                                                     'msgID': xhr.visJSON[thisSID].msgID,
                                                     'dindex': xhr.visJSON[thisSID].dindex,
-                                                    'htimeline': xhr.visJSON[thisSID].htimeline,
-                                                    'timeextent': xhr.visJSON[thisSID].timeextent
+                                                    'htimeline': thishtimeline,
+                                                    'timeextent': thistimeextent
                                                 });
                                                 DlgTcolor[xhr.visJSON[thisSID].linkNo] = xhr.visJSON[thisSID].color;
-                                                $("#message_dlg_"+xhr.visJSON[thisSID].linkNo).siblings('.ui-dialog-titlebar').css("background", DlgTcolor[xhr.visJSON[thisSID].linkNo]);
-                                                $("#"+thistypes[j]+"_dlg_"+xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
+                                                $("#message_dlg_" + xhr.visJSON[thisSID].linkNo).siblings('.ui-dialog-titlebar').css("background", DlgTcolor[xhr.visJSON[thisSID].linkNo]);
+                                                $("#" + thistypes[j] + "_dlg_" + xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
                                                 break;
                                             case 'event':
                                                 xhr.visJSON[thisSID].linkNo = createDialog('event', null, {
@@ -205,12 +213,12 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
                                                     'id': xhr.visJSON[thisSID].dsource,
                                                     'msgID': xhr.visJSON[thisSID].msgID,
                                                     'dindex': xhr.visJSON[thisSID].dindex,
-                                                    'htimeline': xhr.visJSON[thisSID].htimeline,
-                                                    'timeextent': xhr.visJSON[thisSID].timeextent
+                                                    'htimeline': thishtimeline,
+                                                    'timeextent': thistimeextent
                                                 });
                                                 DlgTcolor[xhr.visJSON[thisSID].linkNo] = xhr.visJSON[thisSID].color;
-                                                $("#event_dlg_"+xhr.visJSON[thisSID].linkNo).siblings('.ui-dialog-titlebar').css("background", DlgTcolor[xhr.visJSON[thisSID].linkNo]);
-                                                $("#"+thistypes[j]+"_dlg_"+xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
+                                                $("#event_dlg_" + xhr.visJSON[thisSID].linkNo).siblings('.ui-dialog-titlebar').css("background", DlgTcolor[xhr.visJSON[thisSID].linkNo]);
+                                                $("#" + thistypes[j] + "_dlg_" + xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
                                                 break;
                                             case 'person':
                                             case 'organization':
@@ -221,12 +229,12 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
                                                     'id': xhr.visJSON[thisSID].dsource,
                                                     'msgID': xhr.visJSON[thisSID].msgID,
                                                     'dindex': xhr.visJSON[thisSID].dindex,
-                                                    'htimeline': xhr.visJSON[thisSID].htimeline,
-                                                    'timeextent': xhr.visJSON[thisSID].timeextent
+                                                    'htimeline': thishtimeline,
+                                                    'timeextent': thistimeextent
                                                 });
                                                 DlgTcolor[xhr.visJSON[thisSID].linkNo] = xhr.visJSON[thisSID].color;
-                                                $("#"+thistypes[j]+"_dlg_"+xhr.visJSON[thisSID].linkNo).siblings('.ui-dialog-titlebar').css("background", DlgTcolor[xhr.visJSON[thisSID].linkNo]);
-                                                $("#"+thistypes[j]+"_dlg_"+xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
+                                                $("#" + thistypes[j] + "_dlg_" + xhr.visJSON[thisSID].linkNo).siblings('.ui-dialog-titlebar').css("background", DlgTcolor[xhr.visJSON[thisSID].linkNo]);
+                                                $("#" + thistypes[j] + "_dlg_" + xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
                                                 break;
                                             case 'network':
                                                 xhr.visJSON[thisSID].linkNo = createNetwork(null, {
@@ -234,12 +242,12 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
                                                     'id': xhr.visJSON[thisSID].dsource,
                                                     'msgID': xhr.visJSON[thisSID].msgID,
                                                     'dindex': xhr.visJSON[thisSID].dindex,
-                                                    'htimeline': xhr.visJSON[thisSID].htimeline,
-                                                    'timeextent': xhr.visJSON[thisSID].timeextent
+                                                    'htimeline': thishtimeline,
+                                                    'timeextent': thistimeextent
                                                 });
                                                 DlgTcolor[xhr.visJSON[thisSID].linkNo] = xhr.visJSON[thisSID].color;
-                                                $("#network_dlg_"+xhr.visJSON[thisSID].linkNo).siblings('.ui-dialog-titlebar').css("background", DlgTcolor[xhr.visJSON[thisSID].linkNo]);
-                                                $("#network_dlg_"+xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
+                                                $("#network_dlg_" + xhr.visJSON[thisSID].linkNo).siblings('.ui-dialog-titlebar').css("background", DlgTcolor[xhr.visJSON[thisSID].linkNo]);
+                                                $("#network_dlg_" + xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
                                                 break;
                                             case 'timeline':
                                                 xhr.visJSON[thisSID].linkNo = createTimeline(null, {
@@ -247,12 +255,12 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
                                                     'id': xhr.visJSON[thisSID].dsource,
                                                     'msgID': xhr.visJSON[thisSID].msgID,
                                                     'dindex': xhr.visJSON[thisSID].dindex,
-                                                    'htimeline': xhr.visJSON[thisSID].htimeline,
-                                                    'timeextent': xhr.visJSON[thisSID].timeextent
+                                                    'htimeline': thishtimeline,
+                                                    'timeextent': thistimeextent
                                                 });
                                                 DlgTcolor[xhr.visJSON[thisSID].linkNo] = xhr.visJSON[thisSID].color;
-                                                $("#"+thistypes[j]+"_dlg_"+xhr.visJSON[thisSID].linkNo).siblings('.ui-dialog-titlebar').css("background", DlgTcolor[xhr.visJSON[thisSID].linkNo]);
-                                                $("#"+thistypes[j]+"_dlg_"+xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
+                                                $("#" + thistypes[j] + "_dlg_" + xhr.visJSON[thisSID].linkNo).siblings('.ui-dialog-titlebar').css("background", DlgTcolor[xhr.visJSON[thisSID].linkNo]);
+                                                $("#" + thistypes[j] + "_dlg_" + xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
                                         }
                                     } else {
                                         switch (thistypes[j]) {
@@ -263,7 +271,7 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
                                                     'filter_type': 'event',
                                                     'id': xhr.visJSON[thisSID].dsource
                                                 });
-                                                $("#"+thistypes[j]+"_dlg_"+xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
+                                                $("#" + thistypes[j] + "_dlg_" + xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
                                                 break;
                                             case 'event':
                                                 createDialog('event', xhr.visJSON[thisSID].linkNo, {
@@ -279,21 +287,21 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
                                                     'filter_type': 'event',
                                                     'id': xhr.visJSON[thisSID].dsource
                                                 });
-                                                $("#"+thistypes[j]+"_dlg_"+xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
+                                                $("#" + thistypes[j] + "_dlg_" + xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
                                                 break;
                                             case 'network':
                                                 createNetwork(xhr.visJSON[thisSID].linkNo, {
                                                     'filter_type': 'network',
                                                     'id': xhr.visJSON[thisSID].dsource
                                                 });
-                                                $("#"+thistypes[j]+"_dlg_"+xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
+                                                $("#" + thistypes[j] + "_dlg_" + xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
                                                 break;
                                             case 'timeline':
                                                 createTimeline(xhr.visJSON[thisSID].linkNo, {
                                                     'filter_type': 'event',
                                                     'id': xhr.visJSON[thisSID].dsource
                                                 });
-                                                $("#"+thistypes[j]+"_dlg_"+xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
+                                                $("#" + thistypes[j] + "_dlg_" + xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
                                         }
                                     }
                                 }

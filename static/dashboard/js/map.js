@@ -3,8 +3,25 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 		var self = this;
 		self.Name = self.element.attr("id");
 		self.SID = self.Name.split("_")[2];
+		if (map[self.SID]) {
+			return;
+		}
 		self.map = new OpenLayers.Map(self.Name);
+        self.map.container = self;
+		var cmb = "map_selectbar_" + self.SID;
+		$("#" + cmb).attr("selectedIndex", 0).change(function() {
+			var x = $("#" + cmb + " option:selected").val();
+			generateOthers(self.Name, x);
+			$("#" + cmb + " option:selected").removeAttr('selected');
+			$("#" + cmb).attr("selectedIndex", 0);
+		});
 
+		self.loadLayers();
+		self.loadFeatures();
+		self.loadControls();
+	},
+	loadLayers: function() {
+		var self = this;
 		var gphy = new OpenLayers.Layer.Google(
 			"Google Physical", {
 				type: google.maps.MapTypeId.TERRAIN
@@ -56,94 +73,122 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 				})
 			})
 		});
-		self.map.addLayers([self.pointlayer, self.linelayer]);
+		self.newFeatureLayer = new OpenLayers.Layer.Vector('New feature', {
+			styleMap: new OpenLayers.StyleMap({
+				'default': new OpenLayers.Style({
+					strokeColor: "#EE4F44",
+					strokeOpacity: 1,
+					strokeWidth: 2,
+					fillColor: "#EE4F44",
+					fillOpacity: 0
+				}),
+			})
+		});
+		self.map.addLayers([self.pointlayer, self.linelayer, self.newFeatureLayer]);
 
 		self.map.setCenter(new OpenLayers.LonLat(44.42200, 33.32500).transform(
 			new OpenLayers.Projection("EPSG:4326"),
 			self.map.getProjectionObject()
 		), 12);
-
+	},
+	loadFeatures: function() {
+		var self = this;
+		var points = [],
+			lines = [];
+		self.linelayer.removeAllFeatures();
+		self.pointlayer.removeAllFeatures();
+		var wktParser = new OpenLayers.Format.WKT();
+		for (var i = 0; i < dataset[self.SID]['location'].length; i++) {
+			var location = dataset[self.SID]['location'][i];
+			if (location['shape'] !== undefined) {
+				var feature = wktParser.read(location['shape']);
+				var origin_prj = new OpenLayers.Projection("EPSG:" + location['srid']);
+				var dest_prj = new OpenLayers.Projection("EPSG:900913");
+				feature.geometry.transform(origin_prj, dest_prj); // projection of google map
+				feature.attributes.id = location['uid'];
+				feature.attributes.name = location['name'];
+				location['shape'] = feature;
+				if (feature instanceof OpenLayers.Geometry.Point) {
+					points.push(location['shape']);
+				} else {
+					lines.push(location['shape']);
+				}
+			}
+		}
+		self.linelayer.addFeatures(lines);
+		self.pointlayer.addFeatures(points);
+	},
+	loadControls: function() {
+		var self = this;
 		var controlPanel = new OpenLayers.Control.Panel();
 		self.map.addControl(new OpenLayers.Control.LayerSwitcher());
 		self.mapControls = {
 			select: new OpenLayers.Control.SelectFeature([self.linelayer, self.pointlayer], {
 				clickout: true,
-				toggle: true,
 				multiple: false,
 				hover: false,
-				onSelect: self.filterByLocation,
-				onUnselect: self.filterByLocation,
-				box: true
+				box: true,
+                callbacks: {
+                    click: self.filterByLocation,
+                }
 			}),
-			navigate: new OpenLayers.Control.Navigation()
+			navigate: new OpenLayers.Control.Navigation(),
+			draw_polygon: new OpenLayers.Control.DrawFeature(self.newFeatureLayer, OpenLayers.Handler.Polygon, {
+				featureAdded: function(feature) {
+					feature.state = OpenLayers.State.INSERT;
+					self.onFeatureAdded(feature);
+				}
+			}),
+			draw_line: new OpenLayers.Control.DrawFeature(self.newFeatureLayer, OpenLayers.Handler.Path, {
+				featureAdded: function(feature) {
+					feature.state = OpenLayers.State.INSERT;
+					self.onFeatureAdded(feature);
+				}
+			})
 		};
 		for (var key in self.mapControls) {
 			self.map.addControl(self.mapControls[key]);
 			controlPanel.addControls([self.mapControls[key]]);
 		}
 		self.map.addControl(controlPanel);
-
-		var cmb = "map_selectbar_" + self.SID;
-
-		$("#" + cmb).attr("selectedIndex", 0).change(function() {
-			var x = $("#" + cmb + " option:selected").val();
-			generateOthers(self.Name, x);
-			$("#" + cmb + " option:selected").removeAttr('selected');
-			$("#" + cmb).attr("selectedIndex", 0);
-		});
+		// self.selectLineFeatureControl = new OpenLayers.Control.SelectFeature(self.linelayer);
+		// self.map.addControl(self.selectLineFeatureControl);
+		// self.selectLineFeatureControl.activate();
+		// self.selectPointFeatureControl = new OpenLayers.Control.SelectFeature(self.pointlayer);
+		// self.map.addControl(self.selectPointFeatureControl);
+		// self.selectPointFeatureControl.activate();
+        self.mapControls['select'].activate();
+        self.setMode('navigation');
 	},
-	update: function(uType) {
+
+	update: function() {
 		var self = this;
-		switch (uType) {
-			case "init":
-				var points = [],
-					lines = [];
-				self.selectLineFeatureControl = new OpenLayers.Control.SelectFeature(self.linelayer);
-				self.map.addControl(self.selectLineFeatureControl);
-				self.selectLineFeatureControl.activate();
-				self.selectLineFeatureControl.unselectAll();
-				self.selectPointFeatureControl = new OpenLayers.Control.SelectFeature(self.pointlayer);
-				self.map.addControl(self.selectPointFeatureControl);
-				self.selectPointFeatureControl.activate();
-				self.selectPointFeatureControl.unselectAll();
-				self.linelayer.removeAllFeatures();
-				self.pointlayer.removeAllFeatures();
-				var wktParser = new OpenLayers.Format.WKT();
-				for (var i = 0; i < dataset[self.SID]['location'].length; i++) {
-					var location = dataset[self.SID]['location'][i];
-					if (location['shape'] !== undefined) {
-						var feature = wktParser.read(location['shape']);
-						var origin_prj = new OpenLayers.Projection("EPSG:" + location['srid']);
-						var dest_prj = new OpenLayers.Projection("EPSG:900913");
-						feature.geometry.transform(origin_prj, dest_prj); // projection of google map
-						feature.attributes.id = location['uid'];
-						feature.attributes.name = location['name'];
-						location['shape'] = feature;
-						if (feature instanceof OpenLayers.Geometry.Point) {
-							points.push(location['shape']);
-						} else {
-							lines.push(location['shape']);
-						}
-					}
-				}
-				self.linelayer.addFeatures(lines);
-				self.pointlayer.addFeatures(points);
-			case "brush":
-				for (var i = 0; i < self.linelayer.features.length; i++) {
-					if ($.inArray(self.linelayer.features[i].attributes.id, dindex[self.SID]) != -1) {
-						self.selectLineFeatureControl.select(self.linelayer.features[i]);
-					}
-				}
-				for (var i = 0; i < self.pointlayer.features.length; i++) {
-					if ($.inArray(self.pointlayer.features[i].attributes.id, dindex[self.SID]) != -1) {
-						self.selectPointFeatureControl.select(self.pointlayer.features[i]);
-					}
-				}
-				self.linelayer.redraw();
-				self.pointlayer.redraw();
-				break;
+        self.mapControls['select'].unselectAll();
+		for (var i = 0; i < self.linelayer.features.length; i++) {
+			if ($.inArray(self.linelayer.features[i].attributes.id, dindex[self.SID]) != -1) {
+				self.mapControls['select'].select(self.linelayer.features[i]);
+			}
 		}
+		for (var i = 0; i < self.pointlayer.features.length; i++) {
+			if ($.inArray(self.pointlayer.features[i].attributes.id, dindex[self.SID]) != -1) {
+				self.mapControls['select'].select(self.pointlayer.features[i]);
+			}
+		}
+		self.linelayer.redraw();
+		self.pointlayer.redraw();
 	},
+
+    setMode: function(mode) {
+        var self = this;
+        switch (mode) {
+            case 'navigation':
+                break;
+            case 'draw_polygon':
+                break;
+            case 'draw_line':
+                break;
+        }
+    },
 	highlight: function(features_id) {
 		var self = this;
 		for (var i = 0; i < self.highlightedFeatures.length; i++) {
@@ -191,7 +236,15 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 	},
 
 	filterByLocation: function(feature) {
-		var self = $(this.div).parents('.ui-dialog-content').vismap().data("vismap");
+		var self = this.map.container;
+        
+        if ($.inArray(feature, feature.layer.selectedFeatures) >= 0) {
+            self.mapControls['select'].unselect(feature);
+        } else {
+            self.mapControls['select'].unselectAll();
+            self.mapControls['select'].select(feature);
+        }
+        
 		var selectedFeas = []; // selected feature ids
 		// get the id of all selected features
 		if (this.layers != null) {
@@ -205,10 +258,6 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 				selectedFeas.push(this.layer.selectedFeatures[i].attributes.id);
 			}
 		}
-        propagate('map', self.SID, selectedFeas);
-	},
-	destroy: function() {
-		this.map.destroy();
-		this._super("_destroy");
+		propagate('map', self.SID, selectedFeas);
 	},
 });

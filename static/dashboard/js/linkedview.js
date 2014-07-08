@@ -63,7 +63,7 @@ function generateOthers(div, vis) { //div is source, vis is target
 			if (self.Type == 'message' && msgID[self.SID].length == 0) {
 				alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
 				break;
-			} else if (self.Type == 'timeline' && timeextent[self.SID].length == 0) {
+			} else if (self.Type == 'timeline' && htimeline[self.SID].length == 0) {
 				alert("Nothing is selected for further subfiltering from " + div + "! (Select first please!)");
 				break;
 			} else if (dindex[self.SID].length == 0) {
@@ -96,15 +96,15 @@ function generateOthers(div, vis) { //div is source, vis is target
 					break;
 				case 'network':
 					createNetwork(null, {
-						'filter_type': 'network',
+						'filter_type': 'event',
 						'id': dindex[self.SID]
 					});
 					break;
 				case 'timeline':
 					createTimeline(null, {
 						'filter_type': 'timeline',
-						'start': timeextent[self.SID][0],
-						'end': timeextent[self.SID][1]
+						'start': htimeline[self.SID][0],
+						'end': htimeline[self.SID][htimeline[self.SID].length - 1]
 					});
 			}
 			break;
@@ -122,7 +122,7 @@ function renderAllExcept(self_name, SID, type) {
 	for (var i = 0; i < toDraw.length; i++) {
 		switch (toDraw[i]) {
 			case "map":
-				if (map[SID]) map[SID].update(type);
+				if (map[SID]) map[SID].update();
 				break;
 			case "timeline":
 				if (timelineset[SID]) timelineset[SID].update();

@@ -1,31 +1,31 @@
 var dialogOptions = {
-    minHeight: 300,
-    minWidth: 800,
-    "modal": false,
-    "resizable": false,
-    "draggable": true,
+	minHeight: 300,
+	minWidth: 800,
+	"modal": false,
+	"resizable": false,
+	"draggable": true,
 };
 // dialog-extend options
 var dialogExtendOptions = {
-    "closable": true,
-    "minimizable": true,
-    "minimizeLocation": "left",
-    "dblclick": "minimize",
+	"closable": true,
+	"minimizable": true,
+	"minimizeLocation": "left",
+	"dblclick": "minimize",
 };
 
 function randomcolor() {
-    var red = Math.floor(Math.random() * 128 + 128).toString(16),
-        green = Math.floor(Math.random() * 128 + 128).toString(16),
-        blue = Math.floor(Math.random() * 128 + 128).toString(16);
-    return color = '#' + red + green + blue;
+	var red = Math.floor(Math.random() * 128 + 128).toString(16),
+		green = Math.floor(Math.random() * 128 + 128).toString(16),
+		blue = Math.floor(Math.random() * 128 + 128).toString(16);
+	return color = '#' + red + green + blue;
 };
 var tableNames = {
-    'event': 'Events',
-    'location': 'Locations',
-    'message': 'Messages',
-    'person': 'People',
-    'organization': 'Organizations',
-    'resource': 'Resources',
+	'event': 'Events',
+	'location': 'Locations',
+	'message': 'Messages',
+	'person': 'People',
+	'organization': 'Organizations',
+	'resource': 'Resources',
 };
 var tableHeaders = {
     'event': [{
@@ -126,100 +126,100 @@ var tableHeaders = {
 var wb_count = 0;
 $(document).ready(function() {
 
-    $("#workbench_btn").click(function() {
-        wb_count++;
-        var wb_dlg = "wb_dlg_" + wb_count,
-            wb_ct = "wb_ctner_" + wb_count,
-            wb_btn1 = "wb_save_new_note_" + wb_count,
-            wb_btn2 = "wb_publish_new_note_" + wb_count,
-            wb_btn3 = "wb_discard_note_" + wb_count,
+	$("#workbench_btn").click(function() {
+		wb_count++;
+		var wb_dlg = "wb_dlg_" + wb_count,
+			wb_ct = "wb_ctner_" + wb_count,
+			wb_btn1 = "wb_save_new_note_" + wb_count,
+			wb_btn2 = "wb_publish_new_note_" + wb_count,
+			wb_btn3 = "wb_discard_note_" + wb_count,
 
-            opt = $.extend({
-                title: "Workbench",
-                position: ['left', 72],
-                close: function(event, ui) {
-                    var tmp = $(this).attr("id");
-                    //alert("deleting" + tmp);
-                    // delete eventTable[tmp.split("_")[2]];
-                    wb_widget.destroy();
-                    //$("#workbench_container").addClass("hidden");
-                    $(this).dialog('destroy').remove();
-                },
-            }, dialogOptions);
+			opt = $.extend({
+				title: "Workbench",
+				position: ['left', 72],
+				close: function(event, ui) {
+					var tmp = $(this).attr("id");
+					//alert("deleting" + tmp);
+					// delete eventTable[tmp.split("_")[2]];
+					wb_widget.destroy();
+					//$("#workbench_container").addClass("hidden");
+					$(this).dialog('destroy').remove();
+				},
+			}, dialogOptions);
 
-        $("#wb_dlg").clone().attr("id", wb_dlg).dialog(opt).dialogExtend(dialogExtendOptions);
-        wb_bt1 = $("#" + wb_dlg + ' > div:eq(0) > button:eq(0)').attr("id", wb_btn1);
-        wb_bt2 = $("#" + wb_dlg + ' > div:eq(0) > button:eq(1)').attr("id", wb_btn2);
-        wb_bt3 = $("#" + wb_dlg + ' > div:eq(0) > button:eq(2)').attr("id", wb_btn3);
-        wb_edt = $("#" + wb_dlg + " > textarea:eq(0)").attr("id", "wb_editor_" + wb_count);
+		$("#wb_dlg").clone().attr("id", wb_dlg).dialog(opt).dialogExtend(dialogExtendOptions);
+		wb_bt1 = $("#" + wb_dlg + ' > div:eq(0) > button:eq(0)').attr("id", wb_btn1);
+		wb_bt2 = $("#" + wb_dlg + ' > div:eq(0) > button:eq(1)').attr("id", wb_btn2);
+		wb_bt3 = $("#" + wb_dlg + ' > div:eq(0) > button:eq(2)').attr("id", wb_btn3);
+		wb_edt = $("#" + wb_dlg + " > textarea:eq(0)").attr("id", "wb_editor_" + wb_count);
 
-        var wb_widget = $("#" + wb_dlg).visworkbench({
-            "wb_count": wb_count,
-            "mode": "create",
-        }).data("vis-visworkbench");
+		var wb_widget = $("#" + wb_dlg).visworkbench({
+			"wb_count": wb_count,
+			"mode": "create",
+		}).data("vis-visworkbench");
 
-    });
-    var noteList_count = 0;
-    $("#mynotes_btn").click(function() {
-        noteList_count++;
-        var dlg = "mynotes_dlg_" + noteList_count,
-            table = "mynotes_tb_" + noteList_count,
-            new_note = "mynotes_new_" + noteList_count;
-        // edit_note = "mynotes_edit_" + noteList_count;
+	});
+	var noteList_count = 0;
+	$("#mynotes_btn").click(function() {
+		noteList_count++;
+		var dlg = "mynotes_dlg_" + noteList_count,
+			table = "mynotes_tb_" + noteList_count,
+			new_note = "mynotes_new_" + noteList_count;
+		// edit_note = "mynotes_edit_" + noteList_count;
 
-        opt = $.extend({
-            title: "My Notes",
-            position: ['left', 72],
-            close: function(event, ui) {
-                var tmp = $(this).attr("id");
-                $(this).dialog('destroy').remove();
-            },
-        }, {
-            minHeight: 330,
-            minWidth: 805,
-            maxWidth: 805,
-            maxHeight: 330,
-            "modal": false,
-            "resizable": false,
-            "draggable": true,
-        });
+		opt = $.extend({
+			title: "My Notes",
+			position: ['left', 72],
+			close: function(event, ui) {
+				var tmp = $(this).attr("id");
+				$(this).dialog('destroy').remove();
+			},
+		}, {
+			minHeight: 330,
+			minWidth: 805,
+			maxWidth: 805,
+			maxHeight: 330,
+			"modal": false,
+			"resizable": false,
+			"draggable": true,
+		});
 
-        $("#mynotes_dlg").clone().attr("id", dlg).dialog(opt).dialogExtend(dialogExtendOptions);
-        $("#" + dlg + ' > table:eq(0)').attr("id", table);
-        $("#" + dlg + ' > div:eq(0) > button:eq(0)').attr("id", new_note);
-        // $("#" + dlg + ' > input:eq(1)').attr("id",edit_note);
+		$("#mynotes_dlg").clone().attr("id", dlg).dialog(opt).dialogExtend(dialogExtendOptions);
+		$("#" + dlg + ' > table:eq(0)').attr("id", table);
+		$("#" + dlg + ' > div:eq(0) > button:eq(0)').attr("id", new_note);
+		// $("#" + dlg + ' > input:eq(1)').attr("id",edit_note);
 
-        var note_widget = $("#" + table).visnotetable({}).data("vis-visnotetable");
-        note_widget.update();
+		var note_widget = $("#" + table).visnotetable({}).data("vis-visnotetable");
+		note_widget.update();
 
-    });
-    $("#map_btn").click(function() {
-        createMap(null, null);
-    });
-    $("#timeline_btn").click(function() {
-        createTimeline(null, null);
-    });
-    $("#location_table_btn").click(function() {
-        createDialog('location', null, null);
-    });
-    $("#resource_table_btn").click(function() {
-        createDialog('resource', null, null);
-    });
-    $("#person_table_btn").click(function() {
-        createDialog('person', null, null);
-    });
-    $("#organization_table_btn").click(function() {
-        createDialog('organization', null, null);
-    });
-    $("#event_table_btn").click(function() {
-        createDialog('event', null, null);
-    });
-    $("#message_table_btn").click(function() {
-        createDialog('message', null, null);
-    });
-    $("#network_btn").click(function() {
-        createNetwork(null, null);
-    });
+	});
+	$("#map_btn").click(function() {
+		createMap(null, null);
+	});
+	$("#timeline_btn").click(function() {
+		createTimeline(null, null);
+	});
+	$("#location_table_btn").click(function() {
+		createDialog('location', null, null);
+	});
+	$("#resource_table_btn").click(function() {
+		createDialog('resource', null, null);
+	});
+	$("#person_table_btn").click(function() {
+		createDialog('person', null, null);
+	});
+	$("#organization_table_btn").click(function() {
+		createDialog('organization', null, null);
+	});
+	$("#event_table_btn").click(function() {
+		createDialog('event', null, null);
+	});
+	$("#message_table_btn").click(function() {
+		createDialog('message', null, null);
+	});
+	$("#network_btn").click(function() {
+		createNetwork(null, null);
+	});
 });
 
 function getData(table_type, filter_params, link_no, callback) {
@@ -358,6 +358,7 @@ function createTimeline(link_no, filter_params) {
                         if (filter_params['htimeline'] != undefined) htimeline[link_no] = filter_params['htimeline'];
                         if (filter_params['timeextent'] != undefined) timeextent[link_no] = filter_params['timeextent'];
                     }
+                    timelineset[link_no].update();
                     $('#' + $(xhr.html).attr('id')).siblings('.ui-dialog-titlebar').css("background-color", DlgTcolor[link_no]);
                 });
             } else { // starting window in existing link
