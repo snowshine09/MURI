@@ -177,51 +177,132 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
                             'visID': visID
                         },
                         success: function(xhr) {
-                            var dSrc = $(xhr.dsource);
-                            xhr.dindex = xhr.dindex.split(',');
-                            xhr.msgID = xhr.msgID.split(',');
-                            xhr.htimeline = xhr.htimeline.split(',');
                             for (i = 0; i < xhr.visJSON.SIDs.length; i++) {
                                 var thisSID = xhr.visJSON.SIDs[i],
-                                    thistypes = xhr.visJSON[thisSID].type_info.keys();
-                                DlgTcolor[xhr.visJSON[thisSID].linkNo] = xhr.visJSON[thisSID].color;
-                                for (j = 0; j < thistypes.length; j++) {
-                                    switch (thistypes[j]) {
-                                        case 'map':
-                                            break;
-                                        case 'message':
-                                            createDialog('message', xhr.visJSON[thisSID].linkNo, {
-                                                'filter_type': 'message',
-                                                'id': xhr.visJSON[thisSID].msgID,
-                                            });
-                                            break;
-                                        case 'event':
-                                            createDialog('event', xhr.visJSON[thisSID].linkNo, {
-                                                'filter_type': 'event',
-                                                'id': xhr.visJSON[thisSID].dindex
-                                            });
-                                            break;
-                                        case 'person':
-                                        case 'organization':
-                                        case 'location':
-                                        case 'resource':
-                                            createDialog(self.Type, xhr.visJSON[thisSID].linkNo, {
-                                                'filter_type': 'event',
-                                                'id': xhr.visJSON[thisSID].dindex
-                                            });
-                                            break;
-                                        case 'network':
-                                            createNetwork(xhr.visJSON[thisSID].linkNo, {
-                                                'filter_type': 'network',
-                                                'id': xhr.visJSON[thisSID].dindex
-                                            });
-                                            break;
-                                        case 'timeline':
-                                            createTimeline(xhr.visJSON[thisSID].linkNo, {
-                                                'filter_type': 'timeline',
-                                                'start': xhr.visJSON[thisSID].timeextent.split(',')[0],
-                                                'end': xhr.visJSON[thisSID].timeextent.split(',')[1]
-                                            });
+                                    thistypes = Object.keys(xhr.visJSON[thisSID].types_info),
+                                    thishtimeline = [],
+                                    thistimeextent = [];
+                                for (k = 0; k < xhr.visJSON[thisSID].htimeline.length; k++) {
+                                    thishtimeline.push(new Date(xhr.visJSON[thisSID].htimeline[k]));
+                                }
+                                for (k = 0; k < xhr.visJSON[thisSID].timeextent.length; k++) {
+                                    thistimeextent.push(new Date(xhr.visJSON[thisSID].timeextent[k]));
+                                }
+
+                                for (j = 0; j < thistypes.length; j++) { //var type in xhr.visJSON[thisSID].type_infos
+                                    if (j == 0) {
+                                        switch (thistypes[j]) {
+                                            case 'map':
+                                                break;
+                                            case 'message':
+                                                xhr.visJSON[thisSID].linkNo = createDialog('message', null, {
+                                                    'filter_type': 'event',
+                                                    'id': xhr.visJSON[thisSID].dsource,
+                                                    'msgID': xhr.visJSON[thisSID].msgID,
+                                                    'dindex': xhr.visJSON[thisSID].dindex,
+                                                    'htimeline': thishtimeline,
+                                                    'timeextent': thistimeextent
+                                                });
+                                                DlgTcolor[xhr.visJSON[thisSID].linkNo] = xhr.visJSON[thisSID].color;
+                                                $("#message_dlg_" + xhr.visJSON[thisSID].linkNo).siblings('.ui-dialog-titlebar').css("background", DlgTcolor[xhr.visJSON[thisSID].linkNo]);
+                                                $("#" + thistypes[j] + "_dlg_" + xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
+                                                break;
+                                            case 'event':
+                                                xhr.visJSON[thisSID].linkNo = createDialog('event', null, {
+                                                    'filter_type': 'event',
+                                                    'id': xhr.visJSON[thisSID].dsource,
+                                                    'msgID': xhr.visJSON[thisSID].msgID,
+                                                    'dindex': xhr.visJSON[thisSID].dindex,
+                                                    'htimeline': thishtimeline,
+                                                    'timeextent': thistimeextent
+                                                });
+                                                DlgTcolor[xhr.visJSON[thisSID].linkNo] = xhr.visJSON[thisSID].color;
+                                                $("#event_dlg_" + xhr.visJSON[thisSID].linkNo).siblings('.ui-dialog-titlebar').css("background", DlgTcolor[xhr.visJSON[thisSID].linkNo]);
+                                                $("#" + thistypes[j] + "_dlg_" + xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
+                                                break;
+                                            case 'person':
+                                            case 'organization':
+                                            case 'location':
+                                            case 'resource':
+                                                xhr.visJSON[thisSID].linkNo = createDialog(thistypes[j], null, {
+                                                    'filter_type': 'event',
+                                                    'id': xhr.visJSON[thisSID].dsource,
+                                                    'msgID': xhr.visJSON[thisSID].msgID,
+                                                    'dindex': xhr.visJSON[thisSID].dindex,
+                                                    'htimeline': thishtimeline,
+                                                    'timeextent': thistimeextent
+                                                });
+                                                DlgTcolor[xhr.visJSON[thisSID].linkNo] = xhr.visJSON[thisSID].color;
+                                                $("#" + thistypes[j] + "_dlg_" + xhr.visJSON[thisSID].linkNo).siblings('.ui-dialog-titlebar').css("background", DlgTcolor[xhr.visJSON[thisSID].linkNo]);
+                                                $("#" + thistypes[j] + "_dlg_" + xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
+                                                break;
+                                            case 'network':
+                                                xhr.visJSON[thisSID].linkNo = createNetwork(null, {
+                                                    'filter_type': 'network',
+                                                    'id': xhr.visJSON[thisSID].dsource,
+                                                    'msgID': xhr.visJSON[thisSID].msgID,
+                                                    'dindex': xhr.visJSON[thisSID].dindex,
+                                                    'htimeline': thishtimeline,
+                                                    'timeextent': thistimeextent
+                                                });
+                                                DlgTcolor[xhr.visJSON[thisSID].linkNo] = xhr.visJSON[thisSID].color;
+                                                $("#network_dlg_" + xhr.visJSON[thisSID].linkNo).siblings('.ui-dialog-titlebar').css("background", DlgTcolor[xhr.visJSON[thisSID].linkNo]);
+                                                $("#network_dlg_" + xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
+                                                break;
+                                            case 'timeline':
+                                                xhr.visJSON[thisSID].linkNo = createTimeline(null, {
+                                                    'filter_type': 'event',
+                                                    'id': xhr.visJSON[thisSID].dsource,
+                                                    'msgID': xhr.visJSON[thisSID].msgID,
+                                                    'dindex': xhr.visJSON[thisSID].dindex,
+                                                    'htimeline': thishtimeline,
+                                                    'timeextent': thistimeextent
+                                                });
+                                                DlgTcolor[xhr.visJSON[thisSID].linkNo] = xhr.visJSON[thisSID].color;
+                                                $("#" + thistypes[j] + "_dlg_" + xhr.visJSON[thisSID].linkNo).siblings('.ui-dialog-titlebar').css("background", DlgTcolor[xhr.visJSON[thisSID].linkNo]);
+                                                $("#" + thistypes[j] + "_dlg_" + xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
+                                        }
+                                    } else {
+                                        switch (thistypes[j]) {
+                                            case 'map':
+                                                break;
+                                            case 'message':
+                                                createDialog('message', xhr.visJSON[thisSID].linkNo, {
+                                                    'filter_type': 'event',
+                                                    'id': xhr.visJSON[thisSID].dsource
+                                                });
+                                                $("#" + thistypes[j] + "_dlg_" + xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
+                                                break;
+                                            case 'event':
+                                                createDialog('event', xhr.visJSON[thisSID].linkNo, {
+                                                    'filter_type': 'event',
+                                                    'id': xhr.visJSON[thisSID].dsource
+                                                });
+                                                break;
+                                            case 'person':
+                                            case 'organization':
+                                            case 'location':
+                                            case 'resource':
+                                                createDialog(thistypes[j], xhr.visJSON[thisSID].linkNo, {
+                                                    'filter_type': 'event',
+                                                    'id': xhr.visJSON[thisSID].dsource
+                                                });
+                                                $("#" + thistypes[j] + "_dlg_" + xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
+                                                break;
+                                            case 'network':
+                                                createNetwork(xhr.visJSON[thisSID].linkNo, {
+                                                    'filter_type': 'network',
+                                                    'id': xhr.visJSON[thisSID].dsource
+                                                });
+                                                $("#" + thistypes[j] + "_dlg_" + xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
+                                                break;
+                                            case 'timeline':
+                                                createTimeline(xhr.visJSON[thisSID].linkNo, {
+                                                    'filter_type': 'event',
+                                                    'id': xhr.visJSON[thisSID].dsource
+                                                });
+                                                $("#" + thistypes[j] + "_dlg_" + xhr.visJSON[thisSID].linkNo).parent().offset(xhr.visJSON[thisSID].types_info[thistypes[j]]);
+                                        }
                                     }
                                 }
 

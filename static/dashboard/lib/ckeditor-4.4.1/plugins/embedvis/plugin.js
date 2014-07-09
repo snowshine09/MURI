@@ -12,6 +12,7 @@ CKEDITOR.plugins.add('embedvis', {
                     if ($(allvisdlg[0][i]).dialogExtend("state") != "minimized") {
                         var vType = $(allvisdlg[0][i]).attr("id").split("_")[0],
                             SID = $(allvisdlg[0][i]).attr("id").split("_")[2];
+                        alert("store dialog " + vType + SID);
                         if (newvis[SID] == undefined) {
                             newvis[SID] = {};
                             IDs.push(SID);
@@ -23,19 +24,21 @@ CKEDITOR.plugins.add('embedvis', {
                             newvis[SID].color = $(allvisdlg[0][i]).siblings(".ui-dialog-titlebar").css("background-color");
                             newvis[SID].dindex = dindex[SID];
                             newvis[SID].msgID = msgID[SID];
-                            var hTL = '';
-                            if (htimeline[SID] != undefined) {
-                                for (j = 0; j < htimeline[SID].length; j++) {
-                                    if (j == 0) hTL += htimeline[SID][j];
-                                    else hTL += ',' + htimeline[SID][j];
-                                }
-                                newvis[SID].htimeline = hTL;
-                            }
-                            if (timeextent[SID] != undefined) {
-                                newvis[SID].timeextent = timeextent[SID][0] + ',' + timeextent[SID][1];
-                            }
+                            newvis[SID].htimeline = htimeline[SID];
+                            newvis[SID].timeextent = timeextent[SID];
+                            // var hTL = '';
+                            // if (htimeline[SID] != undefined) {
+                            //     for (j = 0; j < htimeline[SID].length; j++) {
+                            //         if (j == 0) hTL += htimeline[SID][j];
+                            //         else hTL += ',' + htimeline[SID][j];
+                            //     }
+                            //     newvis[SID].htimeline = hTL;
+                            // }
+                            // if (timeextent[SID] != undefined) {
+                            //     newvis[SID].timeextent = timeextent[SID][0] + ',' + timeextent[SID][1];
+                            // }
                         }
-                        newvis[SID].types_info[vType] = $(allvisdlg[0][i]).parent().position()['left'] + ',' + $(allvisdlg[0][i]).parent().position()['top'];
+                        newvis[SID].types_info[vType] = $(allvisdlg[0][i]).parent().offset();
                     }
                 }
                 newvis.SIDs = IDs;
