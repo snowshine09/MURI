@@ -17,4 +17,21 @@
         </form>
     </div>
 	<div id="map_cvs_{{id}}" class="map cvs"></div>
+    <div id="new-footprint-form-{{ id }}" class="new-footprint-form hidden">
+        <form role="form">
+            <div class="form-group">
+                <input type="text" size="15" class="form-control" placeholder="Name" id="new-footprint-name-{{ id }}"></input>
+            </div>
+            <div class="form-group">
+                <label>Please select event(s) from the events table: </label>
+            </div>
+            <div class="form-group">
+                <label id="related-events-{{ id }}" class='related-events'>(none)</label>
+            </div>
+            <div class="form-group">
+                <button id="new-footprint-save-{{ id }}" class="btn btn-sm btn-primary">Save</button>
+                <button id="new-footprint-discard-{{ id }}" class="btn btn-sm btn-default">Discard</button>
+            </div>
+        </form>
+    </div>
 </div>

@@ -50,13 +50,11 @@ g.node {
   color: #FFF!important;
   background-color: #2A6496!important;
 }
-div.ui-dialog {
-  padding: 0!important;
-}
+
 div.ui-dialog-titlebar {
   padding: 3px 10px!important;
 }
-div.ui-dialog-content {
+div.visdlg {
   padding: 0!important;
 
 }

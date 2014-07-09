@@ -8,6 +8,7 @@ from networkx.readwrite import json_graph
 from itertools import combinations
 from django.template import Context
 from django.db.models import Q
+from django.contrib.gis.geos import *
 from itertools import chain
 import copy
 import sys
@@ -308,11 +309,20 @@ def notes(request):
 
     return HttpResponse(json.dumps(response), mimetype='application/json')
 
-# def switchNote(mode):
-#     return {
-#         'edit': 1,
-#         'b': 2,
-#         }.get(x, 9) 
+def footprint(request):
+    response = {}
+    name = request.REQUEST.get('name')
+    created_at = request.REQUEST.get('created_at')
+    shape = request.REQUEST.get('shape')
+    srid = request.REQUEST.get('srid')
+    footprint = Footprint.objects.create(name=name, date_as_of=parser.parse(created_at), shape=GEOSGeometry('SRID=%s;%s' % (srid, shape)), entity_type='place')
+    event_ids = request.POST.getlist('entities[]')
+    for event_id in event_ids:
+        event = Event.objects.get(id=event_id)
+        Relationship.objects.create(source=event, target=footprint, date_as_of=parser.parse(created_at))
+    response['id'] = footprint.id
+    return HttpResponse(json.dumps(response), mimetype='application/json')
+
 
 def visRetrieve(request):
     global linkCount 

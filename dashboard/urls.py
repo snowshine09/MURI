@@ -32,4 +32,5 @@ urlpatterns = patterns('',
     url(r'^map_template/', map_template),
     url(r'^filter_data/', filter_data),
     url(r'^filter_data_by_time/', filter_data_by_time),
+    url(r'^footprint/', footprint),
 )

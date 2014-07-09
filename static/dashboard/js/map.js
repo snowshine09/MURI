@@ -7,7 +7,7 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 			return;
 		}
 		self.map = new OpenLayers.Map(self.Name);
-        self.map.container = self;
+		self.map.container = self;
 		var cmb = "map_selectbar_" + self.SID;
 		$("#" + cmb).attr("selectedIndex", 0).change(function() {
 			var x = $("#" + cmb + " option:selected").val();
@@ -19,6 +19,24 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 		self.loadLayers();
 		self.loadFeatures();
 		self.loadControls();
+
+		$.contextMenu({
+			selector: '#map_cvs_' + self.SID,
+			items: {
+				draw_polygon: {
+					name: 'Draw polygon',
+					callback: function() {
+						self.setMode('draw_polygon');
+					}
+				},
+				draw_line: {
+					name: 'Draw line',
+					callback: function() {
+						self.setMode('draw_line');
+					}
+				}
+			}
+		});
 	},
 	loadLayers: function() {
 		var self = this;
@@ -123,14 +141,24 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 		var controlPanel = new OpenLayers.Control.Panel();
 		self.map.addControl(new OpenLayers.Control.LayerSwitcher());
 		self.mapControls = {
-			select: new OpenLayers.Control.SelectFeature([self.linelayer, self.pointlayer], {
+			boxSelect: new OpenLayers.Control.SelectFeature([self.linelayer, self.pointlayer], {
 				clickout: true,
+				toggle: true,
 				multiple: false,
 				hover: false,
 				box: true,
-                callbacks: {
-                    click: self.filterByLocation,
-                }
+				onSelect: self.filterByLocation,
+				onUnselect: self.filterByLocation,
+				displayClass: 'olBoxSelect'
+			}),
+			select: new OpenLayers.Control.SelectFeature([self.linelayer, self.pointlayer], {
+				clickout: true,
+				toggle: true,
+				multiple: false,
+				hover: false,
+				onSelect: self.filterByLocation,
+				onUnselect: self.filterByLocation,
+				displayClass: 'olPan'
 			}),
 			navigate: new OpenLayers.Control.Navigation(),
 			draw_polygon: new OpenLayers.Control.DrawFeature(self.newFeatureLayer, OpenLayers.Handler.Polygon, {
@@ -151,44 +179,128 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 			controlPanel.addControls([self.mapControls[key]]);
 		}
 		self.map.addControl(controlPanel);
-		// self.selectLineFeatureControl = new OpenLayers.Control.SelectFeature(self.linelayer);
-		// self.map.addControl(self.selectLineFeatureControl);
-		// self.selectLineFeatureControl.activate();
-		// self.selectPointFeatureControl = new OpenLayers.Control.SelectFeature(self.pointlayer);
-		// self.map.addControl(self.selectPointFeatureControl);
-		// self.selectPointFeatureControl.activate();
-        self.mapControls['select'].activate();
-        self.setMode('navigation');
+		self.setMode('navigation');
 	},
 
 	update: function() {
 		var self = this;
-        self.mapControls['select'].unselectAll();
+		// unhighlight all
+		if (self.mapControls['select'].layers != null) {
+			self.mapControls['select'].layers.forEach(function(layer) {
+				for (var i = 0, len = layer.features.length; i < len; i++) {
+					self.mapControls['select'].unhighlight(layer.features[i]);
+				}
+			});
+		} else {
+			alert('layers are empty!');
+		}
+		var count = 0,
+			tmpFeature;
 		for (var i = 0; i < self.linelayer.features.length; i++) {
 			if ($.inArray(self.linelayer.features[i].attributes.id, dindex[self.SID]) != -1) {
-				self.mapControls['select'].select(self.linelayer.features[i]);
+				self.mapControls['select'].highlight(self.linelayer.features[i]);
+				count++;
+				tmpFeature = self.linelayer.features[i];
 			}
 		}
 		for (var i = 0; i < self.pointlayer.features.length; i++) {
 			if ($.inArray(self.pointlayer.features[i].attributes.id, dindex[self.SID]) != -1) {
-				self.mapControls['select'].select(self.pointlayer.features[i]);
+				self.mapControls['select'].highlight(self.pointlayer.features[i]);
+				count++;
+				tmpFeature = self.pointlayer.features[i];
 			}
 		}
 		self.linelayer.redraw();
 		self.pointlayer.redraw();
+		if (count == 1) {
+			var lon = tmpFeature.geometry.getCentroid().x;
+			var lat = tmpFeature.geometry.getCentroid().y;
+			self.map.panTo(new OpenLayers.LonLat(lon, lat));
+		}
 	},
 
-    setMode: function(mode) {
-        var self = this;
-        switch (mode) {
-            case 'navigation':
-                break;
-            case 'draw_polygon':
-                break;
-            case 'draw_line':
-                break;
-        }
-    },
+	onFeatureAdded: function(feature) {
+		var self = this;
+		self.setMode('navigation');
+		$('#new-footprint-form-' + self.SID).dialog({
+			title: 'New footprint',
+			width: 'auto',
+			height: 'auto',
+		});
+		if (!$('#event_dlg_' + self.SID).length) {
+			createDialog('event', self.SID, null);
+		}
+		$('#new-footprint-form-' + self.SID).removeClass("hidden").dialog("open");
+		$('#new-footprint-save-' + self.SID).click(function(e) {
+			e.preventDefault();
+            var related_entities = $('#related-events-' + self.SID).text();
+            if (related_entities === '(none)' || related_entities.length == 0) {
+                alert('Please select at least one event.');
+                return;
+            }
+			var footprint = {};
+			footprint.name = $("#new-footprint-name-" + self.SID).val();
+			footprint.srid = 4326;
+            footprint.entities = related_entities.split(' ');
+			footprint.shape = new OpenLayers.Format.WKT().write(feature);
+			footprint.created_at = new Date();
+			$.ajax({
+				url: 'footprint/',
+				type: "post",
+                data: footprint,
+				success: function(xhr) {
+					$("#new-footprint-name-" + self.SID).val('');
+					$('#new-plan-content').val('');
+					$('#new-footprint-form-' + self.SID).addClass("hidden").dialog("close");
+                    self.newFeatureLayer.removeAllFeatures();
+                    self.linelayer.addFeatures([feature]);
+                    feature.attributes.id = xhr.id;
+                    feature.attributes.name = footprint.name;
+                    dataset[self.SID]['location'].push({
+                        frequency: 1,
+                        name: footprint.name,
+                        node: 'footprint',
+                        shape: feature,
+                        srid: 900913,
+                        uid: xhr.id
+                    });
+				},
+				error: function(xhr) {
+					alert("failed to add footprint!")
+				},
+			});
+		});
+		$('#new-footprint-discard-' + self.SID).click(function(e) {
+			e.preventDefault();
+			$('#new-footprint-form-' + self.SID).addClass("hidden").dialog("close");
+		});
+	},
+	setMode: function(mode) {
+		var self = this;
+		switch (mode) {
+			case 'navigation':
+				self.mapControls['navigate'].activate();
+				self.mapControls['select'].activate();
+				self.mapControls['boxSelect'].deactivate();
+				self.mapControls['draw_polygon'].deactivate();
+				self.mapControls['draw_line'].deactivate();
+				break;
+			case 'draw_polygon':
+				self.mapControls['navigate'].deactivate();
+				self.mapControls['select'].deactivate();
+				self.mapControls['boxSelect'].deactivate();
+				self.mapControls['draw_polygon'].activate();
+				self.mapControls['draw_line'].deactivate();
+				break;
+			case 'draw_line':
+				self.mapControls['navigate'].deactivate();
+				self.mapControls['select'].deactivate();
+				self.mapControls['boxSelect'].deactivate();
+				self.mapControls['draw_polygon'].deactivate();
+				self.mapControls['draw_line'].activate();
+				break;
+		}
+	},
 	highlight: function(features_id) {
 		var self = this;
 		for (var i = 0; i < self.highlightedFeatures.length; i++) {
@@ -237,14 +349,6 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 
 	filterByLocation: function(feature) {
 		var self = this.map.container;
-        
-        if ($.inArray(feature, feature.layer.selectedFeatures) >= 0) {
-            self.mapControls['select'].unselect(feature);
-        } else {
-            self.mapControls['select'].unselectAll();
-            self.mapControls['select'].select(feature);
-        }
-        
 		var selectedFeas = []; // selected feature ids
 		// get the id of all selected features
 		if (this.layers != null) {

@@ -8,28 +8,28 @@
 }
 
 
-.olControlPanel .olControlNavigationItemInactive { 
+.olControlPanel .olPanItemInactive { 
   width:  22px;  
   height: 22px;
   background-image: url("/static/dashboard/img/pan_off.png");
   cursor: pointer;
   margin: 0 0 5px 5px;
 }
-.olControlPanel .olControlNavigationItemActive { 
+.olControlPanel .olPanItemActive { 
   width:  22px;  
   height: 22px;
   background-image: url("/static/dashboard/img/pan_on.png");
   cursor: pointer;
   margin: 0 0 5px 5px;
 }
-.olControlPanel .olControlSelectFeatureItemInactive { 
+.olControlPanel .olBoxSelectItemInactive { 
   width:  22px;  
   height: 22px;
   background-image: url("/static/dashboard/img/select_off.png");
   cursor: pointer;
   margin: 0 0 5px 5px;
 }
-.olControlPanel .olControlSelectFeatureItemActive { 
+.olControlPanel .olBoxSelectItemActive { 
   width:  22px;  
   height: 22px;
   background-image: url("/static/dashboard/img/select_on.png");
@@ -42,4 +42,10 @@
 }
 .olFramedCloudPopupContent .header:before {
     content: "* ";
+}
+.map path {
+  cursor: pointer;
+}
+.map polyline {
+  cursor: pointer;
 }

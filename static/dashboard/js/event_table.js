@@ -116,6 +116,9 @@ SIIL.DataTable.prototype.update = function(uType) {
 			}
 		}
 		$("#" + self.tbName).parents('.ui-dialog-content').find('.selected-count').text(self.table.$('tr.row_selected').length);
+        if (self.tbType === 'event') {
+            $('.new-footprint-form').find('.related-events').text(self.table.cells('.row_selected', 'ID:name').data().toArray().join(' '));
+        }
 		propagate(self.tbType, self.SID, self.table.cells('.row_selected', 'ID:name').data().toArray());
 	});
 };
