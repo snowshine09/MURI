@@ -26,17 +26,6 @@ CKEDITOR.plugins.add('embedvis', {
                             newvis[SID].msgID = msgID[SID];
                             newvis[SID].htimeline = htimeline[SID];
                             newvis[SID].timeextent = timeextent[SID];
-                            // var hTL = '';
-                            // if (htimeline[SID] != undefined) {
-                            //     for (j = 0; j < htimeline[SID].length; j++) {
-                            //         if (j == 0) hTL += htimeline[SID][j];
-                            //         else hTL += ',' + htimeline[SID][j];
-                            //     }
-                            //     newvis[SID].htimeline = hTL;
-                            // }
-                            // if (timeextent[SID] != undefined) {
-                            //     newvis[SID].timeextent = timeextent[SID][0] + ',' + timeextent[SID][1];
-                            // }
                         }
                         newvis[SID].types_info[vType] = $(allvisdlg[0][i]).parent().offset();
                     }
@@ -88,13 +77,13 @@ CKEDITOR.plugins.add('embedvis', {
         editor.ui.addButton('network', {
 
             // The text part of the button (if available) and tooptip.
-            label: 'Insert network visual components',
+            label: 'Insert visual components',
 
             // The command to execute on click.
             command: 'embednw',
             icon: this.path + 'icons/network.png',
             // The button placement in the toolbar (toolbar group name).
-            toolbar: 'links'
+            toolbar: 'tools'
         });
 
         // editor.ui.addButton('claim', {
@@ -126,7 +115,7 @@ CKEDITOR.plugins.add('embedvis', {
 
                 editor.addMenuGroup('VisGroup');
                 editor.addMenuItem('VisNetwork', {
-                    label: 'Insert network as visual components',
+                    label: 'Insert as visual components',
                     icon: self.path + 'icons/network.png',
                     command: 'embednw',
                     group: 'VisGroup'
