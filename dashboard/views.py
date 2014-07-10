@@ -276,7 +276,6 @@ def connected_entities(ett_id,length):
         return connected_entities(ett_id,len(ett_id))
 
 def notes(request):
-    print "enter get Notes"
     response={}
     response["notes"] =[]
     author = 1
@@ -286,14 +285,14 @@ def notes(request):
             print "enter Filter Note Object"
             note_info = {}
             note_info["id"] = str(note.id)
-            note_info["author"] = str(note.author_id)
+            note_info["author"] = str(note.author.username)
             pir_brief = PIR.objects.filter(id=note.pir_id)
             note_info["pir"] = str(pir_brief)
             note_info["title"] = note.title
             note_info["content"] = str(note.content)
             note_info["published"] = note.published
-            note_info["created_at"] = strftime("%m/%d/%y %H:%M:%S", note.date_created.timetuple())
-            note_info['updated_at'] = strftime("%m/%d/%y %H:%M:%S", note.date_updated.timetuple())
+            note_info["created_at"] = strftime("%m/%d/%y %H:%M", note.date_created.timetuple())
+            note_info['updated_at'] = strftime("%m/%d/%y %H:%M", note.date_updated.timetuple())
             response["notes"].append(note_info)    
     elif nt_type == "id":
         notes_id = request.POST.getlist('id[]', None)
@@ -306,8 +305,8 @@ def notes(request):
             note_info["title"] = note.title
             note_info["content"] = str(note.content)
             note_info["published"] = note.published
-            note_info["created_at"] = strftime("%m/%d/%y %H:%M:%S", note.date_created.timetuple())
-            note_info['updated_at'] = strftime("%m/%d/%y %H:%M:%S", note.date_updated.timetuple())
+            note_info["created_at"] = strftime("%m/%d/%y %H:%M", note.date_created.timetuple())
+            note_info['updated_at'] = strftime("%m/%d/%y %H:%M", note.date_updated.timetuple())
             response["notes"].append(note_info) 
 
     return HttpResponse(json.dumps(response), mimetype='application/json')

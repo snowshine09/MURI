@@ -139,10 +139,7 @@ $(document).ready(function() {
 				position: ['left', 72],
 				close: function(event, ui) {
 					var tmp = $(this).attr("id");
-					//alert("deleting" + tmp);
-					// delete eventTable[tmp.split("_")[2]];
 					wb_widget.destroy();
-					//$("#workbench_container").addClass("hidden");
 					$(this).dialog('destroy').remove();
 				},
 			}, dialogOptions);
@@ -174,22 +171,13 @@ $(document).ready(function() {
 				var tmp = $(this).attr("id");
 				$(this).dialog('destroy').remove();
 			},
-		}, {
-			minHeight: 330,
-			minWidth: 805,
-			maxWidth: 805,
-			maxHeight: 330,
-			"modal": false,
-			"resizable": false,
-			"draggable": true,
-		});
+		}, dialogOptions);
 
 		$("#mynotes_dlg").clone().attr("id", dlg).dialog(opt).dialogExtend(dialogExtendOptions);
 		$("#" + dlg + ' > table:eq(0)').attr("id", table);
 		$("#" + dlg + ' > div:eq(0) > button:eq(0)').attr("id", new_note);
-		// $("#" + dlg + ' > input:eq(1)').attr("id",edit_note);
 
-		var note_widget = $("#" + table).visnotetable({}).data("vis-visnotetable");
+		var note_widget = $("#" + table).visnotetable().data("vis-visnotetable");
 		note_widget.update();
 
 	});

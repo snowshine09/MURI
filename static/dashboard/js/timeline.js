@@ -22,7 +22,7 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 		self.start = new Date(dataset[self.SID]['timeline'][0][0]),
 		self.end = new Date(dataset[self.SID]['timeline'][dataset[self.SID]['timeline'].length - 1][0]);
 		self.end.setDate(self.end.getDate() + 1);
-		self.barWidth = 
+		self.numDays = Math.round((self.end - self.start) / (24 * 3600 * 1000))
 		self.charts = [
 			self.barChart()
 			.round(d3.time.day.round)
@@ -130,6 +130,7 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 					gBrush.selectAll("rect").attr("height", height);
 					gBrush.selectAll(".resize").append("path").attr("d", resizePath);
 				}
+				self.barWidth = width / self.numDays;
 				g.selectAll(".bar").attr("d", barPath);
 			});
 
@@ -140,7 +141,7 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 					d;
 				while (++i < n) {
 					d = groups[i];
-					path.push("M", x(d[0]), ",", height, "V", y(d[1]), "h9V", height);
+					path.push("M", x(d[0]), ",", height, "V", y(d[1]), "h" + self.barWidth + "V", height);
 				}
 				return path.join("");
 			}
