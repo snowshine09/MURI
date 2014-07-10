@@ -10,7 +10,7 @@ settings.py
 .DS_Store?
 .DS_Store
 ehthumbs.db
-Icon?
+
 Thumbs.db
 
 # swp file by vim

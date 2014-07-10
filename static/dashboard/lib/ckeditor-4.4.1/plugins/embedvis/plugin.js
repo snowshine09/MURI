@@ -52,7 +52,7 @@ CKEDITOR.plugins.add('embedvis', {
                         "newvis": JSON.stringify(newvis)
                     },
                     success: function(res) {
-                        editor.insertHtml('<a href="#" vid="' + res.id + '" class="ref-link"><sup>[' + newvis.date_updated + ' ]</sup></a>');
+                        editor.insertHtml('<a href="#" vid="' + res.id + '" class="ref-link"><sup>[saved view(s)]</sup></a>');
                         if (visxml[editor.name] == undefined) visxml[editor.name] = [];
                         visxml[editor.name].push(res.id);
                     },

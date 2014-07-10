@@ -172,7 +172,7 @@ $.widget("vis.visworkbench", $.Widget, {
                 data: newNote,
                 success: function() {
                     $("#wb_editor_" + self.options.wb_count).val('');
-                    $("#wb_dlg_" + self.options.wb_count).addClass("hidden").dialog("destroy");
+                    // $("#wb_dlg_" + self.options.wb_count).addClass("hidden").dialog("destroy");
                     $(".visnotetable").each(function() {
                         $(this).data("vis-visnotetable").update();
                     });
