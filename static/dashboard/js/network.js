@@ -124,7 +124,7 @@ SIIL.Network = function($div, link_no) {
 	});
 	$("#network_gravity_" + self.SID).slider({
 		value: 0.2,
-		max: 1,
+		max: 0.45,
 		step: 0.01,
 		animate: true,
 		slide: function(event, ui) {
