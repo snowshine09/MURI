@@ -99,21 +99,22 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
         this.SID = this.tbName.split("_")[2];
         this.new_edit_button = "mynotes_new_" + this.SID;
         this.table = $('#' + this.tbName).dataTable({
-            "bJQueryUI": true,
-            "bDestroy": true,
-            "bScrollCollapse": true,
-            "bAutoWidth": false,
-            'sScrollX': '100%',
-            'sScrollY': '100%',
-            "sRowSelect": "multi",
-            "sDom": "RlfrtipS",
-            "fnCreatedRow": function(nRow, aData, iDataIndex) {
-                $(nRow).addClass("note_row");
-                $(nRow).attr("id", "note_row_" + aData[0]);
-                if (aData[5] == true) {
-                    $(nRow).addClass("note_published");
+            autoWidth: true,
+            scrollY: '100%',
+            dom: 'lftirp',
+            pagingType: 'full',
+            columns: [{
+                    "visible": false
+                },
+                {'orderable': false}, null, null
+            ],
+            createdRow: function(row, data, dataIndex) {
+                $(row).addClass('note_row');
+                $(row).attr("id", "note-row-" + data[0]);
+                if (data[1].length > 0) {
+                    $(row).addClass('note_published');
                 }
-            },
+            }
         });
 
         this.Tinstance = this.table.api();
@@ -154,8 +155,15 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
 
                 var Notes = result.notes;
                 var data = [];
+                var toSymbol = function(published) {
+                    if (published) {
+                        return '<span class="glyphicon glyphicon-ok"></span>';
+                    } else {
+                        return '';
+                    }
+                }
                 for (var i = 0; i < Notes.length; i++) {
-                    data.push([Notes[i].id, Notes[i].author, Notes[i].title, Notes[i].content, Notes[i].pir, Notes[i].published, Notes[i].created_at, Notes[i].updated_at]);
+                    data.push([Notes[i].id, toSymbol(Notes[i].published), Notes[i].content, Notes[i].author + " at " + Notes[i].updated_at]);
                 }
 
 
@@ -354,7 +362,7 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
                 return {
                     items: menuItems,
                     callback: function(key, options) {
-                        self.id_selected = parseInt(options.$trigger.children().eq(0).text());
+                        self.id_selected = parseInt(options.$trigger[0].id.split('-')[2]);
                         console.log(options.$trigger);
                         //alert(self.id_selected);
                         switch (key) {

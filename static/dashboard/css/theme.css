@@ -20,9 +20,7 @@ g.node {
 }
 
 .highlight { background-color: yellow }
-.visdlg {
-  overflow: hidden!important;
-}
+
 .paginate_button {
   cursor: pointer;
   border: 1px solid #CCC;
@@ -56,7 +54,11 @@ div.ui-dialog-titlebar {
 }
 div.visdlg {
   padding: 0!important;
-
+  overflow: hidden!important;
+}
+div.note {
+  padding: 0!important;
+  overflow:hidden!important;
 }
 .cvs {
   width: 100%;
