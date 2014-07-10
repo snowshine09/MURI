@@ -77,7 +77,7 @@ CKEDITOR.plugins.add('embedvis', {
         editor.ui.addButton('network', {
 
             // The text part of the button (if available) and tooptip.
-            label: 'Insert visual components',
+            label: 'Insert views',
 
             // The command to execute on click.
             command: 'embednw',

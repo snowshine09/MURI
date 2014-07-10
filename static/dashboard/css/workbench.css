@@ -43,3 +43,6 @@
 .inner-center .ui-layout-center .ui-layout-pane {
     padding:0px!important; 
 }
+.cke_button__network_label {
+    display: inline;
+}
