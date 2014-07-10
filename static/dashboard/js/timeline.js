@@ -22,13 +22,15 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 		self.start = new Date(dataset[self.SID]['timeline'][0][0]),
 		self.end = new Date(dataset[self.SID]['timeline'][dataset[self.SID]['timeline'].length - 1][0]);
 		self.end.setDate(self.end.getDate() + 1);
+		self.barWidth = 
 		self.charts = [
-			self.barChart() //onlu one chart(vis) method in this list
+			self.barChart()
 			.round(d3.time.day.round)
 			.x(d3.time.scale()
 				.domain([new Date(self.start), new Date(self.end)])
 				.rangeRound([0, 10 * 90]))
 		];
+
 		d3.selectAll("#" + this.Name)
 			.data(self.charts)
 			.each(function(method) {

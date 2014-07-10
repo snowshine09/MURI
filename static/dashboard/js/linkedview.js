@@ -96,7 +96,7 @@ function generateOthers(div, vis) { //div is source, vis is target
 					break;
 				case 'network':
 					createNetwork(null, {
-						'filter_type': 'event',
+						'filter_type': 'network',
 						'id': dindex[self.SID]
 					});
 					break;

@@ -233,37 +233,37 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 		$('#new-footprint-form-' + self.SID).removeClass("hidden").dialog("open");
 		$('#new-footprint-save-' + self.SID).click(function(e) {
 			e.preventDefault();
-            var related_entities = $('#related-events-' + self.SID).text();
-            if (related_entities === '(none)' || related_entities.length == 0) {
-                alert('Please select at least one event.');
-                return;
-            }
+			var related_entities = $('#related-events-' + self.SID).text();
+			if (related_entities === '(none)' || related_entities.length == 0) {
+				alert('Please select at least one event.');
+				return;
+			}
 			var footprint = {};
 			footprint.name = $("#new-footprint-name-" + self.SID).val();
-			footprint.srid = 4326;
-            footprint.entities = related_entities.split(' ');
+			footprint.srid = 900913;
+			footprint.entities = related_entities.split(' ');
 			footprint.shape = new OpenLayers.Format.WKT().write(feature);
 			footprint.created_at = new Date();
 			$.ajax({
 				url: 'footprint/',
 				type: "post",
-                data: footprint,
+				data: footprint,
 				success: function(xhr) {
 					$("#new-footprint-name-" + self.SID).val('');
-					$('#new-plan-content').val('');
+					$('#related-events-' + self.SID).text('(none)');
 					$('#new-footprint-form-' + self.SID).addClass("hidden").dialog("close");
-                    self.newFeatureLayer.removeAllFeatures();
-                    self.linelayer.addFeatures([feature]);
-                    feature.attributes.id = xhr.id;
-                    feature.attributes.name = footprint.name;
-                    dataset[self.SID]['location'].push({
-                        frequency: 1,
-                        name: footprint.name,
-                        node: 'footprint',
-                        shape: feature,
-                        srid: 900913,
-                        uid: xhr.id
-                    });
+					self.newFeatureLayer.removeAllFeatures();
+					self.linelayer.addFeatures([feature]);
+					feature.attributes.id = xhr.id;
+					feature.attributes.name = footprint.name;
+					dataset[self.SID]['location'].push({
+						frequency: 1,
+						name: footprint.name,
+						node: 'footprint',
+						shape: feature,
+						srid: 900913,
+						uid: xhr.id
+					});
 				},
 				error: function(xhr) {
 					alert("failed to add footprint!")
@@ -272,7 +272,10 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 		});
 		$('#new-footprint-discard-' + self.SID).click(function(e) {
 			e.preventDefault();
+			$("#new-footprint-name-" + self.SID).val('');
+			$('#related-events-' + self.SID).text('(none)');
 			$('#new-footprint-form-' + self.SID).addClass("hidden").dialog("close");
+			self.newFeatureLayer.removeAllFeatures();
 		});
 	},
 	setMode: function(mode) {

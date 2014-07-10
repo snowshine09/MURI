@@ -78,3 +78,22 @@ div.dataTables_scrollBody{
 .question{
   background-color:rgba(255, 166, 166, 0.21);
 }
+
+ul.context-menu-list {
+    font-size: 14px;
+    background-color: #ffffff;
+    padding: 5px 0 0;
+    min-width: 160px;
+    margin: 2px 0 0;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    border-radius: 6px;
+
+}
+li.context-menu-item {
+    background-color: #ffffff;
+    padding: 4px 2px 4px 20px;
+}
+li.context-menu-item:hover {
+    color: #ffffff;
+    background-color: #428bca;
+}

@@ -277,7 +277,7 @@ function createMap(link_no, filter_params) {
         type: "post",
         async: false,
         data: {
-            'new_link': new_link,
+            'link_no': link_no,
         },
         success: function(xhr) {
             if (new_link) {
@@ -327,7 +327,7 @@ function createTimeline(link_no, filter_params) {
         type: "post",
         async: false,
         data: {
-            'new_link': new_link,
+            'link_no': link_no,
         },
         success: function(xhr) {
             if (new_link) {
@@ -380,7 +380,7 @@ function createNetwork(link_no, filter_params) {
         type: "post",
         async: false,
         data: {
-            'new_link': new_link,
+            'link_no': link_no,
         },
         success: function(xhr) {
             if (new_link) {
@@ -429,7 +429,7 @@ function createDialog(table_type, link_no, filter_params) {
         data: {
             'table_type': table_type,
             'headers': tableHeaders[table_type],
-            'new_link': new_link,
+            'link_no': link_no,
         },
         success: function(xhr) {
             if (new_link) {

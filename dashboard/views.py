@@ -35,39 +35,41 @@ def LinkNum(request):
 def get_table(request):
     global linkCount
     global viewtypes
-    new_link = request.REQUEST.get('new_link')
-    if new_link == 'true':
+    link_no = request.REQUEST.get('link_no')
+    if len(link_no) == 0:
         linkCount += 1
+        link_no = linkCount
     table_type = request.REQUEST.get('table_type', '')
     headers = request.POST.getlist('headers[]')
     response = {}
-    print headers
-    response['html'] = render_to_string("dashboard/table.html", {'table_type': table_type, 'viewtypes': viewtypes, 'columns': headers, 'id': str(linkCount)})
-    response['linkNo'] = linkCount
+    response['html'] = render_to_string("dashboard/table.html", {'table_type': table_type, 'viewtypes': viewtypes, 'columns': headers, 'id': str(link_no)})
+    response['linkNo'] = link_no
     return HttpResponse(json.dumps(response), mimetype='application/json')
 
 def network_template(request):
     global linkCount
-    new_link = request.REQUEST.get('new_link')
-    if new_link == 'true':
+    link_no = request.REQUEST.get('link_no')
+    if len(link_no) == 0:
         linkCount += 1
+        link_no = linkCount
     global viewtypes
     parentID = request.REQUEST.get('parentID',None)
     response = {}
-    response['html'] = render_to_string("dashboard/network.html", {'viewtypes': viewtypes, 'id': str(linkCount), 'parent_id': parentID})
-    response['linkNo'] = linkCount
+    response['html'] = render_to_string("dashboard/network.html", {'viewtypes': viewtypes, 'id': str(link_no), 'parent_id': parentID})
+    response['linkNo'] = link_no
     return HttpResponse(json.dumps(response), mimetype='application/json')
 
 def timeline_template(request):
     global linkCount
-    new_link = request.REQUEST.get('new_link')
-    if new_link == 'true':
+    link_no = request.REQUEST.get('link_no')
+    if len(link_no) == 0:
         linkCount += 1
+        link_no = linkCount
     global viewtypes
     parentID = request.REQUEST.get('parentID',None)
     response = {}
-    response['html'] = render_to_string("dashboard/timeline.html", {'viewtypes': viewtypes, 'id': str(linkCount), 'parent_id': parentID})
-    response['linkNo'] = linkCount
+    response['html'] = render_to_string("dashboard/timeline.html", {'viewtypes': viewtypes, 'id': str(link_no), 'parent_id': parentID})
+    response['linkNo'] = link_no
     return HttpResponse(json.dumps(response), mimetype='application/json')
 
 def map_template(request):
