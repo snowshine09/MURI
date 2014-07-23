@@ -83,7 +83,7 @@ CKEDITOR.plugins.add('embedvis', {
             command: 'embednw',
             icon: this.path + 'icons/network.png',
             // The button placement in the toolbar (toolbar group name).
-            toolbar: 'tools'
+            toolbar: 'links'
         });
 
         // editor.ui.addButton('claim', {

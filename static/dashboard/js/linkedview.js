@@ -23,6 +23,7 @@ var timeextent = {}; //two elements array to control and reflect change of timel
 var htimeline = {}; //discontinuous time
 var visxml = {};
 var cindex = {};
+var originIDs = {};
 
 
 //dynamic generation coordinated windows
@@ -77,32 +78,63 @@ function generateOthers(div, vis) { //div is source, vis is target
 					createDialog('message', null, {
 						'filter_type': 'message',
 						'id': msgID[self.SID],
+						'parentID': self.SID,
+						'origin': $("#" + self.Type + "_table_" + self.SID).DataTable().cells('.row_selected', 'ID:name').data().toArray()//msgID[self.SID],
 					});
 					break;
 				case 'event':
 					createDialog('event', null, {
 						'filter_type': 'event',
-						'id': dindex[self.SID]
+						'id': dindex[self.SID],
+						'parentID': self.SID,
+						'origin': $("#" + self.Type + "_table_" + self.SID).DataTable().cells('.row_selected', 'ID:name').data().toArray()//dindex[self.SID]
 					});
 					break;
 				case 'person':
+				createDialog(self.Type, null, {
+						'filter_type': 'person',
+						'id': dindex[self.SID],
+						'parentID': self.SID,
+						'origin': $("#" + self.Type + "_table_" + self.SID).DataTable().cells('.row_selected', 'ID:name').data().toArray()
+					});
+					break;
 				case 'organization':
+				createDialog(self.Type, null, {
+						'filter_type': 'organization',
+						'id': dindex[self.SID],
+						'parentID': self.SID,
+						'origin': $("#" + self.Type + "_table_" + self.SID).DataTable().cells('.row_selected', 'ID:name').data().toArray()
+					});
+					break;
 				case 'location':
+				createDialog(self.Type, null, {
+						'filter_type': 'location',
+						'id': dindex[self.SID],
+						'parentID': self.SID,
+						'origin': $("#" + self.Type + "_table_" + self.SID).DataTable().cells('.row_selected', 'ID:name').data().toArray()
+					});
+					break;
 				case 'resource':
 					createDialog(self.Type, null, {
-						'filter_type': 'event',
-						'id': dindex[self.SID]
+						'filter_type': 'resource',
+						'parentID': self.SID,
+						'id': dindex[self.SID],
+						'origin': $("#" + self.Type + "_table_" + self.SID).DataTable().cells('.row_selected', 'ID:name').data().toArray()
 					});
 					break;
 				case 'network':
 					createNetwork(null, {
 						'filter_type': 'network',
-						'id': dindex[self.SID]
+						'id': dindex[self.SID],
+						'parentID': self.SID,
+						// 'origin': $("#" + self.Type + "_table_" + self.SID).DataTable().cells('.row_selected', 'ID:name').data().toArray()
 					});
 					break;
 				case 'timeline':
 					createTimeline(null, {
 						'filter_type': 'timeline',
+						'parentID': self.SID,
+						// 'origin': $("#" + self.Type + "_table_" + self.SID).DataTable().cells('.row_selected', 'ID:name').data().toArray(),
 						'start': htimeline[self.SID][0],
 						'end': htimeline[self.SID][htimeline[self.SID].length - 1]
 					});

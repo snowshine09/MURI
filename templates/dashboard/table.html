@@ -3,7 +3,7 @@
         <div id="{{ table_type }}_selectbar_{{ id }}" class="selectbar form-group">
             <select class="form-control">
                 <option value="">Open in linked window...</option>
-                    <optgroup label = "Linked window...">
+                <optgroup label = "Linked window...">
                     {% for viewtype in viewtypes %}{% if table_type != viewtype %}<option value="{{ viewtype }}_self">{{ viewtype|title }}</option>{% endif %}{% endfor %}
                 </optgroup>
                 <optgroup label="Filter to subset...">
@@ -12,13 +12,19 @@
             </select>   
         </div>
         {% if parent_id %}
-        <div class="form-group">
-            <button href="#" class="btn btn-sm btn-default" onclick="showcontext();return false;">Show Context (parent view)</button>
+        <div id="table_ctxt_{{parent_id}}" class="form-group">
+            <button class="btn btn-sm btn-default showcontext">Show Context in Link {{parent_id}}</button>
+        </div>
+        <div class="form-group checkbox">
+            <label>
+                <input type="checkbox" class = "checkbox_input" checked> Related entities
+            </label>
         </div>
         {% endif %}
         <div class="form-group">
             <label class="selected-count">0</label> item(s) highlighted
         </div>
+
     </form>
     <table id="{{ table_type }}_table_{{ id }}">
 

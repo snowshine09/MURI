@@ -3,6 +3,8 @@ $.widget("vis.timeline", $.vis.viscontainer, {
 		var self = this;
 		this.Name = this.element.attr("id");
 		this.SID = this.Name.split("_")[2];
+
+    $("#timeline_dlg_"+self.SID).parent().addClass('link_'+self.SID);
 		var cmb = "timeline_selectbar_" + self.SID;
 
 		$("#" + cmb).attr("selectedIndex", 0).change(function() {

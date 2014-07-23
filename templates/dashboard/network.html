@@ -7,8 +7,8 @@
 				<div id="network_gravity_{{id}}"></div>
 			</div>
 			{% if parent_id %}
-			<div id="network_ctxt_{{id}}" class="showcontext form-group">
-				<button href="#" class="btn btn-sm btn-default" onclick="showcontext();return false;">Show Context in Link {{parent_id}}</button>
+			<div id="network_ctxt_{{parent_id}}" class="form-group">
+				<button class="btn btn-sm btn-default showcontext">Show Context in Link {{parent_id}}</button>
 			</div>
 			{% endif %}
 			<div id="network_selectbar_{{id}}" class="selectbar form-group">

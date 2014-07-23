@@ -36,13 +36,15 @@ def get_table(request):
     global linkCount
     global viewtypes
     link_no = request.REQUEST.get('link_no')
+    parentID = request.REQUEST.get('parentID',None)
+    response = {}
     if len(link_no) == 0:
         linkCount += 1
         link_no = linkCount
     table_type = request.REQUEST.get('table_type', '')
     headers = request.POST.getlist('headers[]')
     response = {}
-    response['html'] = render_to_string("dashboard/table.html", {'table_type': table_type, 'viewtypes': viewtypes, 'columns': headers, 'id': str(link_no)})
+    response['html'] = render_to_string("dashboard/table.html", {'table_type': table_type, 'viewtypes': viewtypes, 'columns': headers, 'id': str(link_no), 'parent_id': parentID})
     response['linkNo'] = link_no
     return HttpResponse(json.dumps(response), mimetype='application/json')
 
@@ -74,9 +76,10 @@ def timeline_template(request):
 
 def map_template(request):
     global linkCount
-    new_link = request.REQUEST.get('new_link')
-    if new_link == 'true':
+    link_no = request.REQUEST.get('link_no')
+    if len(link_no) == 0:
         linkCount += 1
+        link_no = linkCount
     global viewtypes
     parentID = request.REQUEST.get('parentID',None)
     response = {}
@@ -133,6 +136,7 @@ def filter_data_by_time(request):
     return HttpResponse(json.dumps(response), mimetype='application/json')
 
 def filter_data(request):
+    print "enter filter_data"
     response = {'dataItems': []}
     data_type = request.REQUEST.get('type')
     filter_type = request.REQUEST.get('filter_type', '')
@@ -140,12 +144,56 @@ def filter_data(request):
     if len(filter_type) == 0:
         events = Event.objects.all().order_by('date_begin')
     else:
-        if filter_type == "event":
+        # if filter_type == data_type:##literally one to one mapping relationship without any propagation
+        #     etts = []
+        #     response["origin"] = []
+            # if(filter_type == "event"):# no need to calculate frequency
+            #     etts = Event.objects.filter(id__in=ids).order_by('date_begin')
+            #     for ett in etts:
+            #         response['dataItems'].append(ett.getKeyAttr())
+            #     return HttpResponse(json.dumps(response), mimetype='application/json')
+            # elif(filter_type == "message"): # no need to calculate frequency
+            #     msgs = Message.objects.filter(uid__in = ids)
+            #     # messages_dup = ids
+            #     # for msg in msgs:
+            #     #     messages_dup.extend([message for message in msg.message_set.all()])
+            #     # messages = list(set(messages_dup))
+            #     for message in msgs:
+            #         response['dataItems'].append(message.getKeyAttr())
+            #     return HttpResponse(json.dumps(response), mimetype='application/json')
+            # else:
+            #     if(filter_type == "person"):
+            #         etts = Person.objects.filter(pk__in=ids)
+            #     elif(filter_type == "organization"):
+            #         etts = Organization.objects.filter(pk__in=ids)
+            #     elif(filter_type == "location"):
+            #         etts = Entity.objects.filter(pk__in=ids)
+            #     elif(filter_type == "resource"):
+            #         etts = Resource.objects.filter(pk__in=ids)
+            #     entity_dup = []
+            #     print "ids=",ids
+            #     print "etts=",etts
+            #     for ett in etts:
+            #         print "ett",ett
+            #         entity_dup.extend([ett])
+            #         entity_dup.extend([entity for entity in list(chain(ett.findTargets(), ett.findSources())) if hasattr(entity, data_type)])
+            #     print "entity_dup = ", entity_dup
+            #     for p in list(set(entity_dup)):
+            #         entity_info = p.getKeyAttr()
+            #         entity_info['frequency'] = entity_dup.count(p)
+            #         response['dataItems'].append(entity_info)
+            #     return HttpResponse(json.dumps(response), mimetype='application/json')
+
+                
+            
+        ##after propagating, with the associated events (derived from entities) and 
+        if filter_type == "event" or filter_type == "person" or filter_type == "organization" or filter_type == "location" or filter_type == "resource":
             events = Event.objects.filter(id__in=ids).order_by('date_begin')
         elif filter_type == "message":
             msgs = Message.objects.filter(uid__in=ids)
             evt_id = []
             for msg in msgs:
+                print "original msg = ", msg.uid, msg.content
                 msg_events = msg.event.all()
                 for eve in msg_events:
                     print eve.id
@@ -175,8 +223,10 @@ def filter_data(request):
         messages_dup = []
         for event in events:
             messages_dup.extend([message for message in event.message_set.all()])
+        
         messages = list(set(messages_dup))
         for message in messages:
+            print "message after mapping to event and back", message.uid, message.content
             response['dataItems'].append(message.getKeyAttr())
     elif data_type == 'person' or data_type == 'organization' or data_type == 'resource':
         entity_dup = []

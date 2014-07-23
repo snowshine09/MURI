@@ -14,6 +14,7 @@ div.gravity{
   stroke-width: 0.4px;
 }
 .selected text{
+  font: 12px Tahoma;
   fill: rgb(106, 86, 168);
   stroke: rgb(106, 86, 168);
 }

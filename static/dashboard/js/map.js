@@ -3,6 +3,7 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 		var self = this;
 		self.Name = self.element.attr("id");
 		self.SID = self.Name.split("_")[2];
+        $("#map_dlg_"+self.SID).parent().addClass('link_'+self.SID);
 		if (map[self.SID]) {
 			return;
 		}
