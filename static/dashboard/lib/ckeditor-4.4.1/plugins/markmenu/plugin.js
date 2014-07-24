@@ -26,7 +26,7 @@ CKEDITOR.plugins.add('markmenu', {
                 var EDTselection = editor.getSelection();
                 var text = ''; //EDTselection.getSelectedText();
                 var html = getSelectedHTML(editor);
-                html = Preprocess(html); 
+                html = Preprocess(html);
                 var litags = $('<div>'+html+'</div>').find("li");
                 if (litags.length != 0) {
                     ultext = '';
@@ -48,7 +48,7 @@ CKEDITOR.plugins.add('markmenu', {
                 var EDTselection = editor.getSelection();
                 var text = ''; //EDTselection.getSelectedText();
                 var html = getSelectedHTML(editor);
-                html = Preprocess(html); 
+                html = Preprocess(html);
                 var litags = $('<div>'+html+'</div>').find("li");
                 if (litags.length != 0) {
                     ultext = '';
@@ -70,7 +70,7 @@ CKEDITOR.plugins.add('markmenu', {
                 var EDTselection = editor.getSelection();
                 var text = ''; //EDTselection.getSelectedText();
                 var html = getSelectedHTML(editor);
-                html = Preprocess(html); 
+                html = Preprocess(html);
                 var litags = $('<div>'+html+'</div>').find("li");
                 if (litags.length != 0) {
                     ultext = '';

@@ -217,8 +217,6 @@ function highlight(footprint_id) {
 
 function showcontext(event) {
 	event.preventDefault();
-	console.log(event.target);
-	alert("showcontext");
 	var parentID = event.target.parentElement.parentElement.parentElement.id.split("_")[2],
 		parentType = event.target.parentElement.parentElement.parentElement.id.split("_")[0];
 	cindex[parentID] = [];
