@@ -26,6 +26,7 @@ CKEDITOR.plugins.add('markmenu', {
                 var EDTselection = editor.getSelection();
                 var text = ''; //EDTselection.getSelectedText();
                 var html = getSelectedHTML(editor);
+                html = Preprocess(html);
                 var litags = $('<div>'+html+'</div>').find("li");
                 if (litags.length != 0) {
                     ultext = '';
@@ -47,6 +48,7 @@ CKEDITOR.plugins.add('markmenu', {
                 var EDTselection = editor.getSelection();
                 var text = ''; //EDTselection.getSelectedText();
                 var html = getSelectedHTML(editor);
+                html = Preprocess(html);
                 var litags = $('<div>'+html+'</div>').find("li");
                 if (litags.length != 0) {
                     ultext = '';
@@ -68,6 +70,7 @@ CKEDITOR.plugins.add('markmenu', {
                 var EDTselection = editor.getSelection();
                 var text = ''; //EDTselection.getSelectedText();
                 var html = getSelectedHTML(editor);
+                html = Preprocess(html);
                 var litags = $('<div>'+html+'</div>').find("li");
                 if (litags.length != 0) {
                     ultext = '';
@@ -220,7 +223,8 @@ function Preprocess(html){
     // });
     $(html).find('.question').removeClass('question').removeAttr( 'style' );
     $(html).find('.claim').removeClass('claim').removeAttr( 'style' );
-    $(html).find('.evidence').removeClass('evidence').removeAttr( 'style' );
+    $(html).find('.conf_evidence').removeClass('conf_evidence').removeAttr( 'style' );
+    $(html).find('.disc_evidence').removeClass('disc_evidence').removeAttr( 'style' );
     console.log(html);
     console.log($(html).html());
     return $(html).html();

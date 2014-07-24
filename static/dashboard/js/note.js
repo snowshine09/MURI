@@ -176,7 +176,6 @@ $.widget("vis.visnotetable", $.vis.viscontainer, {
                 $links.on('click', function() {
                     var linkBtn = this;
                     var visID = $(linkBtn).attr("vid");
-                    alert("visid = " + visID);
                     $.ajax({
                         url: "visOnceMore",
                         type: "POST",

@@ -12,7 +12,6 @@ CKEDITOR.plugins.add('embedvis', {
                     if ($(allvisdlg[0][i]).dialogExtend("state") != "minimized") {
                         var vType = $(allvisdlg[0][i]).attr("id").split("_")[0],
                             SID = $(allvisdlg[0][i]).attr("id").split("_")[2];
-                        alert("store dialog " + vType + SID);
                         if (newvis[SID] == undefined) {
                             newvis[SID] = {};
                             IDs.push(SID);

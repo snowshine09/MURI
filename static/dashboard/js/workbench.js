@@ -135,8 +135,6 @@ $.widget("vis.visworkbench", $.Widget, {
                 success: function() {
 
                     $(".mynotes").each(function() {
-                        console.log($(this));
-                        //alert("mhynotes");
                         $(this).data("vis-visnotetable").update();
                     });
                     $("#wb_editor_" + wbID).val('');
@@ -144,7 +142,6 @@ $.widget("vis.visworkbench", $.Widget, {
                 },
                 error: function(xhr) {
                     if (xhr.status == 403) {
-                        console.log(xhr);
                         var res = JSON.parse(xhr.responseText);
                         alert(res.errors);
                     } else {
