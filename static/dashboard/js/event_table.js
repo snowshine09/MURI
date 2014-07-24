@@ -6,7 +6,7 @@ SIIL.DataTable = function($div, table_type, link_no) {
 	$("#" + self.tbType + "_dlg_" + self.SID).parent().addClass('link_' + self.SID);
 
 	self.isfuzzy = $("#" + self.tbType + "_dlg_" + self.SID).find('.checkbox_input').is(":checked");
-	
+
 	self.table = $('#' + self.tbName).DataTable({
 		autoWidth: true,
 		scrollY: '100%',
@@ -26,15 +26,24 @@ SIIL.DataTable = function($div, table_type, link_no) {
 
 	$("#" + self.tbType + "_dlg_" + self.SID).find('.showcontext').click(function(event) {
 		event.preventDefault();
-		self.parentID = $div.find('.showcontext').parent().attr('id').split("_")[2];
-		if(tables[table_type][self.parentID]!=undefined){
-			var indexes = $("#" + self.tbType + "_dlg_" + self.parentID).find('table').DataTable().rows().eq(0).filter(function(rowIdx) {
-				var tmp = $("#" + self.tbType + "_dlg_" + self.parentID).find('table').DataTable().cell(rowIdx, 0).data();
-				return $.inArray(tmp, originIDs[self.SID]) != -1 ? false : true;
-			});
+		self.parentID = $("#"+self.tbType+"_ctxt_"+self.SID).html().split(" ")[4];
+		var b4toggleText = $("#"+self.tbType+"_ctxt_"+self.SID).html().split(" ")[0],
+			ToggledText = $("#"+self.tbType+"_ctxt_"+self.SID).html().split(" ")[0] == "Show" ? "Hide" : "Show";
+		$("#"+self.tbType+"_ctxt_"+self.SID).html(ToggledText + " Context in Link " + self.parentID);
+		if (b4toggleText == "Show") {
+			if (tables[table_type][self.parentID] != undefined) {
+				var indexes = $("#" + self.tbType + "_table_" + self.parentID).DataTable().rows().eq(0).filter(function(rowIdx) {
+					var tmp = $("#" + self.tbType + "_table_" + self.parentID).DataTable().cell(rowIdx, 0).data();
+					return $.inArray(tmp, originIDs[self.SID]) != -1 ? true : false;
+				});
 
-			$("#" + self.tbType + "_dlg_" + self.parentID).find('table').DataTable().rows(indexes).nodes().to$().addClass('row_origin');
-		} else alert("Parent link has already been removed!");
+				$("#" + self.tbType + "_table_" + self.parentID).DataTable().rows(indexes).nodes().to$().css("background-color", DlgTcolor[self.SID]);
+				$("#" + self.tbType + "_table_" + self.parentID).DataTable().rows(indexes).nodes().to$().removeClass("row_selected");
+			} else alert("Parent link has already been removed!");
+		} else {
+			$("#" + self.tbType + "_table_" + self.parentID).DataTable().rows(indexes).nodes().to$().css("background-color", "");
+			tables[table_type][self.parentID].update("brush");
+		}
 	});
 	var cmb = $div.find('.selectbar').attr('id');
 

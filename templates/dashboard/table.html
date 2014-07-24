@@ -12,8 +12,8 @@
             </select>   
         </div>
         {% if parent_id %}
-        <div id="table_ctxt_{{parent_id}}" class="form-group">
-            <button class="btn btn-sm btn-default showcontext">Show Context in Link {{parent_id}}</button>
+        <div class="form-group">
+            <button id="{{ table_type }}_ctxt_{{id}}" class="btn btn-sm btn-default showcontext">Show Context in Link {{parent_id}}</button>
         </div>
         <div class="form-group checkbox">
             <label>

@@ -11,6 +11,13 @@ g.node {
   margin-right: 0px!important;
 }
 
+.showcontext {
+  width:200px;
+}
+
+.network_mode {
+  width:120px;
+}
 .row_origin {
   /*background-color: rgb(106, 86, 168)!important;*/
   color: #9FAACC;/*#E69B9B*/
