@@ -143,7 +143,9 @@ def filter_data(request):
     ids = request.POST.getlist('id[]', None)
     if len(filter_type) == 0:
         events = Event.objects.all().order_by('date_begin')
+        print "queryEvent"
     else:
+        print "not queryEvent"
         # if filter_type == data_type:##literally one to one mapping relationship without any propagation
         #     etts = []
         #     response["origin"] = []
@@ -185,7 +187,7 @@ def filter_data(request):
             #     return HttpResponse(json.dumps(response), mimetype='application/json')
 
                 
-            
+        print "ids = []", ids    
         ##after propagating, with the associated events (derived from entities) and 
         if filter_type == "event" or filter_type == "person" or filter_type == "organization" or filter_type == "location" or filter_type == "resource":
             events = Event.objects.filter(id__in=ids).order_by('date_begin')

@@ -127,7 +127,7 @@ $.widget("vis.vismap", $.vis.viscontainer, {
 				feature.attributes.id = location['uid'];
 				feature.attributes.name = location['name'];
 				location['shape'] = feature;
-				if (feature instanceof OpenLayers.Geometry.Point) {
+				if (location['shape'].geometry instanceof OpenLayers.Geometry.Point) {
 					points.push(location['shape']);
 				} else {
 					lines.push(location['shape']);
