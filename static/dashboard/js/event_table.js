@@ -111,7 +111,7 @@ SIIL.DataTable.prototype.update = function(uType) {
 				case "location":
 					for (var i = 0; i < dataset[this.SID]['location'].length; i++) {
 						var item = dataset[this.SID]['location'][i];
-						self.data.push([item.uid, item.name, item.frequency]);
+						self.data.push([item.uid, item.name, item.frequency,0]);
 					}
 					break;
 				case "message":
