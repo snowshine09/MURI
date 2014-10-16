@@ -13,6 +13,8 @@ SIIL.DataTable = function($div, table_type, link_no) {
 		dom: 'lftirp',
 		pagingType: 'full',
 		columns: tableHeaders[table_type],
+		ordering:true,
+		orderFixed:[tableHeaders[table_type].length-1,'desc'],
 	});
 	if (self.tbType != 'message') {
 		self.table.column('ID:name').visible(false);
@@ -70,37 +72,37 @@ SIIL.DataTable.prototype.update = function(uType) {
 				case "location":
 					for (var i = 0; i < dataset[this.SID]['location'].length; i++) {
 						var item = dataset[this.SID]['location'][i];
-						if ($.inArray(item.uid, originIDs[self.SID]) != -1) self.data.push([item.uid, item.name, item.frequency]);
+						if ($.inArray(item.uid, originIDs[self.SID]) != -1) self.data.push([item.uid, item.name, item.frequency,0]);
 					}
 					break;
 				case "message":
 					for (var i = 0; i < dataset[this.SID]['message'].length; i++) {
 						var item = dataset[this.SID]['message'][i];
-						if ($.inArray(item.uid, originIDs[self.SID]) != -1) self.data.push([item.uid, item.content, item.date]);
+						if ($.inArray(item.uid, originIDs[self.SID]) != -1) self.data.push([item.uid, item.content, item.date,0]);
 					}
 					break;
 				case "event":
 					for (var i = 0; i < dataset[this.SID]['event'].length; i++) {
 						var item = dataset[this.SID]['event'][i];
-						if ($.inArray(item.uid, originIDs[self.SID]) != -1) self.data.push([item.uid, item.name, item.types, item.excerpt, item.date]);
+						if ($.inArray(item.uid, originIDs[self.SID]) != -1) self.data.push([item.uid, item.name, item.types, item.excerpt, item.date,0]);
 					}
 					break;
 				case "resource":
 					for (var i = 0; i < dataset[this.SID]['resource'].length; i++) {
 						var item = dataset[this.SID]['resource'][i];
-						if ($.inArray(item.uid, originIDs[self.SID]) != -1) self.data.push([item.uid, item.name, item.condition, item.resource_type, item.frequency]);
+						if ($.inArray(item.uid, originIDs[self.SID]) != -1) self.data.push([item.uid, item.name, item.condition, item.resource_type, item.frequency,0]);
 					}
 					break;
 				case "person":
 					for (var i = 0; i < dataset[this.SID]['person'].length; i++) {
 						var item = dataset[this.SID]['person'][i];
-						if ($.inArray(item.uid, originIDs[self.SID]) != -1) self.data.push([item.uid, item.name, item.gender, item.race, item.nationality, item.frequency]);
+						if ($.inArray(item.uid, originIDs[self.SID]) != -1) self.data.push([item.uid, item.name, item.gender, item.race, item.nationality, item.frequency,0]);
 					}
 					break;
 				case "organization":
 					for (var i = 0; i < dataset[this.SID]['organization'].length; i++) {
 						var item = dataset[this.SID]['organization'][i];
-						if ($.inArray(item.uid, originIDs[self.SID]) != -1) self.data.push([item.uid, item.name, item.types, item.nationality, item.ethnicity, item.religion, item.frequency]);
+						if ($.inArray(item.uid, originIDs[self.SID]) != -1) self.data.push([item.uid, item.name, item.types, item.nationality, item.ethnicity, item.religion, item.frequency,0]);
 					}
 					break;
 			}
@@ -115,31 +117,31 @@ SIIL.DataTable.prototype.update = function(uType) {
 				case "message":
 					for (var i = 0; i < dataset[this.SID]['message'].length; i++) {
 						var item = dataset[this.SID]['message'][i];
-						self.data.push([item.uid, item.content, item.date]);
+						self.data.push([item.uid, item.content, item.date,0]);
 					}
 					break;
 				case "event":
 					for (var i = 0; i < dataset[this.SID]['event'].length; i++) {
 						var item = dataset[this.SID]['event'][i];
-						self.data.push([item.uid, item.name, item.types, item.excerpt, item.date]);
+						self.data.push([item.uid, item.name, item.types, item.excerpt, item.date,0]);
 					}
 					break;
 				case "resource":
 					for (var i = 0; i < dataset[this.SID]['resource'].length; i++) {
 						var item = dataset[this.SID]['resource'][i];
-						self.data.push([item.uid, item.name, item.condition, item.resource_type, item.frequency]);
+						self.data.push([item.uid, item.name, item.condition, item.resource_type, item.frequency,0]);
 					}
 					break;
 				case "person":
 					for (var i = 0; i < dataset[this.SID]['person'].length; i++) {
 						var item = dataset[this.SID]['person'][i];
-						self.data.push([item.uid, item.name, item.gender, item.race, item.nationality, item.frequency]);
+						self.data.push([item.uid, item.name, item.gender, item.race, item.nationality, item.frequency,0]);
 					}
 					break;
 				case "organization":
 					for (var i = 0; i < dataset[this.SID]['organization'].length; i++) {
 						var item = dataset[this.SID]['organization'][i];
-						self.data.push([item.uid, item.name, item.types, item.nationality, item.ethnicity, item.religion, item.frequency]);
+						self.data.push([item.uid, item.name, item.types, item.nationality, item.ethnicity, item.religion, item.frequency,0]);
 					}
 					break;
 			}
@@ -164,24 +166,38 @@ SIIL.DataTable.prototype.update = function(uType) {
 		if (msgID[self.SID].length != 0) {
 			var indexes = self.table.rows().eq(0).filter(function(rowIdx) {
 				var tmp = self.table.cell(rowIdx, 0).data();
+				self.table.cell(rowIdx, 3).data(0).draw();
 				return $.inArray(tmp, msgID[self.SID]) != -1 ? true : false;
 			});
 			self.table.$('tr.row_selected').removeClass("row_selected");
 			self.table.rows(indexes).nodes().to$().addClass('row_selected');
+			self.table.rows(indexes).eq(0).filter(function(rowIdx) {
+				self.table.cell(rowIdx, 3).data(1).draw();
+			});
 		} else {
 			self.table.$('tr.row_selected').removeClass("row_selected");
+			self.table.rows().eq(0).filter(function(rowIdx) {
+				self.table.cell(rowIdx, 3).data(0).draw();
+			});
 		}
 	} else {
 		// highlight entries in Entity table
 		if (dindex[self.SID].length != 0) {
 			var indexes = self.table.rows().eq(0).filter(function(rowIdx) {
 				var tmp = self.table.cell(rowIdx, 0).data();
+				self.table.cell(rowIdx, tableHeaders[self.tbType].length-1).data(0).draw();
 				return $.inArray(tmp, dindex[self.SID]) != -1 ? true : false;
 			});
 			self.table.$('tr.row_selected').removeClass("row_selected");
 			self.table.rows(indexes).nodes().to$().addClass('row_selected');
+			self.table.rows(indexes).eq(0).filter(function(rowIdx) {
+				self.table.cell(rowIdx, tableHeaders[self.tbType].length-1).data(1).draw();
+			});
 		} else {
 			self.table.$('tr.row_selected').removeClass("row_selected");
+			self.table.rows(indexes).eq(0).filter(function(rowIdx) {
+				self.table.cell(rowIdx, tableHeaders[self.tbType].length-1).data(0).draw();
+			});
 		}
 	}
 

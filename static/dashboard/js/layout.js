@@ -43,6 +43,11 @@ var tableHeaders = {
     }, {
         'title': 'Date',
         'name': 'Date'
+    }, {
+        'title': 'Selected',
+        'name': 'Selected',
+        'visible':false,
+        'orderable':true
     }],
     'location': [{
         'title': 'ID',
@@ -53,6 +58,11 @@ var tableHeaders = {
     }, {
         'title': 'Frequency',
         'name': 'Frequency'
+    }, {
+        'title': 'Selected',
+        'name': 'Selected',
+        'visible':false,
+        'orderable':true
     }],
     'message': [{
         'title': 'ID',
@@ -63,6 +73,11 @@ var tableHeaders = {
     }, {
         'title': 'Date',
         'name': 'Date'
+    }, {
+        'title': 'Selected',
+        'name': 'Selected',
+        'visible':false,
+        'orderable':true
     }],
     'person': [{
         'title': 'ID',
@@ -82,6 +97,11 @@ var tableHeaders = {
     }, {
         'title': 'Frequency',
         'name': 'Frequency'
+    }, {
+        'title': 'Selected',
+        'name': 'Selected',
+        'visible':false,
+        'orderable':true
     }],
     'organization': [{
         'title': 'ID',
@@ -104,6 +124,11 @@ var tableHeaders = {
     }, {
         'title': 'Frequency',
         'name': 'Frequency'
+    }, {
+        'title': 'Selected',
+        'name': 'Selected',
+        'visible':false,
+        'orderable':true
     }],
     'resource': [{
         'title': 'ID',
@@ -120,6 +145,11 @@ var tableHeaders = {
     }, {
         'title': 'Frequency',
         'name': 'Frequency'
+    }, {
+        'title': 'Selected',
+        'name': 'Selected',
+        'visible':false,
+        'orderable':true
     }],
 };
 
@@ -283,7 +313,7 @@ function createMap(link_no, filter_params) {
             }
             $(xhr.html).dialog($.extend({}, dialogOptions, {
                 title: 'Map of link ' + link_no,
-                position: ['left', 36],
+                position: ['left', 36*2],
                 height: 600,
                 close: function(event, ui) {
                     delete map[$(this).attr("id").split("_")[2]];
@@ -333,9 +363,11 @@ function createTimeline(link_no, filter_params) {
             if ($("#timeline_dlg_" + link_no).length) {
                 return;
             }
+            // target_posited = parentID==null?window:
             $(xhr.html).dialog($.extend({}, dialogOptions, {
                 title: 'Timeline of link ' + link_no,
-                position: ['left', 36],
+                // position: ['left', 36],
+                position:{ my: "left top", at: "left top" },//, of: button
                 width: 'auto',
                 height: 'auto',
                 minHeight: '0',
