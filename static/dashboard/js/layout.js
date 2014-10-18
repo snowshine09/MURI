@@ -278,6 +278,7 @@ function initNewLink(table_type, filter_params, link_no, callback) {
         'timeline': [],
         'filter': {},
         'parentID':null,
+        'center':table_type,
     };
     timeextent[link_no] = [];
     htimeline[link_no] = [];
@@ -290,6 +291,9 @@ function initNewLink(table_type, filter_params, link_no, callback) {
         getData('event', filter_params, link_no, function() {
             getData(table_type, filter_params, link_no, callback);
         });
+    }
+    if(filter_params["filter_type"]=="network"){
+        dataset[link_no]['center']="network";
     }
 };
 
@@ -430,6 +434,7 @@ function createNetwork(link_no, filter_params) {
             })).dialogExtend(dialogExtendOptions);
             network[link_no] = new SIIL.Network($(xhr.html), link_no);
             if (new_link) { // start window in new link / start a subset
+                console.log(filter_params);
                 initNewLink('event', filter_params, link_no, function() { // filter_params is not null when starting subset
                     dataset[link_no]['filter'] = filter_params;
                     if (filter_params != null) {

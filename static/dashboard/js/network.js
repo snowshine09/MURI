@@ -26,7 +26,7 @@ SIIL.Network = function($div, link_no) {
     event.preventDefault();
     self.parentID = $div.find('.showcontext').parent().attr('id').split("_")[2];
     if(network[self.parentID]!=undefined){
-      
+
     } else alert("Parent link has already been removed!");
   });
 
@@ -63,80 +63,80 @@ SIIL.Network = function($div, link_no) {
 
   // });
 
-  self.force = d3.layout.force()
-    .nodes([])
-    .links([])
-    .gravity(0.2)
-    .charge(-400)
-    .size([self.width, self.height])
-    .on("tick", tick);
+self.force = d3.layout.force()
+.nodes([])
+.links([])
+.gravity(0.2)
+.charge(-400)
+.size([self.width, self.height])
+.on("tick", tick);
 
   self.shiftKey = null; //set shiftkey available all over the body
   d3.select("body")
-    .attr("tabindex", 1)
-    .on("keyup", keyflip)
-    .on("keydown", keyflip)
-    .each(function() {
-      this.focus();
-    });
+  .attr("tabindex", 1)
+  .on("keyup", keyflip)
+  .on("keydown", keyflip)
+  .each(function() {
+    this.focus();
+  });
 
   var x_scale = d3.scale.identity().domain([0, this.width]),
-    y_scale = d3.scale.identity().domain([0, this.height]);
+  y_scale = d3.scale.identity().domain([0, this.height]);
 
   //REGISTER behaviors: zoom, drag, brush
   self.zoom = d3.behavior.zoom()
-    .scaleExtent([0, 15])
-    .x(x_scale)
-    .y(y_scale)
-    .on("zoom", redraw);
+  .scaleExtent([0, 15])
+  .x(x_scale)
+  .y(y_scale)
+  .on("zoom", redraw);
 
   self.drag = self.force.drag()
-    .on("dragstart", dragstarted)
-    .on("drag", dragged)
-    .on("dragend", dragended);
+  .on("dragstart", dragstarted)
+  .on("drag", dragged)
+  .on("dragend", dragended);
 
   self.brush = d3.svg.brush()
-    .x(self.zoom.x())
-    .y(self.zoom.y())
-    .on("brushstart", function(d) {
-      node.each(function(d) {
-        d.previouslySelected = self.shiftKey && d.selected;
-      });
-    })
-    .on("brush", function() {
-      var extent = d3.event.target.extent();
-      node.classed("selected", function(d) {
-        return d.selected = d.previouslySelected ^
-          (extent[0][0] <= d.x && d.x < extent[1][0] && extent[0][1] <= d.y && d.y < extent[1][1]);
-      });
-    })
-    .on("brushend", function() {
-      d3.event.target.clear();
-      d3.select(this).call(d3.event.target);
-      updateOthers();
+  .x(self.zoom.x())
+  .y(self.zoom.y())
+  .on("brushstart", function(d) {
+    node.each(function(d) {
+      d.previouslySelected = self.shiftKey && d.selected;
     });
+  })
+  .on("brush", function() {
+    var extent = d3.event.target.extent();
+    node.classed("selected", function(d) {
+      return d.selected = d.previouslySelected ^
+      (extent[0][0] <= d.x && d.x < extent[1][0] && extent[0][1] <= d.y && d.y < extent[1][1]);
+    });
+  })
+  .on("brushend", function() {
+    d3.event.target.clear();
+    d3.select(this).call(d3.event.target);
+    updateOthers();
+  });
 
   var svg = d3.select('#' + self.Name)
-    .attr("tabindex", 1)
-    .on("keyup", keyflip)
-    .on("keydown", keyflip)
-    .each(function() {
-      this.focus();
-    })
-    .append("svg:svg")
-    .attr("width", self.width)
-    .attr("height", self.height)
-    .attr("pointer-events", "all")
-    .append('svg:g')
-    .attr("class", "zoom")
-    .call(self.zoom)
-    .append("svg:g");
+  .attr("tabindex", 1)
+  .on("keyup", keyflip)
+  .on("keydown", keyflip)
+  .each(function() {
+    this.focus();
+  })
+  .append("svg:svg")
+  .attr("width", self.width)
+  .attr("height", self.height)
+  .attr("pointer-events", "all")
+  .append('svg:g')
+  .attr("class", "zoom")
+  .call(self.zoom)
+  .append("svg:g");
 
   var rect = svg.append("rect")
-    .attr("transform", "translate(-" + self.width / 2 + ",-" + self.height / 2 + ")")
-    .attr("width", self.width * 2)
-    .attr("height", self.height * 2)
-    .style("fill", "none");
+  .attr("transform", "translate(-" + self.width / 2 + ",-" + self.height / 2 + ")")
+  .attr("width", self.width * 2)
+  .attr("height", self.height * 2)
+  .style("fill", "none");
 
   var node = svg.selectAll(".node");
   var link = svg.selectAll(".link");
@@ -226,15 +226,15 @@ SIIL.Network = function($div, link_no) {
       svg.selectAll(".brush").remove();
     } else {
       self.brush_g = svg.append("g")
-        .datum(function() {
-          return {
-            selected: false,
-            previouslySelected: false
-          };
-        })
-        .attr("tabindex", 2)
-        .attr("class", "brush")
-        .call(self.brush);
+      .datum(function() {
+        return {
+          selected: false,
+          previouslySelected: false
+        };
+      })
+      .attr("tabindex", 2)
+      .attr("class", "brush")
+      .call(self.brush);
     }
   }
   d3.selection.prototype.size = function() {
@@ -255,10 +255,71 @@ SIIL.Network = function($div, link_no) {
   self.update = function(update_type) {
     var self = this;
     if (update_type === "init") {
+      // alert(dataset[self.SID]['center']);
       events_id = []
-      for (var i = 0; i < dataset[self.SID]['event'].length; i++) {
-        events_id.push(dataset[self.SID]['event'][i].uid);
+      // if(dataset[self.SID]['center']=="network"){
+      //   for (var i = 0; i < dataset[self.SID]['event'].length; i++) {
+      //     events_id.push(dataset[self.SID]['event'][i].uid);
+      //   }
+      //   for (var i = 0; i < dataset[self.SID]['organization'].length; i++) {
+      //     events_id.push(dataset[self.SID]['organization'][i].uid);
+      //   }
+      //   for (var i = 0; i < dataset[self.SID]['person'].length; i++) {
+      //     events_id.push(dataset[self.SID]['person'][i].uid);
+      //   }
+      //   for (var i = 0; i < dataset[self.SID]['location'].length; i++) {
+      //     events_id.push(dataset[self.SID]['location'][i].uid);
+      //   }
+      //   for (var i = 0; i < dataset[self.SID]['resource'].length; i++) {
+      //     events_id.push(dataset[self.SID]['resource'][i].uid);
+      //   }
+      // }
+      if(dataset[self.SID]['center']=="event"){
+        for (var i = 0; i < dataset[self.SID]['event'].length; i++) {
+          events_id.push(dataset[self.SID]['event'][i].uid);
+        }
       }
+      else if(dataset[self.SID]['center']=="organization"){
+        for (var i = 0; i < dataset[self.SID]['organization'].length; i++) {
+          events_id.push(dataset[self.SID]['organization'][i].uid);
+        }
+      }
+      else if(dataset[self.SID]['center']=="person"){
+        for (var i = 0; i < dataset[self.SID]['person'].length; i++) {
+          events_id.push(dataset[self.SID]['person'][i].uid);
+        }
+      }
+      else if(dataset[self.SID]['center']=="location"){
+        for (var i = 0; i < dataset[self.SID]['location'].length; i++) {
+          events_id.push(dataset[self.SID]['location'][i].uid);
+        }
+      }
+      else if(dataset[self.SID]['center']=="resource"){
+        for (var i = 0; i < dataset[self.SID]['resource'].length; i++) {
+          events_id.push(dataset[self.SID]['resource'][i].uid);
+        }
+      }
+      else {
+        for (var i = 0; i < dataset[self.SID]['event'].length; i++) {
+          events_id.push(dataset[self.SID]['event'][i].uid);
+        }
+        for (var i = 0; i < dataset[self.SID]['organization'].length; i++) {
+          events_id.push(dataset[self.SID]['organization'][i].uid);
+        }
+        for (var i = 0; i < dataset[self.SID]['person'].length; i++) {
+          events_id.push(dataset[self.SID]['person'][i].uid);
+        }
+        for (var i = 0; i < dataset[self.SID]['location'].length; i++) {
+          events_id.push(dataset[self.SID]['location'][i].uid);
+        }
+        for (var i = 0; i < dataset[self.SID]['resource'].length; i++) {
+          events_id.push(dataset[self.SID]['resource'][i].uid);
+        }
+      }
+      // alert(events_id.length);
+
+
+
       $.ajax({
         url: 'network/',
         type: 'post',
@@ -275,39 +336,39 @@ SIIL.Network = function($div, link_no) {
           link.enter().append("line").attr("class", "link");
           node = node.data(xhr.nodes);
           node_g = node.enter().append("g")
-            .attr("class", "node")
-            .call(self.drag);
+          .attr("class", "node")
+          .call(self.drag);
           node.append("image")
-            .attr("xlink:href", function(d) {
-              if (d.node == 'Organization') {
-                return "static/dashboard/img/organization.png";
-              } else if (d.node == 'Person') {
-                return "static/dashboard/img/person.png";
-              } else if (d.node == 'Event') {
-                return "static/dashboard/img/event.png";
-              } else if (d.node == 'Footprint') {
-                return "static/dashboard/img/footprint.png";
-              } else if (d.node == 'Resource') {
-                return "static/dashboard/img/resource.png";
-              }
-            }).attr("x", -12)
-            .attr("y", -12)
-            .attr("width", 24)
-            .attr("height", 24);
+          .attr("xlink:href", function(d) {
+            if (d.node == 'Organization') {
+              return "static/dashboard/img/organization.png";
+            } else if (d.node == 'Person') {
+              return "static/dashboard/img/person.png";
+            } else if (d.node == 'Event') {
+              return "static/dashboard/img/event.png";
+            } else if (d.node == 'Footprint') {
+              return "static/dashboard/img/footprint.png";
+            } else if (d.node == 'Resource') {
+              return "static/dashboard/img/resource.png";
+            }
+          }).attr("x", -12)
+          .attr("y", -12)
+          .attr("width", 24)
+          .attr("height", 24);
 
           node.append("text")
-            .attr("dx", "-1.95em")
-            .attr("dy", "-.95em")
-            .text(function(d) {
-              return d.name
-            });
+          .attr("dx", "-1.95em")
+          .attr("dy", "-.95em")
+          .text(function(d) {
+            return d.name
+          });
           self.force.start();
           update_mode();
           self.highlight();
         }
       });
-    } else {
-      self.highlight();
-    }
-  }
+} else {
+  self.highlight();
+}
+}
 };

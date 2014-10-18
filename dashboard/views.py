@@ -190,6 +190,14 @@ def filter_data(request):
         print "ids = []", ids    
         ##after propagating, with the associated events (derived from entities) and 
         if filter_type == "event" or filter_type == "person" or filter_type == "organization" or filter_type == "location" or filter_type == "resource":
+            events = Entity.objects.filter(id__in=ids)
+            linked_entities = list(events.select_subclasses())
+            for eve in events:
+                entities = list(chain(eve.findTargets(), eve.findSources()))
+                linked_entities += entities
+            relations = Relationship.objects.filter( Q(source__in=linked_entities) & Q(target__in=linked_entities) )
+            for relation in relations:
+                ids.extend([relation.source.id, relation.target.id])
             events = Event.objects.filter(id__in=ids).order_by('date_begin')
         elif filter_type == "message":
             msgs = Message.objects.filter(uid__in=ids)
@@ -272,6 +280,7 @@ def prepareNetwork(request):
     for entity in linked_entities:
         if entity.date_begin is not None:
             date = entity.date_begin.strftime('%m/%d/%Y') 
+        else: date = ''
         graph.add_node(entity.id, {'uid': entity.id, 'node': type(entity).__name__, 'name': entity.name, 'date': date})
 
     relations = Relationship.objects.filter( Q(source__in=linked_entities) & Q(target__in=linked_entities) )
@@ -296,7 +305,12 @@ def related_entities(request):
     linked_entities = list(ori_entities.select_subclasses())
     for entity in ori_entities:
         linked_entities.extend(list(chain(entity.findTargets(), entity.findSources())))
+        # linked_entities.extend+=list(chain(entity.findTargets(), entity.findSources()))
+    relations = Relationship.objects.filter( Q(source__in=linked_entities) & Q(target__in=linked_entities) )
     response['ett_idset'] = list(set([entity.id for entity in linked_entities]))
+    for relation in relations:
+        response['ett_idset'].extend([relation.source.id, relation.target.id])
+    
     response['ett_dateset'] = list(set([entity.date_begin.strftime('%m/%d/%Y') for entity in linked_entities if entity.date_begin is not None]))
 
 
