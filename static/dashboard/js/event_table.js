@@ -10,7 +10,7 @@ SIIL.DataTable = function($div, table_type, link_no) {
 	self.table = $('#' + self.tbName).DataTable({
 		autoWidth: true,
 		scrollY: '100%',
-		dom: 'lftirp',
+		dom: 'ftir',
 		pagingType: 'full',
 		columns: tableHeaders[table_type],
 		ordering:true,

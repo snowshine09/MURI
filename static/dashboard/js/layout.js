@@ -27,6 +27,28 @@ var tableNames = {
     'organization': 'Organizations',
     'resource': 'Resources',
 };
+var DlgInitPos = {
+    'event':[0,36],//left, top parameter
+    'location': [$(window).width()*2/3,36],
+    'message': [$(window).width()/3,36],
+    'person': [0,536],
+    'organization': [$(window).width()/3,536],
+    'resource': [$(window).width()*2/3,536],
+    'timeline':[0,$(window).height()/3*2],
+    'map':[$(window).width()/3,$(window).height()/3*2],
+    'network':[$(window).width()*2/3,$(window).height()/3*2],
+};
+var DlgSize = {
+    'event':['600px',36],//left, top parameter
+    'location': ['300px',36],
+    'message': ['600px',36],
+    'person': ['450px',536],
+    'organization': ['480px',536],
+    'resource': ['500px',536],  
+    'timeline':[0,$(window).height()/3*2],
+    'map':[$(window).width()/3,$(window).height()/3*2],
+    'network':[$(window).width()*2/3,$(window).height()/3*2],
+};
 var tableHeaders = {
     'event': [{
         'title': 'ID',
@@ -317,7 +339,7 @@ function createMap(link_no, filter_params) {
             }
             $(xhr.html).dialog($.extend({}, dialogOptions, {
                 title: 'Map of link ' + link_no,
-                position: ['left', 36*2],
+                position: DlgInitPos['map'],
                 height: 600,
                 close: function(event, ui) {
                     delete map[$(this).attr("id").split("_")[2]];
@@ -371,7 +393,7 @@ function createTimeline(link_no, filter_params) {
             $(xhr.html).dialog($.extend({}, dialogOptions, {
                 title: 'Timeline of link ' + link_no,
                 // position: ['left', 36],
-                position:{ my: "left top", at: "left top" },//, of: button
+                position:DlgInitPos['timeline'],//, of: button
                 width: 'auto',
                 height: 'auto',
                 minHeight: '0',
@@ -426,7 +448,7 @@ function createNetwork(link_no, filter_params) {
             }
             $(xhr.html).dialog($.extend({}, dialogOptions, {
                 title: 'Network of link ' + link_no,
-                position: ['left', 36],
+                position: DlgInitPos['network'],
                 close: function(event, ui) {
                     delete network[$(this).attr("id").split("_")[2]];
                     $(this).dialog('destroy').remove();
@@ -481,7 +503,10 @@ function createDialog(table_type, link_no, filter_params) {
 
             $(xhr.html).dialog($.extend({
                 title: tableNames[table_type] + ' of link ' + link_no,
-                position: ['left', 36],
+                position: DlgInitPos[table_type],
+                width: DlgSize[table_type][0],//'600px',
+                height: 'auto',//$(window).height()/2
+                minHeight: '0',
                 close: function(event, ui) {
                     delete tables[table_type][$(this).attr("id").split("_")[2]];
                     $(this).dialog('destroy').remove();
