@@ -4,9 +4,20 @@ g.node.selected > rect{
 }
 
 div.gravity{
-  width: 200px;
+  width: 20%;
 }
 
+div.selectbar{
+  width: 25%;
+}
+
+div.network_mode{
+  width: 15%;
+}
+
+div.highlightcount{
+  width: 15%;
+}
 .cvs text {
   font: 10px Tahoma;
   font-weight: bold;

@@ -3,8 +3,8 @@ SIIL.Network = function($div, link_no) {
   self.SID = link_no;
   self.Type = 'network';
   self.Name = 'network_cvs_' + self.SID;
-  self.width = 800;
-  self.height = 700;
+  self.width = 500;//800;
+  self.height = 400;//700;
   self.mode = "pan";
   $("#network_dlg_" + self.SID).parent().addClass("link_" + self.SID);
   var cmb = $div.find('.selectbar').attr('id');

@@ -41,13 +41,13 @@ var DlgInitPos = {
 var DlgSize = {
     'event':['600px',36],//left, top parameter
     'location': ['300px',36],
-    'message': ['600px',36],
+    'message': ['500px',36],
     'person': ['450px',536],
     'organization': ['480px',536],
     'resource': ['500px',536],  
     'timeline':[0,$(window).height()/3*2],
     'map':[$(window).width()/3,$(window).height()/3*2],
-    'network':[$(window).width()*2/3,$(window).height()/3*2],
+    'network':['500px','400px'],
 };
 var tableHeaders = {
     'event': [{
@@ -314,9 +314,9 @@ function initNewLink(table_type, filter_params, link_no, callback) {
             getData(table_type, filter_params, link_no, callback);
         });
     }
-    if(filter_params["filter_type"]=="network"){
-        dataset[link_no]['center']="network";
-    }
+    // if(filter_params["filter_type"]=="network"){
+    //     dataset[link_no]['center']="network";
+    // }
 };
 
 function createMap(link_no, filter_params) {
@@ -449,6 +449,12 @@ function createNetwork(link_no, filter_params) {
             $(xhr.html).dialog($.extend({}, dialogOptions, {
                 title: 'Network of link ' + link_no,
                 position: DlgInitPos['network'],
+                width: DlgSize['network'][0],
+                height: 'auto',
+                minHeight: '0',
+                // width:DlgSize['network'][0],
+                // height:DlgSize['network'][1],
+
                 close: function(event, ui) {
                     delete network[$(this).attr("id").split("_")[2]];
                     $(this).dialog('destroy').remove();
@@ -456,7 +462,7 @@ function createNetwork(link_no, filter_params) {
             })).dialogExtend(dialogExtendOptions);
             network[link_no] = new SIIL.Network($(xhr.html), link_no);
             if (new_link) { // start window in new link / start a subset
-                console.log(filter_params);
+                //console.log(filter_params);
                 initNewLink('event', filter_params, link_no, function() { // filter_params is not null when starting subset
                     dataset[link_no]['filter'] = filter_params;
                     if (filter_params != null) {
