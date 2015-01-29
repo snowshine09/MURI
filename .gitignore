@@ -6,6 +6,9 @@ settings.py
 *.sock
 *.pid
 
+#database records
+dashboard/migrations/**
+
 # OS generated file
 .DS_Store?
 .DS_Store
