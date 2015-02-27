@@ -1,9 +1,6 @@
 {% load static %}
-{% load compress %}
 {% block extralib %}
-{% compress js %}
 <script type="text/javascript" src="{% static 'dashboard/js/page_header.js' %}"></script>
-{% endcompress %}
 <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/page_header.css' %}">
 {% endblock %}
 

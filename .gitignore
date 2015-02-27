@@ -1,6 +1,7 @@
 # Compiled source #
 *.pyc
-
+#setting profile
+dashboard/settings.py
 # runtime file #
 *.sock
 *.pid
